@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Greener's Order Collection System</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --gp:#2d6a4f;--gd:#1b4332;--gm:#40916c;--gl:#95d5b2;--pale:#d8f3dc;--faint:#f0faf3;
+      --td:#1a1a1a;--tm:#4a5568;--tl:#718096;--border:#e2e8f0;
+      --shadow:0 2px 12px rgba(0,0,0,.08);--shadow-lg:0 8px 32px rgba(0,0,0,.12);
+      --r:12px;--rs:8px;
+    }
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans Sinhala','Noto Sans Tamil',sans-serif;background:var(--faint);color:var(--td);min-height:100vh}
+
+    /* HEADER */
+    header{background:var(--gd);position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.2)}
+    .header-top{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;gap:12px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:12px;flex-shrink:0}
+    .brand-icon{width:42px;height:42px;background:var(--gl);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px}
+    .brand-text h1{font-size:1.2rem;font-weight:700;color:#fff;line-height:1.1}
+    .brand-text p{font-size:.68rem;color:var(--gl);margin-top:2px}
+    .lang-switcher{display:flex;gap:4px;background:rgba(255,255,255,.1);border-radius:8px;padding:4px}
+    .lang-btn{background:transparent;border:none;color:rgba(255,255,255,.7);padding:5px 11px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:500;transition:all .2s;font-family:inherit}
+    .lang-btn.active,.lang-btn:hover{background:var(--gp);color:#fff}
+    nav{display:flex;background:var(--gp);overflow-x:auto;scrollbar-width:none}
+    nav::-webkit-scrollbar{display:none}
+    .nav-tab{background:transparent;border:none;color:rgba(255,255,255,.75);padding:13px 20px;cursor:pointer;font-size:.86rem;font-weight:500;white-space:nowrap;border-bottom:3px solid transparent;transition:all .2s;font-family:inherit}
+    .nav-tab.active,.nav-tab:hover{color:#fff;border-bottom-color:var(--gl)}
+    .nav-tab.active{background:rgba(0,0,0,.15)}
+
+    /* LAYOUT */
+    main{max-width:980px;margin:0 auto;padding:24px 16px 110px}
+    .section{display:none}.section.active{display:block}
+    @media(max-width:600px){main{padding:16px 12px 120px}.header-top{padding:10px 14px}.nav-tab{padding:11px 14px;font-size:.8rem}}
+
+    /* CARDS */
+    .card{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);padding:24px;margin-bottom:20px}
+    .card-title{font-size:1.1rem;font-weight:700;color:var(--gd);margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--pale)}
+
+    /* FORMS */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+    .form-group{display:flex;flex-direction:column;gap:6px}
+    .form-group.full{grid-column:1/-1}
+    label{font-size:.75rem;font-weight:600;color:var(--tm);text-transform:uppercase;letter-spacing:.04em}
+    input,select,textarea{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:.94rem;color:var(--td);background:#fff;transition:border-color .2s,box-shadow .2s;font-family:inherit;-webkit-appearance:none}
+    input:focus,select:focus{outline:none;border-color:var(--gp);box-shadow:0 0 0 3px rgba(45,106,79,.12)}
+
+    /* BUTTONS */
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 22px;border-radius:var(--rs);border:none;cursor:pointer;font-size:.9rem;font-weight:600;transition:all .2s;font-family:inherit;white-space:nowrap}
+    .btn-primary{background:var(--gp);color:#fff}
+    .btn-primary:hover{background:var(--gd);transform:translateY(-1px);box-shadow:0 4px 14px rgba(45,106,79,.3)}
+    .btn-outline{background:transparent;color:var(--gp);border:2px solid var(--gp)}
+    .btn-outline:hover{background:var(--pale)}
+    .btn-danger{background:#fee2e2;color:#991b1b;border:none}
+    .btn-danger:hover{background:#fca5a5}
+    .btn-sm{padding:6px 14px;font-size:.8rem}
+    .btn-wa{background:#25d366;color:#fff;border:none}
+    .btn-wa:hover{background:#128c5e}
+
+    /* TOAST */
+    .toast{position:fixed;top:76px;right:20px;padding:13px 18px;border-radius:var(--rs);font-size:.88rem;font-weight:500;box-shadow:var(--shadow-lg);z-index:9999;transform:translateX(130%);transition:transform .3s;max-width:320px}
+    .toast.show{transform:translateX(0)}
+    .toast-success{background:#d1fae5;color:#065f46;border-left:4px solid #059669}
+    .toast-error{background:#fee2e2;color:#991b1b;border-left:4px solid #dc2626}
+
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;display:none}
+    .modal-overlay.open{display:flex}
+    .modal{background:#fff;border-radius:var(--r);max-width:560px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border)}
+    .modal-header h3{font-size:1.05rem;font-weight:700;color:var(--gd)}
+    .modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--tl);line-height:1;padding:2px 6px}
+    .modal-body{padding:20px 22px}
+    .modal-footer{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+
+    /* PIN GATE */
+    .pin-gate{text-align:center;padding:48px 24px}
+    .pin-gate-icon{font-size:3rem;margin-bottom:16px}
+    .pin-gate h3{font-size:1.2rem;font-weight:700;color:var(--gd);margin-bottom:8px}
+    .pin-gate p{font-size:.88rem;color:var(--tm);margin-bottom:20px}
+    .pin-input{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
+    .pin-input input{width:50px;text-align:center;font-size:1.4rem;font-weight:700;letter-spacing:.2em;padding:8px}
+
+    /* MEMBER CARD */
+    .member-id-card{background:linear-gradient(135deg,var(--gp),var(--gd));color:#fff;border-radius:var(--r);padding:24px;margin-top:20px;display:none;box-shadow:var(--shadow-lg)}
+    .member-id-card.visible{display:block}
+    .member-card-hdr{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+    .member-avatar{width:52px;height:52px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px}
+    .member-card-details{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.2)}
+    .mdl{font-size:.68rem;opacity:.65;text-transform:uppercase}
+    .mdv{font-size:.92rem;font-weight:600;margin-top:2px}
+
+    /* SEARCH */
+    .search-wrap{position:relative}
+    .search-dropdown{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--border);border-top:none;border-radius:0 0 var(--rs) var(--rs);z-index:50;max-height:260px;overflow-y:auto;box-shadow:var(--shadow-lg);display:none}
+    .search-dropdown.open{display:block}
+    .search-item{padding:11px 15px;cursor:pointer;transition:background .15s;border-bottom:1px solid var(--faint)}
+    .search-item:hover{background:var(--faint)}
+    .si-name{font-weight:600;font-size:.92rem}.si-sub{font-size:.78rem;color:var(--tl);margin-top:2px}
+
+    /* MEMBER BANNER */
+    .member-banner{display:none;background:var(--pale);border:1.5px solid var(--gl);border-radius:var(--rs);padding:12px 16px;margin-bottom:18px;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+    .member-banner.visible{display:flex}
+
+    /* CATALOG */
+    .catalog-section{margin-bottom:4px}
+    .cat-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;background:var(--pale);border-radius:var(--rs);cursor:pointer;user-select:none;margin-bottom:2px;transition:background .2s}
+    .cat-hdr:hover{background:#b7e4c7}
+    .cat-title{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--gd);font-size:.9rem}
+    .cat-chev{font-size:.75rem;color:var(--tm);transition:transform .2s}
+    .cat-hdr.collapsed .cat-chev{transform:rotate(-90deg)}
+    .cat-items{display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
+    .cat-items.hidden{display:none}
+    .product-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;background:#fff;border:1px solid var(--border);border-radius:var(--rs);padding:10px 14px;transition:border-color .2s}
+    .product-row:hover{border-color:var(--gl)}
+    .product-row.has-qty{border-color:var(--gp);background:var(--faint)}
+    .p-name1{font-weight:600;color:var(--td);font-size:.9rem}
+    .p-name2{font-size:.74rem;color:var(--tl);margin-top:1px}
+    .p-price{font-size:.78rem;color:var(--gp);font-weight:600;margin-top:3px}
+    .p-subtotal{font-size:.82rem;color:var(--gd);font-weight:700;margin-top:2px;min-height:1em}
+    .prod-ctrl{display:flex;align-items:center;gap:6px;flex-shrink:0}
+
+    /* WEIGHT INPUTS */
+    .w-inputs{display:flex;gap:5px;align-items:flex-end;flex-wrap:wrap}
+    .w-inputs input[type=number]{width:62px;padding:7px 5px;font-size:.84rem;text-align:center}
+    .w-inputs select{padding:7px 3px;font-size:.79rem;width:70px}
+    .w-lbl{font-size:.66rem;color:var(--tm);font-weight:500;text-align:center;margin-top:2px}
+
+    /* WEIGHT PRESETS */
+    .w-presets{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
+    .w-preset-btn{background:var(--faint);border:1px solid var(--gl);border-radius:20px;padding:3px 9px;font-size:.72rem;font-weight:600;color:var(--gp);cursor:pointer;transition:all .15s;font-family:inherit}
+    .w-preset-btn:hover{background:var(--pale)}
+
+    /* STEPPER */
+    .stepper{display:flex;align-items:center;border:1.5px solid var(--border);border-radius:var(--rs);overflow:hidden}
+    .stepper-btn{background:var(--faint);border:none;padding:7px 11px;cursor:pointer;font-size:1rem;font-weight:700;color:var(--gp);transition:background .15s;line-height:1}
+    .stepper-btn:hover{background:var(--gl)}
+    .stepper-val{min-width:36px;text-align:center;font-size:.88rem;font-weight:700;padding:7px 4px;border-left:1px solid var(--border);border-right:1px solid var(--border)}
+
+    /* ORDER FOOTER */
+    .order-footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid var(--pale);padding:13px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 -4px 20px rgba(0,0,0,.1);z-index:90;flex-wrap:wrap}
+    .ot-label{font-size:.74rem;color:var(--tm);font-weight:500}
+    .ot-amount{font-size:1.5rem;font-weight:800;color:var(--gd)}
+    .ot-count{font-size:.74rem;color:var(--tl)}
+
+    /* TABLES */
+    .tbl-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse;font-size:.86rem}
+    th{background:var(--gp);color:#fff;padding:10px 12px;text-align:left;font-weight:600;font-size:.78rem}
+    td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+    tr:hover td{background:var(--faint)}
+    .cat-row td{background:var(--pale);font-weight:700;color:var(--gd);padding:7px 12px;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
+    .price-our{font-weight:700;color:var(--gp)}
+    .price-lower{background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:20px;font-weight:700}
+    .price-dash{color:var(--tl)}
+
+    /* ADMIN TABLE */
+    .admin-table input[type=number]{width:80px;padding:5px 7px;font-size:.85rem}
+    .badge-active{background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:20px;font-size:.75rem;font-weight:700}
+    .badge-inactive{background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:20px;font-size:.75rem;font-weight:700}
+
+    /* REPORTS */
+    .report-filter{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px}
+    .report-filter .form-group{flex:1;min-width:140px}
+    .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:18px}
+    .stat-card{background:#fff;border-radius:var(--rs);padding:14px;text-align:center;border:1.5px solid var(--border)}
+    .stat-val{font-size:1.4rem;font-weight:800;color:var(--gd)}
+    .stat-lbl{font-size:.7rem;color:var(--tm);margin-top:3px;font-weight:500}
+
+    /* EXPANDABLE ROWS */
+    .expand-row{background:var(--faint);border-bottom:2px solid var(--gl);display:none}
+    .expand-row.open{display:table-row}
+    .expand-row td{padding:8px 12px}
+
+    /* REPORT TABS */
+    .sub-tabs{display:flex;gap:4px;margin-bottom:18px;border-bottom:2px solid var(--pale);padding-bottom:0}
+    .sub-tab{background:transparent;border:none;padding:9px 16px;font-size:.85rem;font-weight:600;color:var(--tm);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;font-family:inherit}
+    .sub-tab.active{color:var(--gp);border-bottom-color:var(--gp)}
+
+    /* PRICE HISTORY */
+    .hist-item{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--faint);font-size:.82rem}
+    .hist-arrow{color:var(--gp);font-size:.9rem}
+    .hist-date{color:var(--tl);font-size:.75rem;flex-shrink:0}
+
+    /* RECEIPT */
+    .receipt{font-family:'Courier New',monospace;font-size:.85rem;line-height:1.6}
+    .receipt-header{text-align:center;margin-bottom:12px;border-bottom:2px dashed #ccc;padding-bottom:12px}
+    .receipt-row{display:flex;justify-content:space-between;gap:8px}
+    .receipt-divider{border-top:1px dashed #ccc;margin:8px 0}
+    .receipt-total{font-weight:700;font-size:1rem}
+    @media print{.modal-overlay{position:absolute}.modal-close,.modal-footer{display:none!important}}
+
+    /* ORDER HISTORY */
+    .hist-order-card{border:1.5px solid var(--border);border-radius:var(--rs);padding:14px;margin-bottom:10px}
+    .hist-order-hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+
+    /* MISC */
+    .loading{text-align:center;padding:28px;color:var(--tl);font-size:.9rem}
+    .empty-state{text-align:center;padding:40px 20px;color:var(--tm)}
+    .empty-icon{font-size:2.8rem;margin-bottom:10px}
+    .tag{display:inline-flex;align-items:center;gap:4px;background:var(--pale);color:var(--gd);padding:3px 10px;border-radius:20px;font-size:.76rem;font-weight:600}
+    .section-hdr{font-size:.76rem;font-weight:700;color:var(--gd);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+  </style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="confirm-title">Confirm Order</h3>
+      <button class="modal-close" onclick="closeModal('confirm-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="confirm-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('confirm-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="finalSubmitOrder()">✓ Confirm &amp; Place</button>
+    </div>
+  </div>
+</div>
+
+<!-- RECEIPT MODAL -->
+<div class="modal-overlay" id="receipt-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>🧾 Order Receipt</h3>
+      <button class="modal-close" onclick="closeModal('receipt-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="receipt-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="window.print()">🖨 Print</button>
+      <button class="btn btn-primary" onclick="closeModal('receipt-modal')">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PRODUCT MODAL -->
+<div class="modal-overlay" id="add-product-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>➕ Add New Product</h3>
+      <button class="modal-close" onclick="closeModal('add-product-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>English Name</label><input type="text" id="np-en" required/></div>
+        <div class="form-group"><label>Sinhala Name</label><input type="text" id="np-si"/></div>
+        <div class="form-group"><label>Tamil Name</label><input type="text" id="np-ta"/></div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="np-cat">
+            <option value="Vegetables &amp; Roots">Vegetables &amp; Roots</option>
+            <option value="Leafy Greens">Leafy Greens</option>
+            <option value="Snack Crops">Snack Crops</option>
+            <option value="Fruits">Fruits</option>
+            <option value="Grains">Grains</option>
+            <option value="Spices">Spices</option>
+            <option value="Sweets &amp; Desserts">Sweets &amp; Desserts</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Unit Type</label>
+          <select id="np-unit"><option value="weight_kg_g">Weight (kg/g)</option><option value="count">Count</option></select>
+        </div>
+        <div class="form-group"><label>Our Price (Rs.)</label><input type="number" id="np-price" min="0" step="0.5"/></div>
+        <div class="form-group"><label>Market Price (Rs.)</label><input type="number" id="np-mktprice" min="0" step="0.5"/></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('add-product-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveNewProduct()">Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-top">
+    <div class="brand">
+      <div class="brand-icon">🌿</div>
+      <div class="brand-text">
+        <h1>Greener's</h1>
+        <p data-i18n="tagline">Collaborating with producers for organized consumers</p>
+      </div>
+    </div>
+    <div class="lang-switcher">
+      <button class="lang-btn" onclick="setLang('si')">සිංහල</button>
+      <button class="lang-btn active" onclick="setLang('en')">English</button>
+      <button class="lang-btn" onclick="setLang('ta')">தமிழ்</button>
+    </div>
+  </div>
+  <nav>
+    <button class="nav-tab active" onclick="showTab('register',this)" data-i18n="navRegister">Register</button>
+    <button class="nav-tab" onclick="showTab('order',this)" data-i18n="navOrder">Place Order</button>
+    <button class="nav-tab" onclick="showTab('prices',this)" data-i18n="navPrices">Price Board</button>
+    <button class="nav-tab" onclick="showTab('reports',this)" data-i18n="navReports">Reports</button>
+    <button class="nav-tab" onclick="showTab('admin',this)" data-i18n="navAdmin">Admin</button>
+    <button class="nav-tab" onclick="showTab('history',this)" data-i18n="navHistory">Order History</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ═══ TAB 1: REGISTER ═══ -->
+<div class="section active" id="tab-register">
+  <div class="card">
+    <div class="card-title" data-i18n="registerTitle">Member Registration</div>
+    <form id="reg-form" onsubmit="submitRegistration(event)">
+      <div class="form-grid">
+        <div class="form-group"><label data-i18n="nameLabel">Full Name</label><input type="text" id="reg-name" required placeholder="Kamal Perera"/></div>
+        <div class="form-group"><label data-i18n="nicLabel">NIC Number</label><input type="text" id="reg-nic" required placeholder="200012345678"/></div>
+        <div class="form-group full"><label data-i18n="addressLabel">Address</label><input type="text" id="reg-address" placeholder="No. 12, Main Road, Colombo"/></div>
+        <div class="form-group"><label data-i18n="phoneLabel">Phone Number</label><input type="tel" id="reg-phone" placeholder="0771234567"/></div>
+        <div class="form-group"><label data-i18n="whatsappLabel">WhatsApp Number</label><input type="tel" id="reg-whatsapp" placeholder="0771234567"/></div>
+        <div class="form-group full">
+          <label data-i18n="orgLabel">Consumer Organization</label>
+          <select id="reg-org"><option value="">— Select organization —</option></select>
+        </div>
+      </div>
+      <div style="margin-top:18px"><button type="submit" class="btn btn-primary" data-i18n="submitReg">Register</button></div>
+    </form>
+    <div class="member-id-card" id="member-card">
+      <div class="member-card-hdr">
+        <div class="member-avatar">👤</div>
+        <div><div class="mdl">GREENER'S MEMBER</div><div class="mdv" id="card-name" style="font-size:1.2rem;font-weight:700">—</div></div>
+      </div>
+      <div class="member-card-details">
+        <div><div class="mdl">Member ID</div><div class="mdv" id="card-id">—</div></div>
+        <div><div class="mdl">NIC</div><div class="mdv" id="card-nic">—</div></div>
+        <div><div class="mdl">Organization</div><div class="mdv" id="card-org">—</div></div>
+        <div><div class="mdl">Status</div><div class="mdv" style="color:var(--gl)">✓ Active</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 2: ORDER ═══ -->
+<div class="section" id="tab-order">
+  <div class="card">
+    <div class="card-title" data-i18n="orderTitle">Place Your Order</div>
+    <div style="margin-bottom:16px">
+      <div class="section-hdr">① <span data-i18n="selectMember">Select Member</span></div>
+      <div class="search-wrap">
+        <input type="text" id="member-search" data-i18n-placeholder="memberSearch" placeholder="Enter your NIC or Name" oninput="searchMembers(this.value)" autocomplete="off"/>
+        <div class="search-dropdown" id="member-dropdown"></div>
+      </div>
+    </div>
+    <div class="member-banner" id="selected-member-banner">
+      <div>
+        <div style="font-weight:700;color:var(--gd);font-size:.96rem" id="banner-name">—</div>
+        <div style="font-size:.78rem;color:var(--tm)" id="banner-nic">—</div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="clearMember()">✕ Clear</button>
+    </div>
+    <div class="section-hdr">② <span data-i18n="chooseProducts">Choose Products</span></div>
+    <div id="catalog-container"><div class="loading">Loading products…</div></div>
+  </div>
+  <div class="order-footer" id="order-footer" style="display:none">
+    <div>
+      <div class="ot-label" data-i18n="totalLabel">Total Amount</div>
+      <div class="ot-amount" id="total-display">Rs. 0.00</div>
+      <div class="ot-count" id="items-count-display">0 items</div>
+    </div>
+    <button class="btn btn-primary" style="font-size:.95rem;padding:12px 26px" onclick="initiateOrder()">🛒 <span data-i18n="placeOrder">Place Order</span></button>
+  </div>
+</div>
+
+<!-- ═══ TAB 3: PRICE BOARD ═══ -->
+<div class="section" id="tab-prices">
+  <div class="card">
+    <div class="card-title" data-i18n="priceTitle">Price Board</div>
+    <p style="font-size:.77rem;color:var(--tl);margin-bottom:14px">💡 <span data-i18n="priceBoardNote">Prices in LKR per kg or per unit. Green = below open market price.</span></p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th data-i18n="colItemEn">Item (English)</th><th data-i18n="colItemSi">Item (සිංහල)</th><th data-i18n="marketPrice">Market Price</th><th data-i18n="ourPrice">Our Price</th></tr></thead>
+        <tbody id="price-tbody"><tr><td colspan="4" class="loading">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 4: REPORTS ═══ -->
+<div class="section" id="tab-reports">
+  <!-- PIN GATE -->
+  <div id="reports-gate" class="card">
+    <div class="pin-gate">
+      <div class="pin-gate-icon">🔒</div>
+      <h3 data-i18n="adminAccess">Admin Access Required</h3>
+      <p data-i18n="enterPIN">Enter the 4-digit PIN to access reports</p>
+      <div class="pin-input"><input type="password" id="reports-pin" maxlength="4" style="width:120px;font-size:1.8rem;text-align:center;letter-spacing:.3em" placeholder="••••" onkeydown="if(event.key==='Enter')unlockReports()"/></div>
+      <button class="btn btn-primary" onclick="unlockReports()" data-i18n="unlockBtn">Unlock</button>
+    </div>
+  </div>
+  <!-- REPORT CONTENT -->
+  <div id="reports-content" style="display:none">
+    <div class="card">
+      <div class="card-title">📊 <span data-i18n="navReports">Reports</span></div>
+      <div class="sub-tabs">
+        <button class="sub-tab active" onclick="showSubTab('rep-org',this)" data-i18n="orgReport">Org Report</button>
+        <button class="sub-tab" onclick="showSubTab('rep-procurement',this)" data-i18n="procurement">Procurement List</button>
+      </div>
+      <!-- ORG REPORT SUB-TAB -->
+      <div id="rep-org">
+        <div class="report-filter">
+          <div class="form-group"><label data-i18n="orgLabel">Organization</label><select id="report-org"><option value="">— Select —</option></select></div>
+          <div class="form-group"><label data-i18n="fromDate">From Date</label><input type="date" id="report-from"/></div>
+          <div class="form-group"><label data-i18n="toDate">To Date</label><input type="date" id="report-to"/></div>
+          <button class="btn btn-primary" onclick="loadOrgReport()" style="flex-shrink:0;align-self:flex-end" data-i18n="generateBtn">Generate</button>
+        </div>
+        <div id="report-output"></div>
+      </div>
+      <!-- PROCUREMENT SUB-TAB -->
+      <div id="rep-procurement" style="display:none">
+        <div class="report-filter">
+          <div class="form-group"><label data-i18n="fromDate">From Date</label><input type="date" id="proc-from"/></div>
+          <div class="form-group"><label data-i18n="toDate">To Date</label><input type="date" id="proc-to"/></div>
+          <button class="btn btn-primary" onclick="loadProcurement()" style="flex-shrink:0;align-self:flex-end" data-i18n="generateBtn">Generate</button>
+        </div>
+        <div id="procurement-output"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 5: ADMIN ═══ -->
+<div class="section" id="tab-admin">
+  <!-- PIN GATE -->
+  <div id="admin-gate" class="card">
+    <div class="pin-gate">
+      <div class="pin-gate-icon">🔐</div>
+      <h3 data-i18n="adminAccess">Admin Access</h3>
+      <p data-i18n="enterPIN">Enter the 4-digit admin PIN</p>
+      <div class="pin-input"><input type="password" id="admin-pin" maxlength="4" style="width:120px;font-size:1.8rem;text-align:center;letter-spacing:.3em" placeholder="••••" onkeydown="if(event.key==='Enter')unlockAdmin()"/></div>
+      <button class="btn btn-primary" onclick="unlockAdmin()" data-i18n="unlockBtn">Unlock</button>
+    </div>
+  </div>
+  <!-- ADMIN CONTENT -->
+  <div id="admin-content" style="display:none">
+    <div class="card">
+      <div class="card-title">🔐 <span data-i18n="navAdmin">Admin — Product Management</span></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center">
+        <input type="text" id="admin-search" placeholder="Search products…" oninput="filterAdminProducts(this.value)" style="max-width:260px"/>
+        <select id="admin-cat-filter" onchange="filterAdminProducts(document.getElementById('admin-search').value)">
+          <option value="">All Categories</option>
+          <option value="Vegetables &amp; Roots">Vegetables &amp; Roots</option>
+          <option value="Leafy Greens">Leafy Greens</option>
+          <option value="Snack Crops">Snack Crops</option>
+          <option value="Fruits">Fruits</option>
+          <option value="Grains">Grains</option>
+          <option value="Spices">Spices</option>
+          <option value="Sweets &amp; Desserts">Sweets &amp; Desserts</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="openModal('add-product-modal')">➕ Add Product</button>
+        <button class="btn btn-outline btn-sm" onclick="saveAllPrices()">💾 Save All Changes</button>
+      </div>
+      <div class="tbl-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Category</th>
+              <th>Our Price (Rs.)</th>
+              <th>Market Price (Rs.)</th>
+              <th>Status</th>
+              <th>History</th>
+            </tr>
+          </thead>
+          <tbody id="admin-tbody"><tr><td colspan="6" class="loading">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📋 Price Change Log</div>
+      <div id="price-log-container"><div class="loading">No changes recorded yet</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 6: ORDER HISTORY ═══ -->
+<div class="section" id="tab-history">
+  <div class="card">
+    <div class="card-title">📦 <span data-i18n="navHistory">Order History</span></div>
+    <div style="margin-bottom:18px">
+      <div class="section-hdr" data-i18n="lookupNIC">Look up by NIC or Name</div>
+      <div class="search-wrap">
+        <input type="text" id="history-search" placeholder="Enter NIC or member name…" oninput="searchHistoryMember(this.value)" autocomplete="off"/>
+        <div class="search-dropdown" id="history-dropdown"></div>
+      </div>
+    </div>
+    <div id="history-output"><div class="empty-state"><div class="empty-icon">🔍</div><div data-i18n="historyHint">Search for a member above to view their past orders</div></div></div>
+  </div>
+</div>
+
+</main>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   TRANSLATIONS
+═══════════════════════════════════════════════════════ */
+const LANG = {
+  en: {
+    tagline:"Collaborating with producers for organized consumers",
+    navRegister:"Register",navOrder:"Place Order",navPrices:"Price Board",navReports:"Reports",navAdmin:"Admin",navHistory:"Order History",
+    registerTitle:"Member Registration",nameLabel:"Full Name",nicLabel:"NIC Number",addressLabel:"Address",
+    phoneLabel:"Phone Number",whatsappLabel:"WhatsApp Number",orgLabel:"Consumer Organization",submitReg:"Register",
+    orderTitle:"Place Your Order",memberSearch:"Enter NIC or Name",selectMember:"Select Member",chooseProducts:"Choose Products",
+    placeOrder:"Place Order",totalLabel:"Total Amount",
+    priceTitle:"Sample Price Board (As of 2026.03.12)",marketPrice:"Market Price",ourPrice:"Our Price",colItemEn:"Item (English)",colItemSi:"Item (සිංහල)",
+    priceBoardNote:"Prices in LKR per kg or per unit. Green = below open market price.",
+    adminAccess:"Admin Access Required",enterPIN:"Enter the 4-digit PIN to access",unlockBtn:"Unlock",
+    orgReport:"Org Report",procurement:"Procurement List",fromDate:"From Date",toDate:"To Date",generateBtn:"Generate",
+    navAdmin:"Admin",lookupNIC:"Search by NIC or Name",historyHint:"Search a member above to view their orders",
+    reorderBtn:"Re-order",printReceipt:"Print Receipt",
+    kg:"kg",gram:"grams",count:"nos",
+    catVeg:"Vegetables & Roots",catLeafy:"Leafy Greens (Bundles)",catSnack:"Snack Crops",
+    catFruit:"Fruits",catGrain:"Grains",catSpice:"Spices",catSweet:"Sweets & Desserts",
+    bananaSub:"Banana varieties"
+  },
+  si: {
+    tagline:"නිෂ්පාදකයින් සමඟ සහයෝගීව සංවිධිත පාරිභෝගිකයන් සඳහා",
+    navRegister:"ලියාපදිංචිය",navOrder:"ඇණවුමක් කරන්න",navPrices:"මිල පුවරුව",navReports:"වාර්තා",navAdmin:"පරිපාලන",navHistory:"ඇණවුම් ඉතිහාසය",
+    registerTitle:"සාමාජික ලියාපදිංචිය",nameLabel:"සම්පූර්ණ නම",nicLabel:"ජා.හැ.අ. අංකය",addressLabel:"ලිපිනය",
+    phoneLabel:"දුරකථන අංකය",whatsappLabel:"WhatsApp අංකය",orgLabel:"පාරිභෝගික සංවිධානය",submitReg:"ලියාපදිංචි කරන්න",
+    orderTitle:"ඔබේ ඇණවුම ලබා දෙන්න",memberSearch:"ජා.හැ.අ. හෝ නම ඇතුළු කරන්න",selectMember:"සාමාජිකයා තෝරන්න",chooseProducts:"භාණ්ඩ තෝරන්න",
+    placeOrder:"ඇණවුම කරන්න",totalLabel:"මුළු මුදල",
+    priceTitle:"ආදර්ශ මිල පුවරුව (2026.03.12 දින පැවති)",marketPrice:"සාමාන්‍ය වෙළඳ මිල",ourPrice:"අපේ මිල",colItemEn:"භාණ්ඩය (ඉංග්‍රීසි)",colItemSi:"භාණ්ඩය (සිංහල)",
+    priceBoardNote:"මිල ශ්‍රී ලංකා රුපියල් වලිනි. කොළ = සාමාන්‍ය වෙළඳ මිලට වඩා අඩු.",
+    adminAccess:"පරිපාලන ප්‍රවේශය",enterPIN:"ප්‍රවේශ PIN ඇතුළු කරන්න",unlockBtn:"ඇතුළු වන්න",
+    orgReport:"සංවිධාන වාර්තාව",procurement:"ප්‍රසම්පාදන ලැයිස්තුව",fromDate:"ආරම්භ දිනය",toDate:"අවසාන දිනය",generateBtn:"ජනනය කරන්න",
+    navAdmin:"පරිපාලන",lookupNIC:"ජා.හැ.අ. හෝ නම සොයන්න",historyHint:"සාමාජිකයා සොයා ඇණවුම් බලන්න",
+    reorderBtn:"නැවත ඇණවුම්",printReceipt:"රිසිට් මුද්‍රණය",
+    kg:"කිලෝ",gram:"ග්‍රෑම්",count:"ගණන",
+    catVeg:"එළවළු සහ අල",catLeafy:"පළා වර්ග (මිටි)",catSnack:"කෙටි ආහාර",
+    catFruit:"පළතුරු",catGrain:"ධාන්‍ය",catSpice:"කුළුබඩු",catSweet:"රස කැවිලි",
+    bananaSub:"කෙසෙල් වර්ග"
+  },
+  ta: {
+    tagline:"உற்பத்தியாளர்களுடன் இணைந்து ஒழுங்கான நுகர்வோருக்காக",
+    navRegister:"பதிவு",navOrder:"ஆர்டர் செய்க",navPrices:"விலை பலகை",navReports:"அறிக்கைகள்",navAdmin:"நிர்வாகம்",navHistory:"ஆர்டர் வரலாறு",
+    registerTitle:"உறுப்பினர் பதிவு",nameLabel:"முழு பெயர்",nicLabel:"NIC எண்",addressLabel:"முகவரி",
+    phoneLabel:"தொலைபேசி",whatsappLabel:"WhatsApp எண்",orgLabel:"நுகர்வோர் அமைப்பு",submitReg:"பதிவு செய்க",
+    orderTitle:"ஆர்டர் செய்க",memberSearch:"NIC அல்லது பெயர்",selectMember:"உறுப்பினரை தேர்ந்தெடுக்கவும்",chooseProducts:"பொருட்களை தேர்ந்தெடுக்கவும்",
+    placeOrder:"ஆர்டர் செய்க",totalLabel:"மொத்த தொகை",
+    priceTitle:"மாதிரி விலை பலகை (2026.03.12 அன்று நிலவிய)",marketPrice:"சந்தை விலை",ourPrice:"எங்கள் விலை",colItemEn:"பொருள் (ஆங்கிலம்)",colItemSi:"பொருள் (சிங்களம்)",
+    priceBoardNote:"விலைகள் இலங்கை ரூபாயில். பச்சை = சந்தை விலையை விட குறைவு.",
+    adminAccess:"நிர்வாக அணுகல்",enterPIN:"4-இலக்க PIN உள்ளிடுக",unlockBtn:"திறக்க",
+    orgReport:"நிறுவன அறிக்கை",procurement:"கொள்முதல் பட்டியல்",fromDate:"தொடக்க தேதி",toDate:"முடிவு தேதி",generateBtn:"உருவாக்க",
+    navAdmin:"நிர்வாகம்",lookupNIC:"NIC அல்லது பெயரால் தேடுக",historyHint:"உறுப்பினரை தேடி ஆர்டர்களை பாருங்கள்",
+    reorderBtn:"மீண்டும் ஆர்டர்",printReceipt:"ரசீது அச்சிடுக",
+    kg:"கிலோ",gram:"கிராம்",count:"எண்ணிக்கை",
+    catVeg:"காய்கறிகள் மற்றும் கிழங்குகள்",catLeafy:"கீரை வகைகள் (கட்டுகள்)",catSnack:"சிற்றுண்டி பயிர்கள்",
+    catFruit:"பழங்கள்",catGrain:"தானியங்கள்",catSpice:"மசாலா",catSweet:"இனிப்புகள்",
+    bananaSub:"வாழை வகைகள்"
+  }
+};
+
+const CAT_KEYS={'Vegetables & Roots':'catVeg','Leafy Greens':'catLeafy','Snack Crops':'catSnack','Fruits':'catFruit','Grains':'catGrain','Spices':'catSpice','Sweets & Desserts':'catSweet'};
+const CAT_ICONS={'Vegetables & Roots':'🥕','Leafy Greens':'🥬','Snack Crops':'🌽','Fruits':'🍈','Grains':'🌾','Spices':'🌶️','Sweets & Desserts':'🍯'};
+const ORG_ICONS={welfare_society:'🏡',elder_society:'👴',women_society:'👩',office:'🏢',factory:'🏭',school:'🏫',hospital:'🏥',hotel:'🏨',restaurant:'🍽️',canteen:'🥘',other:'🏛️'};
+
+vx
+/* ── STATE ── */
+let currentLang=localStorage.getItem('greeners_lang')||'en';
+let allProducts=[],allOrgs=[],allMembers=[];
+let selectedMemberId=null,selectedMemberObj=null;
+let quantities={};
+let searchTimer=null;
+let priceLog=JSON.parse(localStorage.getItem('greeners_price_log')||'[]');
+let pendingOrderItems=[];
+let adminUnlocked=sessionStorage.getItem('admin_unlocked')==='1';
+let reportsUnlocked=sessionStorage.getItem('reports_unlocked')==='1';
+
+/* ── LANGUAGE ── */
+function t(k){return(LANG[currentLang]||LANG.en)[k]||LANG.en[k]||k}
+function setLang(lang){
+  currentLang=lang;localStorage.setItem('greeners_lang',lang);
+  document.querySelectorAll('.lang-btn').forEach(b=>{b.classList.toggle('active',b.textContent.trim()==={si:'සිංහල',en:'English',ta:'தமிழ்'}[lang])});
+  applyTranslations();
+  if(allOrgs.length)refreshOrgSelects();
+  if(allProducts.length){renderCatalog();renderPriceBoard()}
+}
+function applyTranslations(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>el.placeholder=t(el.dataset.i18nPlaceholder));
+}
+
+/* ── MODAL ── */
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+
+/* ── TABS ── */
+function showTab(name,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  document.getElementById('order-footer').style.display=(name==='order')?'flex':'none';
+  if(name==='prices')renderPriceBoard();
+  if(name==='order')renderCatalog();
+  if(name==='reports')initReportsTab();
+  if(name==='admin')initAdminTab();
+}
+function showSubTab(id,btn){
+  const parent=btn.closest('.card');
+  parent.querySelectorAll('.sub-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  parent.querySelectorAll('[id^="rep-"]').forEach(el=>el.style.display='none');
+  document.getElementById(id).style.display='block';
+}
+
+/* ── TOAST ── */
+function showToast(msg,type='success'){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.className=`toast toast-${type} show`;
+  setTimeout(()=>el.classList.remove('show'),3400);
+}
+
+/* ── API ── */
+const API_BASE='/api';
+async function apiFetch(path,opts={}){
+  const r=await fetch(API_BASE+path,{headers:{'Content-Type':'application/json'},...opts});
+  if(!r.ok){const b=await r.json().catch(()=>({}));throw new Error(b.error||`HTTP ${r.status}`)}
+  return r.json();
+}
+
+/* ── INIT ── */
+async function initData(){
+  try{
+    [allProducts,allOrgs,allMembers]=await Promise.all([apiFetch('/products'),apiFetch('/organizations'),apiFetch('/members')]);
+    populateOrgSelect('reg-org');
+    renderCatalog();renderPriceBoard();
+  }catch(e){showToast('Failed to load: '+e.message,'error')}
+}
+
+function populateOrgSelect(id){
+  const sel=document.getElementById(id);
+  while(sel.options.length>1)sel.remove(1);
+  allOrgs.forEach(o=>{
+    const name=currentLang==='si'?(o.name_si||o.name_en):currentLang==='ta'?(o.name_ta||o.name_en):o.name_en;
+    sel.add(new Option(`${ORG_ICONS[o.type]||'🏛️'} ${name}`,o.id));
+  });
+}
+function refreshOrgSelects(){
+  populateOrgSelect('reg-org');
+  if(document.getElementById('report-org'))populateOrgSelect('report-org');
+}
+
+/* ── REGISTRATION ── */
+async function submitRegistration(e){
+  e.preventDefault();
+  const name=document.getElementById('reg-name').value.trim();
+  const nic=document.getElementById('reg-nic').value.trim();
+  const addr=document.getElementById('reg-address').value.trim();
+  const phone=document.getElementById('reg-phone').value.trim();
+  const wa=document.getElementById('reg-whatsapp').value.trim();
+  const orgId=document.getElementById('reg-org').value;
+  try{
+    const m=await apiFetch('/members',{method:'POST',body:JSON.stringify({name,nic_number:nic,address:addr||null,phone_number:phone||null,whatsapp_number:wa||null,organization_id:orgId?parseInt(orgId):null})});
+    const org=allOrgs.find(o=>o.id==orgId);
+    allMembers.push({...m,organization_name_en:org?.name_en});
+    document.getElementById('card-name').textContent=name;
+    document.getElementById('card-id').textContent='#'+String(m.id).padStart(5,'0');
+    document.getElementById('card-nic').textContent=nic.slice(0,-4).replace(/./g,'•')+nic.slice(-4);
+    document.getElementById('card-org').textContent=org?`${ORG_ICONS[org.type]||''} ${org.name_en}`:'—';
+    document.getElementById('member-card').classList.add('visible');
+    showToast('✓ Member registered!');
+    document.getElementById('reg-form').reset();
+  }catch(err){showToast('Error: '+err.message,'error')}
+}
+
+/* ── MEMBER SEARCH (ORDER) ── */
+function searchMembers(q){
+  clearTimeout(searchTimer);
+  searchTimer=setTimeout(()=>{
+    const dd=document.getElementById('member-dropdown');
+    const qr=q.toLowerCase().trim();
+    if(!qr){dd.classList.remove('open');return}
+    const matches=allMembers.filter(m=>m.name.toLowerCase().includes(qr)||m.nic_number.toLowerCase().includes(qr)).slice(0,8);
+    dd.innerHTML=matches.length
+      ?matches.map(m=>`<div class="search-item" onclick="selectMember(${m.id})"><div class="si-name">👤 ${m.name}</div><div class="si-sub">${m.nic_number}${m.organization_name_en?' · '+m.organization_name_en:''}</div></div>`).join('')
+      :'<div class="search-item"><span class="si-name" style="color:var(--tl)">No members found</span></div>';
+    dd.classList.add('open');
+  },180);
+}
+function selectMember(id){
+  const m=allMembers.find(x=>x.id===id);if(!m)return;
+  selectedMemberId=id;selectedMemberObj=m;
+  document.getElementById('member-search').value=m.name;
+  document.getElementById('member-dropdown').classList.remove('open');
+  document.getElementById('banner-name').textContent='👤 '+m.name;
+  document.getElementById('banner-nic').textContent=m.nic_number+(m.organization_name_en?' · '+m.organization_name_en:'');
+  document.getElementById('selected-member-banner').classList.add('visible');
+}
+function clearMember(){
+  selectedMemberId=null;selectedMemberObj=null;
+  document.getElementById('member-search').value='';
+  document.getElementById('selected-member-banner').classList.remove('visible');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.search-wrap'))document.querySelectorAll('.search-dropdown').forEach(d=>d.classList.remove('open'));
+});
+
+/* ── CATALOG ── */
+function getCatLabel(catEn){return t(CAT_KEYS[catEn]||'catVeg')||catEn}
+function renderCatalog(){
+  const container=document.getElementById('catalog-container');
+  if(!allProducts.length)return;
+  const grouped={};
+  allProducts.forEach(p=>{const c=p.category_en||'Other';(grouped[c]=grouped[c]||[]).push(p)});
+  container.innerHTML=Object.entries(grouped).map(([cat,prods])=>`
+    <div class="catalog-section">
+      <div class="cat-hdr" onclick="toggleCat(this)">
+        <div class="cat-title"><span>${CAT_ICONS[cat]||'🌿'}</span><span>${getCatLabel(cat)}</span></div>
+        <span class="cat-chev">▼</span>
+      </div>
+      <div class="cat-items">${prods.map(p=>renderProductRow(p)).join('')}</div>
+    </div>`).join('');
+  updateTotal();
+}
+const BANANA_IDS=[38,39,40,41,42,43];
+function renderProductRow(p){
+  const q=quantities[p.id]||{};
+  const primary=currentLang==='si'?(p.name_si||p.name_en):currentLang==='ta'?(p.name_ta||p.name_en):p.name_en;
+  const secondary=p.name_si&&currentLang!=='si'?p.name_si:currentLang==='si'&&p.name_en?p.name_en:'';
+  const price=p.our_price||0;
+  const hasQty=p.unit_type==='weight_kg_g'?(q.kg>0||q.grams>0):(q.count>0);
+  const kg=(q.kg||0)+(q.grams||0)/1000;
+  const subtotal=p.unit_type==='weight_kg_g'?kg*price:(q.count||0)*price;
+  const subtotalStr=subtotal>0?`= Rs. ${subtotal.toFixed(2)}`:'';
+  const isSpice=p.category_en==='Spices';
+
+  let ctrl;
+  if(p.unit_type==='weight_kg_g'){
+    const gramOptions=isSpice
+      ?`<option value="0" ${(q.grams||0)==0?'selected':''}>0g</option>
+        <option value="100" ${(q.grams||0)==100?'selected':''}>100g</option>
+        <option value="250" ${(q.grams||0)==250?'selected':''}>250g</option>
+        <option value="500" ${(q.grams||0)==500?'selected':''}>500g</option>`
+      :`<option value="0" ${(q.grams||0)==0?'selected':''}>0g</option>
+        <option value="500" ${(q.grams||0)==500?'selected':''}>500g</option>`;
+    const presets=isSpice
+      ?`<button class="w-preset-btn" onclick="applyPreset(${p.id},0,100)">100g</button>
+        <button class="w-preset-btn" onclick="applyPreset(${p.id},0,250)">250g</button>
+        <button class="w-preset-btn" onclick="applyPreset(${p.id},0,500)">500g</button>
+        <button class="w-preset-btn" onclick="applyPreset(${p.id},1,0)">1kg</button>`
+      :`<button class="w-preset-btn" onclick="applyPreset(${p.id},0,500)">500g</button>
+        <button class="w-preset-btn" onclick="applyPreset(${p.id},1,0)">1kg</button>`;
+    ctrl=`<div>
+      <div class="w-inputs">
+        <div>
+          <input type="number" min="0" step="1" placeholder="0" value="${q.kg||''}"
+            onchange="setQty(${p.id},'kg',this.value)" style="width:62px"/>
+          <div class="w-lbl">${t('kg')}</div>
+        </div>
+        <div>
+          <select onchange="setQty(${p.id},'grams',this.value)">${gramOptions}</select>
+          <div class="w-lbl">${t('gram')}</div>
+        </div>
+      </div>
+      <div class="w-presets">${presets}</div>
+    </div>`;
+  }else{
+    ctrl=`<div style="display:flex;align-items:center;gap:6px">
+      <div class="stepper">
+        <button class="stepper-btn" onclick="stepCount(${p.id},-1)">−</button>
+        <span class="stepper-val" id="cnt-${p.id}">${q.count||0}</span>
+        <button class="stepper-btn" onclick="stepCount(${p.id},1)">+</button>
+      </div>
+      <span class="w-lbl">${t('count')}</span>
+    </div>`;
+  }
+
+  return `<div class="product-row${hasQty?' has-qty':''}" id="row-${p.id}">
+    <div>
+      <div class="p-name1">${primary}</div>
+      ${secondary?`<div class="p-name2">${secondary}</div>`:''}
+      <div class="p-subtotal" id="sub-${p.id}">${subtotalStr}</div>
+    </div>
+    <div class="prod-ctrl">${ctrl}</div>
+  </div>`;
+}
+function toggleCat(hdr){hdr.nextElementSibling.classList.toggle('hidden');hdr.classList.toggle('collapsed')}
+
+/* ── PRESET BUTTONS ── */
+function applyPreset(pid,kg,grams){
+  if(!quantities[pid])quantities[pid]={};
+  quantities[pid].kg=kg;quantities[pid].grams=grams;
+  const row=document.getElementById('row-'+pid);
+  if(row){
+    const kgInput=row.querySelector('input[type=number]');
+    const gramSel=row.querySelector('select');
+    if(kgInput)kgInput.value=kg||'';
+    if(gramSel)gramSel.value=grams;
+  }
+  updateRowHighlight(pid);updateTotal();
+}
+
+/* ── QUANTITIES ── */
+function setQty(id,field,val){
+  if(!quantities[id])quantities[id]={};
+  quantities[id][field]=parseFloat(val)||0;
+  updateRowHighlight(id);updateTotal();
+}
+function stepCount(id,delta){
+  if(!quantities[id])quantities[id]={count:0};
+  quantities[id].count=Math.max(0,(quantities[id].count||0)+delta);
+  const el=document.getElementById('cnt-'+id);
+  if(el)el.textContent=quantities[id].count;
+  updateRowHighlight(id);updateTotal();
+}
+function updateRowHighlight(id){
+  const q=quantities[id]||{};
+  const row=document.getElementById('row-'+id);
+  if(!row)return;
+  const hasQty=(q.kg>0||q.grams>0||q.count>0);
+  row.classList.toggle('has-qty',hasQty);
+  const p=allProducts.find(x=>x.id===id);
+  const price=p?.our_price||0;
+  let subtotal=0;
+  if(p?.unit_type==='weight_kg_g'){const kg=(q.kg||0)+(q.grams||0)/1000;subtotal=kg*price}
+  else{subtotal=(q.count||0)*price}
+  const el=document.getElementById('sub-'+id);
+  if(el)el.textContent=subtotal>0?`= Rs. ${subtotal.toFixed(2)}`:'';
+}
+function updateTotal(){
+  let total=0,cnt=0;
+  allProducts.forEach(p=>{
+    const q=quantities[p.id];if(!q)return;
+    const price=p.our_price||0;
+    if(p.unit_type==='weight_kg_g'){const kg=(q.kg||0)+(q.grams||0)/1000;if(kg>0){total+=kg*price;cnt++}}
+    else{if((q.count||0)>0){total+=q.count*price;cnt++}}
+  });
+  document.getElementById('total-display').textContent=`Rs. ${total.toFixed(2)}`;
+  document.getElementById('items-count-display').textContent=`${cnt} item${cnt!==1?'s':''} selected`;
+}
+
+/* ── ORDER CONFIRMATION ── */
+function initiateOrder(){
+  if(!selectedMemberId){showToast('Please select a member first','error');return}
+  const items=buildOrderItems();
+  if(!items.length){showToast('Please add at least one product','error');return}
+  pendingOrderItems=items;
+  const total=items.reduce((s,i)=>s+i.subtotal,0);
+  const m=selectedMemberObj;
+  const org=allOrgs.find(o=>o.id==m?.organization_id);
+  let html=`
+    <div style="margin-bottom:14px;padding:12px;background:var(--faint);border-radius:var(--rs)">
+      <div style="font-weight:700;color:var(--gd)">${m?.name||'—'}</div>
+      <div style="font-size:.8rem;color:var(--tm)">${m?.nic_number||''} ${org?'· '+org.name_en:''}</div>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr></thead>
+      <tbody>
+        ${items.map(i=>`<tr><td>${i.name_en}<br><small style="color:var(--tl)">${i.name_si||''}</small></td><td>${i.qtyStr}</td><td>Rs.${i.unit_price.toFixed(2)}</td><td>Rs.${i.subtotal.toFixed(2)}</td></tr>`).join('')}
+      </tbody>
+    </table></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:12px;font-size:1.1rem;font-weight:800;color:var(--gd)">Total: Rs. ${total.toFixed(2)}</div>`;
+  document.getElementById('confirm-body').innerHTML=html;
+  document.getElementById('confirm-title').textContent='Confirm Order — '+m?.name;
+  openModal('confirm-modal');
+}
+
+function buildOrderItems(){
+  const items=[];
+  allProducts.forEach(p=>{
+    const q=quantities[p.id];if(!q)return;
+    const price=p.our_price||0;
+    if(p.unit_type==='weight_kg_g'){
+      const kg=(q.kg||0)+(q.grams||0)/1000;
+      if(kg>0)items.push({product_id:p.id,name_en:p.name_en,name_si:p.name_si,qtyStr:`${kg.toFixed(3)} kg`,quantity_kg:kg,unit_price:price,subtotal:kg*price,unit_type:'weight_kg_g'});
+    }else{
+      if((q.count||0)>0)items.push({product_id:p.id,name_en:p.name_en,name_si:p.name_si,qtyStr:`${q.count} ${t('count')}`,quantity_count:q.count,unit_price:price,subtotal:q.count*price,unit_type:'count'});
+    }
+  });
+  return items;
+}
+
+async function finalSubmitOrder(){
+  closeModal('confirm-modal');
+  try{
+    const payload={member_id:selectedMemberId,items:pendingOrderItems.map(i=>({product_id:i.product_id,quantity_kg:i.quantity_kg??null,quantity_count:i.quantity_count??null}))};
+    const order=await apiFetch('/orders',{method:'POST',body:JSON.stringify(payload)});
+    showReceipt(order,pendingOrderItems);
+    quantities={};renderCatalog();clearMember();pendingOrderItems=[];
+  }catch(err){showToast('Order failed: '+err.message,'error')}
+}
+
+/* ── PRINTABLE RECEIPT ── */
+function showReceipt(order,items){
+  const m=selectedMemberObj||allMembers.find(x=>x.id===order.member_id);
+  const org=allOrgs.find(o=>o.id==m?.organization_id);
+  const maskedNic=m?.nic_number?(m.nic_number.slice(0,-4).replace(/./g,'•')+m.nic_number.slice(-4)):'—';
+  const dateStr=new Date(order.order_date||Date.now()).toLocaleDateString('en-LK',{year:'numeric',month:'long',day:'numeric'});
+  const total=items.reduce((s,i)=>s+i.subtotal,0);
+  const html=`
+    <div class="receipt">
+      <div class="receipt-header">
+        <div style="font-size:1.3rem;font-weight:800;color:var(--gd)">🌿 GREENER'S</div>
+        <div style="font-size:.8rem;color:var(--tm)">Order Receipt / ඇණවුම් රිසිට්</div>
+        <div style="font-size:.75rem;margin-top:4px;color:var(--tl)">${dateStr}</div>
+      </div>
+      <div class="receipt-row"><span>Order #</span><span>#${String(order.id).padStart(5,'0')}</span></div>
+      <div class="receipt-row"><span>Member</span><span>${m?.name||'—'}</span></div>
+      <div class="receipt-row"><span>NIC</span><span>${maskedNic}</span></div>
+      <div class="receipt-row"><span>Organization</span><span>${org?.name_en||'—'}</span></div>
+      <div class="receipt-divider"></div>
+      ${items.map(i=>`
+        <div class="receipt-row"><span>${i.name_en}</span><span>${i.qtyStr}</span></div>
+        <div class="receipt-row" style="color:var(--tm);font-size:.8rem;padding-left:12px"><span>@ Rs.${i.unit_price.toFixed(2)}</span><span>Rs.${i.subtotal.toFixed(2)}</span></div>
+      `).join('')}
+      <div class="receipt-divider"></div>
+      <div class="receipt-row receipt-total"><span>TOTAL</span><span>Rs. ${total.toFixed(2)}</span></div>
+      <div style="text-align:center;margin-top:16px;font-size:.75rem;color:var(--tl)">ස්තූතියි — Greener's Cooperative</div>
+    </div>`;
+  document.getElementById('receipt-body').innerHTML=html;
+  openModal('receipt-modal');
+}
+
+/* ── PRICE BOARD ── */
+const BANANA_PRODUCT_IDS=[38,39,40,41,42,43];
+function renderPriceBoard(){
+  const tb=document.getElementById('price-tbody');
+  if(!allProducts.length){tb.innerHTML='<tr><td colspan="4" class="loading">Loading…</td></tr>';return}
+  const grouped={};
+  allProducts.forEach(p=>{const c=p.category_en||'Other';(grouped[c]=grouped[c]||[]).push(p)});
+  let html='';
+  Object.entries(grouped).forEach(([cat,prods])=>{
+    html+=`<tr class="cat-row"><td colspan="4">${CAT_ICONS[cat]||'🌿'} ${getCatLabel(cat)}</td></tr>`;
+    let bananaHeaderInserted=false;
+    prods.forEach(p=>{
+      if(cat==='Fruits'&&BANANA_PRODUCT_IDS.includes(p.id)&&!bananaHeaderInserted){
+        bananaHeaderInserted=true;
+        html+=`<tr style="background:#b7e4c7"><td colspan="4" style="font-weight:700;color:#1b4332;font-size:.8rem;padding:6px 12px;letter-spacing:.04em">🍌 ${t('bananaSub')}</td></tr>`;
+      }
+      const hasM=p.market_price&&p.market_price>0;
+      const lower=hasM&&p.our_price<p.market_price;
+      const unit=p.unit_type==='weight_kg_g'?'/kg':'/unit';
+      html+=`<tr>
+        <td>${p.name_en||'—'}</td>
+        <td>${p.name_si||'—'}</td>
+        <td>${hasM?`Rs.${p.market_price.toLocaleString()}${unit}`:'<span class="price-dash">—</span>'}</td>
+        <td>${p.our_price?`<span class="${lower?'price-lower':'price-our'}">Rs.${p.our_price.toLocaleString()}${unit}</span>`:'<span class="price-dash">—</span>'}</td>
+      </tr>`;
+    });
+  });
+  tb.innerHTML=html;
+}
+
+/* ── REPORTS (PIN) ── */
+function initReportsTab(){
+  if(reportsUnlocked){showReports();return}
+  document.getElementById('reports-gate').style.display='';
+  document.getElementById('reports-content').style.display='none';
+}
+function unlockReports(){
+  const pin=document.getElementById('reports-pin').value.trim();
+  if(pin===ADMIN_PIN){reportsUnlocked=true;sessionStorage.setItem('reports_unlocked','1');showReports()}
+  else{showToast('Incorrect PIN','error');document.getElementById('reports-pin').value=''}
+}
+function showReports(){
+  document.getElementById('reports-gate').style.display='none';
+  document.getElementById('reports-content').style.display='';
+  populateOrgSelect('report-org');
+}
+
+async function loadOrgReport(){
+  const orgId=document.getElementById('report-org').value;
+  if(!orgId){showToast('Please select an organization','error');return}
+  const from=document.getElementById('report-from').value;
+  const to=document.getElementById('report-to').value;
+  let url=`/reports/organization/${orgId}`;
+  const p=[];if(from)p.push('date_from='+from);if(to)p.push('date_to='+to);
+  if(p.length)url+='?'+p.join('&');
+  const out=document.getElementById('report-output');
+  out.innerHTML='<div class="loading">Generating…</div>';
+  try{
+    const d=await apiFetch(url);
+    const org=d.organization;const icon=ORG_ICONS[org.type]||'🏛️';
+    let html=`
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+        <div>
+          <div style="font-size:1.05rem;font-weight:700;color:var(--gd)">${icon} ${org.name_en||org.name_si}</div>
+          ${org.name_si?`<div style="font-size:.82rem;color:var(--tm)">${org.name_si}</div>`:''}
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="window.print()">🖨 Print</button>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-val">${d.total_orders}</div><div class="stat-lbl">Total Orders</div></div>
+        <div class="stat-card"><div class="stat-val">Rs. ${d.total_amount.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div><div class="stat-lbl">Revenue</div></div>
+        <div class="stat-card"><div class="stat-val">${d.member_summaries.length}</div><div class="stat-lbl">Members Ordered</div></div>
+        <div class="stat-card"><div class="stat-val">${d.product_summaries.length}</div><div class="stat-lbl">Products</div></div>
+      </div>`;
+
+    if(d.member_summaries.length){
+      html+=`<div class="section-hdr" style="margin-bottom:8px">Member Breakdown</div>
+      <div class="tbl-wrap" style="margin-bottom:18px"><table id="member-table">
+        <thead><tr><th>Member</th><th>NIC (last 4)</th><th>Orders</th><th>Amount</th><th>WhatsApp</th></tr></thead>
+        <tbody>
+        ${d.member_summaries.map((m,i)=>{
+          const mem=allMembers.find(x=>x.id===m.member_id)||{};
+          const last4=mem.nic_number?mem.nic_number.slice(-4):'—';
+          const wa=mem.whatsapp_number;
+          const waMsg=buildWAMessage(org.name_en||'',m.member_name,d,m.member_id);
+          const waLink=wa?`<a href="https://wa.me/${wa.replace(/[^0-9]/g,'')}?text=${encodeURIComponent(waMsg)}" target="_blank" class="btn btn-wa btn-sm">📱 Send</a>`:'—';
+          return `<tr id="mr-${i}" style="cursor:pointer" onclick="toggleMemberRow(${i},${m.member_id},'${orgId}')">
+            <td>👤 ${m.member_name}</td><td>••••${last4}</td>
+            <td>${m.total_orders}</td>
+            <td>Rs. ${m.total_amount.toLocaleString('en',{minimumFractionDigits:2})}</td>
+            <td>${waLink}</td>
+          </tr>
+          <tr class="expand-row" id="expand-${i}"><td colspan="5"><div id="expand-content-${i}" class="loading">Loading…</div></td></tr>`;
+        }).join('')}
+        </tbody>
+      </table></div>`;
+    }
+
+    if(d.product_summaries.length){
+      html+=`<div class="section-hdr" style="margin-bottom:8px">Product Quantities Ordered</div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Product</th><th>Sinhala</th><th>Quantity</th><th>Amount</th></tr></thead>
+        <tbody>
+        ${d.product_summaries.map(p=>`<tr>
+          <td>${p.product_name_en||'—'}</td>
+          <td>${p.product_name_si||'—'}</td>
+          <td>${p.unit_type==='weight_kg_g'?p.total_quantity_kg.toFixed(3)+' kg':p.total_quantity_count+' units'}</td>
+          <td>Rs. ${p.total_amount.toLocaleString('en',{minimumFractionDigits:2})}</td>
+        </tr>`).join('')}
+        </tbody>
+      </table></div>`;
+    }
+    if(!d.total_orders)html+=`<div class="empty-state"><div class="empty-icon">📋</div>No orders found for this organization.</div>`;
+    out.innerHTML=html;
+    window._currentReportData=d;
+  }catch(err){out.innerHTML=`<div class="empty-state"><div class="empty-icon">⚠️</div>${err.message}</div>`}
+}
+
+async function toggleMemberRow(idx,memberId,orgId){
+  const expandRow=document.getElementById('expand-'+idx);
+  expandRow.classList.toggle('open');
+  if(expandRow.classList.contains('open')){
+    const content=document.getElementById('expand-content-'+idx);
+    content.innerHTML='<div class="loading">Loading items…</div>';
+    try{
+      const orders=await apiFetch(`/reports/member/${memberId}/orders`);
+      if(!orders.length){content.innerHTML='<em>No orders found</em>';return}
+      const all_items=orders.flatMap(o=>o.items.map(i=>({...i,order_date:o.order_date,order_id:o.id})));
+      content.innerHTML=`<table style="font-size:.82rem;width:100%">
+        <thead><tr><th>Date</th><th>Product</th><th>Qty</th><th>Subtotal</th></tr></thead>
+        <tbody>
+        ${all_items.map(i=>`<tr>
+          <td>${new Date(i.order_date).toLocaleDateString()}</td>
+          <td>${i.product_name_en||'—'}</td>
+          <td>${i.unit_type==='weight_kg_g'?(i.quantity_kg||0).toFixed(3)+' kg':(i.quantity_count||0)+' units'}</td>
+          <td>Rs. ${(i.subtotal||0).toFixed(2)}</td>
+        </tr>`).join('')}
+        </tbody>
+      </table>`;
+    }catch(e){content.innerHTML='<em>Error loading items</em>'}
+  }
+}
+
+function buildWAMessage(orgName,memberName,data,memberId){
+  const memberSummary=data.member_summaries.find(m=>m.member_id===memberId);
+  const orderItems=data.product_summaries;
+  let msg=`ශ්‍රී ${orgName} සාමාජිකයා ${memberName} ගේ ඇණවුම:\n`;
+  orderItems.forEach(p=>{
+    const qty=p.unit_type==='weight_kg_g'?`${p.total_quantity_kg.toFixed(3)} kg`:`${p.total_quantity_count} units`;
+    msg+=`${p.product_name_si||p.product_name_en}: ${qty} - Rs. ${p.total_amount.toFixed(2)}\n`;
+  });
+  msg+=`\nමුළු මුදල: Rs. ${memberSummary?.total_amount?.toFixed(2)||'0.00'}\n`;
+  msg+=`දිනය: ${new Date().toLocaleDateString('en-LK')}\n`;
+  msg+=`ස්තූතියි — Greener's`;
+  return msg;
+}
+
+/* ── PROCUREMENT REPORT ── */
+async function loadProcurement(){
+  const from=document.getElementById('proc-from').value;
+  const to=document.getElementById('proc-to').value;
+  let url='/reports/procurement';
+  const p=[];if(from)p.push('date_from='+from);if(to)p.push('date_to='+to);
+  if(p.length)url+='?'+p.join('&');
+  const out=document.getElementById('procurement-output');
+  out.innerHTML='<div class="loading">Loading procurement data…</div>';
+  try{
+    const d=await apiFetch(url);
+    if(!d.total_orders){out.innerHTML='<div class="empty-state"><div class="empty-icon">📦</div>No orders found for selected period.</div>';return}
+    let html=`
+      <div class="stat-grid" style="margin-bottom:18px">
+        <div class="stat-card"><div class="stat-val">${d.total_orders}</div><div class="stat-lbl">Total Orders</div></div>
+        <div class="stat-card"><div class="stat-val">Rs. ${d.total_amount.toLocaleString('en',{minimumFractionDigits:2})}</div><div class="stat-lbl">Grand Total</div></div>
+        <div class="stat-card"><div class="stat-val">${d.org_summaries.length}</div><div class="stat-lbl">Organizations</div></div>
+      </div>
+      <div class="section-hdr" style="margin-bottom:8px">🛒 Procurement List — Items to Source</div>
+      <div class="tbl-wrap" style="margin-bottom:20px"><table>
+        <thead><tr><th>Product (EN)</th><th>Product (SI)</th><th>Total Qty Needed</th><th>Total Value</th></tr></thead>
+        <tbody>
+        ${d.product_summaries.sort((a,b)=>b.total_amount-a.total_amount).map(p=>`<tr>
+          <td>${p.product_name_en||'—'}</td>
+          <td>${p.product_name_si||'—'}</td>
+          <td style="font-weight:700">${p.unit_type==='weight_kg_g'?p.total_quantity_kg.toFixed(3)+' kg':p.total_quantity_count+' units'}</td>
+          <td>Rs. ${p.total_amount.toLocaleString('en',{minimumFractionDigits:2})}</td>
+        </tr>`).join('')}
+        </tbody>
+      </table></div>
+      <div class="section-hdr" style="margin-bottom:8px">Organization-wise Revenue</div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Organization</th><th>Type</th><th>Orders</th><th>Amount</th></tr></thead>
+        <tbody>
+        ${d.org_summaries.sort((a,b)=>b.total_amount-a.total_amount).map(o=>`<tr>
+          <td>${ORG_ICONS[o.org_type]||'🏛️'} ${o.org_name_en||o.org_name_si}</td>
+          <td>${o.org_type||'—'}</td>
+          <td>${o.total_orders}</td>
+          <td>Rs. ${o.total_amount.toLocaleString('en',{minimumFractionDigits:2})}</td>
+        </tr>`).join('')}
+        </tbody>
+      </table></div>`;
+    out.innerHTML=html;
+  }catch(err){out.innerHTML=`<div class="empty-state"><div class="empty-icon">⚠️</div>${err.message}</div>`}
+}
+
+/* ── ADMIN TAB (PIN) ── */
+function initAdminTab(){
+  if(adminUnlocked){showAdminContent();return}
+  document.getElementById('admin-gate').style.display='';
+  document.getElementById('admin-content').style.display='none';
+}
+function unlockAdmin(){
+  const pin=document.getElementById('admin-pin').value.trim();
+  if(pin===ADMIN_PIN){adminUnlocked=true;sessionStorage.setItem('admin_unlocked','1');showAdminContent()}
+  else{showToast('Incorrect PIN','error');document.getElementById('admin-pin').value=''}
+}
+async function showAdminContent(){
+  document.getElementById('admin-gate').style.display='none';
+  document.getElementById('admin-content').style.display='';
+  await loadAdminProducts();
+  renderPriceLog();
+}
+let adminProducts=[];
+async function loadAdminProducts(){
+  try{
+    adminProducts=await apiFetch('/products?all=1');
+    renderAdminTable(adminProducts);
+  }catch(e){showToast('Failed to load products','error')}
+}
+function filterAdminProducts(q){
+  const cat=document.getElementById('admin-cat-filter').value;
+  const qr=q.toLowerCase().trim();
+  const filtered=adminProducts.filter(p=>{
+    const matchQ=!qr||p.name_en?.toLowerCase().includes(qr)||p.name_si?.toLowerCase().includes(qr);
+    const matchC=!cat||p.category_en===cat;
+    return matchQ&&matchC;
+  });
+  renderAdminTable(filtered);
+}
+function renderAdminTable(products){
+  const tb=document.getElementById('admin-tbody');
+  if(!products.length){tb.innerHTML='<tr><td colspan="6" class="loading">No products found</td></tr>';return}
+  tb.innerHTML=products.map(p=>`
+    <tr>
+      <td>
+        <div style="font-weight:600">${p.name_en}</div>
+        <div style="font-size:.75rem;color:var(--tl)">${p.name_si||''}</div>
+      </td>
+      <td style="font-size:.8rem">${p.category_en||'—'}</td>
+      <td><input type="number" min="0" step="0.5" value="${p.our_price||''}" id="our-${p.id}" style="width:80px;padding:5px 6px;font-size:.85rem" onchange="trackPriceChange(${p.id},'our',this.value,${p.our_price||0})"/></td>
+      <td><input type="number" min="0" step="0.5" value="${p.market_price||''}" id="mkt-${p.id}" style="width:80px;padding:5px 6px;font-size:.85rem"/></td>
+      <td>
+        <button class="btn btn-sm ${p.is_active?'badge-active':'badge-inactive'}" style="cursor:pointer;border:none;border-radius:20px;font-size:.75rem;padding:3px 10px" onclick="toggleActive(${p.id},${p.is_active?0:1})">
+          ${p.is_active?'Active':'Inactive'}
+        </button>
+      </td>
+      <td style="font-size:.75rem;color:var(--tl)">${p.updated_at?new Date(p.updated_at).toLocaleDateString():'—'}</td>
+    </tr>`).join('');
+}
+
+function trackPriceChange(id,field,newVal,oldVal){
+  const newNum=parseFloat(newVal)||0;
+  if(newNum===oldVal)return;
+  const p=adminProducts.find(x=>x.id===id);
+  priceLog.unshift({id,name:p?.name_en||'Product '+id,field,old:oldVal,new:newNum,date:new Date().toISOString()});
+  if(priceLog.length>100)priceLog.length=100;
+  localStorage.setItem('greeners_price_log',JSON.stringify(priceLog));
+  renderPriceLog();
+}
+
+function renderPriceLog(){
+  const cont=document.getElementById('price-log-container');
+  if(!priceLog.length){cont.innerHTML='<div class="loading">No changes recorded yet</div>';return}
+  cont.innerHTML=priceLog.slice(0,20).map(l=>`
+    <div class="hist-item">
+      <span class="hist-arrow">→</span>
+      <span style="flex:1"><strong>${l.name}</strong> ${l.field==='our'?'Our Price':'Market Price'}</span>
+      <span>Rs.${l.old} <span class="hist-arrow">→</span> Rs.${l.new}</span>
+      <span class="hist-date">${new Date(l.date).toLocaleDateString()}</span>
+    </div>`).join('');
+}
+
+async function saveAllPrices(){
+  const items=adminProducts.map(p=>{
+    const ourEl=document.getElementById('our-'+p.id);
+    const mktEl=document.getElementById('mkt-'+p.id);
+    return{id:p.id,our_price:ourEl?parseFloat(ourEl.value)||null:p.our_price,market_price:mktEl?parseFloat(mktEl.value)||null:p.market_price};
+  });
+  try{
+    await apiFetch('/products/batch',{method:'PUT',body:JSON.stringify(items)});
+    showToast('✓ All prices saved!');
+    await loadAdminProducts();
+    await initData();
+  }catch(e){showToast('Save failed: '+e.message,'error')}
+}
+
+async function toggleActive(id,newActive){
+  try{
+    await apiFetch(`/products/${id}`,{method:'PUT',body:JSON.stringify({is_active:newActive})});
+    const p=adminProducts.find(x=>x.id===id);if(p)p.is_active=newActive;
+    renderAdminTable(adminProducts);
+    showToast(newActive?'Product activated':'Product hidden from orders');
+    await initData();
+  }catch(e){showToast('Error: '+e.message,'error')}
+}
+
+async function saveNewProduct(){
+  const name_en=document.getElementById('np-en').value.trim();
+  if(!name_en){showToast('English name required','error');return}
+  const payload={name_en,name_si:document.getElementById('np-si').value.trim()||null,name_ta:document.getElementById('np-ta').value.trim()||null,category_en:document.getElementById('np-cat').value,unit_type:document.getElementById('np-unit').value,our_price:parseFloat(document.getElementById('np-price').value)||null,market_price:parseFloat(document.getElementById('np-mktprice').value)||null,is_active:1};
+  try{
+    await apiFetch('/products',{method:'POST',body:JSON.stringify(payload)});
+    showToast('✓ Product added!');closeModal('add-product-modal');
+    await loadAdminProducts();await initData();
+  }catch(e){showToast('Error: '+e.message,'error')}
+}
+
+/* ── ORDER HISTORY ── */
+let historySearchTimer=null;
+function searchHistoryMember(q){
+  clearTimeout(historySearchTimer);
+  historySearchTimer=setTimeout(()=>{
+    const dd=document.getElementById('history-dropdown');
+    const qr=q.toLowerCase().trim();
+    if(!qr){dd.classList.remove('open');return}
+    const matches=allMembers.filter(m=>m.name.toLowerCase().includes(qr)||m.nic_number.toLowerCase().includes(qr)).slice(0,8);
+    dd.innerHTML=matches.length
+      ?matches.map(m=>`<div class="search-item" onclick="loadMemberHistory(${m.id},'${m.name.replace(/'/g,"\\'")}')"><div class="si-name">👤 ${m.name}</div><div class="si-sub">${m.nic_number}</div></div>`).join('')
+      :'<div class="search-item"><span class="si-name" style="color:var(--tl)">No members found</span></div>';
+    dd.classList.add('open');
+  },180);
+}
+
+async function loadMemberHistory(memberId,memberName){
+  document.getElementById('history-dropdown').classList.remove('open');
+  const out=document.getElementById('history-output');
+  out.innerHTML='<div class="loading">Loading order history…</div>';
+  try{
+    const orders=await apiFetch(`/reports/member/${memberId}/orders`);
+    if(!orders.length){out.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div>No orders found for ${memberName}</div>`;return}
+    out.innerHTML=`<div style="font-weight:700;color:var(--gd);margin-bottom:14px">Last ${orders.length} orders for 👤 ${memberName}</div>`+
+    orders.map(order=>{
+      const dateStr=new Date(order.order_date||Date.now()).toLocaleDateString('en-LK',{year:'numeric',month:'long',day:'numeric'});
+      return`<div class="hist-order-card">
+        <div class="hist-order-hdr">
+          <div>
+            <div style="font-weight:700;color:var(--gd)">Order #${String(order.id).padStart(5,'0')}</div>
+            <div style="font-size:.8rem;color:var(--tl)">${dateStr} · <span class="tag">${order.status||'pending'}</span></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="font-weight:800;font-size:1.1rem;color:var(--gd)">Rs. ${(order.total_amount||0).toFixed(2)}</div>
+            <button class="btn btn-outline btn-sm" onclick="preloadOrder(${memberId},'${memberName.replace(/'/g,"\\'")}',${JSON.stringify(order.items).replace(/'/g,"\\'")})" data-i18n="reorderBtn">Re-order</button>
+          </div>
+        </div>
+        <div class="tbl-wrap"><table style="font-size:.82rem">
+          <tbody>
+          ${order.items.map(i=>`<tr>
+            <td>${i.product_name_en||'—'}</td>
+            <td style="color:var(--tl)">${i.unit_type==='weight_kg_g'?(i.quantity_kg||0).toFixed(3)+' kg':(i.quantity_count||0)+' units'}</td>
+            <td>Rs. ${(i.subtotal||0).toFixed(2)}</td>
+          </tr>`).join('')}
+          </tbody>
+        </table></div>
+      </div>`;
+    }).join('');
+  }catch(e){out.innerHTML=`<div class="empty-state"><div class="empty-icon">⚠️</div>${e.message}</div>`}
+}
+
+function preloadOrder(memberId,memberName,items){
+  selectMember(memberId);
+  quantities={};
+  items.forEach(item=>{
+    if(!quantities[item.product_id])quantities[item.product_id]={};
+    if(item.unit_type==='weight_kg_g'&&item.quantity_kg){
+      quantities[item.product_id].kg=Math.floor(item.quantity_kg);
+      quantities[item.product_id].grams=Math.round((item.quantity_kg%1)*1000);
+    }else if(item.quantity_count){
+      quantities[item.product_id].count=item.quantity_count;
+    }
+  });
+  document.querySelector('.nav-tab[onclick*="order"]').click();
+  renderCatalog();
+  showToast('Previous order loaded — review and place');
+}
+
+/* ── INIT ── */
+setLang(currentLang);
+document.getElementById('order-footer').style.display='none';
+initData();
+</script>
+</body>
+</html>
