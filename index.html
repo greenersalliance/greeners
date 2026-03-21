@@ -368,6 +368,8 @@ tr:hover td{background:var(--faint)}
       <div class="sub-tabs">
         <button class="sub-tab active" onclick="showSubTab('rep-org',this)" data-i18n="orgReport">Org Report</button>
         <button class="sub-tab" onclick="showSubTab('rep-proc',this)" data-i18n="procurement">Procurement List</button>
+        <button class="sub-tab" onclick="showSubTab('rep-distrib',this)">Distribution Report</button>
+        <button class="sub-tab" onclick="showSubTab('rep-producer',this)">Producer Report</button>
       </div>
       <div id="rep-org">
         <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
@@ -385,6 +387,31 @@ tr:hover td{background:var(--faint)}
           <button class="btn btn-primary" onclick="genProcReport()" data-i18n="generateBtn">Generate</button>
         </div>
         <div id="rep-proc-out"></div>
+      </div>
+      <!-- DISTRIBUTION REPORT -->
+      <div id="rep-distrib" style="display:none">
+        <div style="background:var(--pale);border-radius:var(--rs);padding:10px 14px;margin-bottom:14px;font-size:.82rem;color:var(--gd)">
+          📋 <strong>Consumer Organization Distribution Report</strong> — Shows each member's itemized order with actual prices for internal distribution.
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
+          <div class="form-group" style="flex:1;min-width:130px"><label>Organization</label><select id="distrib-org-sel"><option value="">— Select —</option></select></div>
+          <div class="form-group"><label>Delivery Date</label><input type="date" id="distrib-date"/></div>
+          <button class="btn btn-primary" onclick="genDistribReport()">Generate</button>
+          <button class="btn btn-wa btn-sm" onclick="shareDistribWA()" id="distrib-wa-btn" style="display:none">📱 Share via WhatsApp</button>
+        </div>
+        <div id="rep-distrib-out"></div>
+      </div>
+      <!-- PRODUCER REPORT -->
+      <div id="rep-producer" style="display:none">
+        <div style="background:var(--pale);border-radius:var(--rs);padding:10px 14px;margin-bottom:14px;font-size:.82rem;color:var(--gd)">
+          🚚 <strong>Producer Organization Procurement &amp; Logistics Report</strong> — Consolidated quantities per product with delivery destinations and packing requirements.
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
+          <div class="form-group"><label>Delivery Date</label><input type="date" id="prod-rep-date"/></div>
+          <button class="btn btn-primary" onclick="genProducerReport()">Generate</button>
+          <button class="btn btn-wa btn-sm" onclick="shareProducerWA()" id="producer-wa-btn" style="display:none">📱 Share via WhatsApp</button>
+        </div>
+        <div id="rep-producer-out"></div>
       </div>
     </div>
   </div>
@@ -665,8 +692,8 @@ function buildDefaultProducts(){
     mk(SW,'Jaggery plain','උක් හකුරු සාමාන්‍ය','சாதா வெல்லம்','weight_kg_g',0,900),
     mk(SW,'Sugarcane syrup thin','උක් පැණි උකු අඩු','மெல்லிய கரும்பு சிரப்','count',0,500),
     mk(SW,'Sugarcane syrup thick','උක් පැණි උකු වැඩි','கனமான கரும்பு சிரப்','count',0,550),
-    mk(SW,'Sesame rolls large','තල කැරලි ලොකු','பெரிய எள் சுருள்','count',0,20),
-    mk(SW,'Sesame rolls small','තල කැරලි පොඩි','சிறிய எள் சுருள்','count',0,10),
+    mk(SW,'Sesame rolls large','තල කැරලි ලොකු','பெரிய எள் சுருள்','count',0,14),
+    mk(SW,'Sesame rolls small','තල කැරලි පොඩි','சிறிய எள் சுருள்','count',0,6),
   ];
 }
 
@@ -735,7 +762,7 @@ function populateOrg(id){
   organizations.forEach(o=>sel.add(new Option((ORG_ICONS[o.type]||'🏛️')+' '+orgName(o),o.id)));
   sel.value=prev;
 }
-function refreshOrgSelects(){populateOrg('r-org');populateOrg('rep-org-sel')}
+function refreshOrgSelects(){populateOrg('r-org');populateOrg('rep-org-sel');populateOrg('distrib-org-sel');}
 
 /* ── REGISTRATION ── */
 function submitReg(e){
@@ -912,11 +939,15 @@ function initiateOrder(){
       <div style="font-weight:700;color:var(--gd)">${selMemberObj?.name||'—'}</div>
       <div style="font-size:.78rem;color:var(--tm)">${selMemberObj?.nic||''}${org?' · '+orgName(org):''}</div>
     </div>
+    <div style="background:#faeeda;border-radius:var(--rs);padding:8px 12px;margin-bottom:10px;font-size:.78rem;color:#854f0b">
+      ⚠️ <strong>Estimated prices only.</strong> Final bill will be calculated at actual delivery prices.
+    </div>
     <div class="tbl-wrap"><table>
-      <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr></thead>
+      <thead><tr><th>Product</th><th>Qty</th><th>Est. Price</th><th>Est. Value</th></tr></thead>
       <tbody>${items.map(i=>`<tr><td>${i.name_en}<br><small style="color:var(--tl)">${i.name_si||''}</small></td><td>${i.qtyStr}</td><td>Rs.${i.price.toFixed(2)}</td><td>Rs.${i.subtotal.toFixed(2)}</td></tr>`).join('')}</tbody>
     </table></div>
-    <div style="text-align:right;margin-top:10px;font-size:1.05rem;font-weight:800;color:var(--gd)">Total: Rs. ${total.toFixed(2)}</div>`;
+    <div style="text-align:right;margin-top:10px;font-size:1.05rem;font-weight:800;color:var(--gd)">Estimated Total: Rs. ${total.toFixed(2)}</div>
+    <div style="text-align:right;font-size:.74rem;color:var(--tl);margin-top:3px">Final amount based on actual delivery prices</div>`;
   openModal('m-confirm');
 }
 function buildItems(){
@@ -963,8 +994,12 @@ function showReceipt(order){
         <div class="receipt-row"><span>${i.name_en}</span><span>${i.qtyStr}</span></div>
         <div class="receipt-row" style="font-size:.78rem;color:var(--tm);padding-left:10px"><span>@ Rs.${i.price.toFixed(2)}</span><span>Rs.${i.subtotal.toFixed(2)}</span></div>`).join('')}
       <div class="receipt-div"></div>
-      <div class="receipt-row" style="font-weight:700;font-size:.98rem"><span>TOTAL</span><span>Rs. ${order.total.toFixed(2)}</span></div>
-      <div style="text-align:center;margin-top:14px;font-size:.73rem;color:var(--tl)">ස්තූතියි — Greener's Cooperative</div>
+      <div class="receipt-row" style="font-weight:700;font-size:.98rem"><span>EST. TOTAL</span><span>Rs. ${order.total.toFixed(2)}</span></div>
+      <div style="border-top:1px dashed #ccc;margin:7px 0;padding-top:7px;font-size:.72rem;color:#718096;text-align:center">
+        ⚠️ Estimated amounts — Final bill at actual delivery prices<br>
+        සහතික මිල ක්රියාගත ප්‍ර෱යයූඹ්දි ගතු ගෛන කල යුතු
+      </div>
+      <div style="text-align:center;margin-top:8px;font-size:.73rem;color:var(--tl)">ස්තූතියි — Greener's Cooperative</div>
     </div>`;
   openModal('m-receipt');
 }
@@ -1001,29 +1036,45 @@ function renderPriceBoard(){
 }
 
 /* ── ACTUAL PRICE BOARD (public view) ── */
+function getActualPrice(productId, dateStr){
+  /* Returns actual price if set, otherwise falls back to our_price (last known price) */
+  if(dateStr&&actualPrices[dateStr]&&actualPrices[dateStr][productId]>0) return {price:actualPrices[dateStr][productId],isActual:true};
+  const p=products.find(x=>x.id===productId);
+  return {price:p?p.our_price:0,isActual:false};
+}
+function getLatestActualDate(){
+  const dates=Object.keys(actualPrices).sort().reverse();
+  return dates.length?dates[0]:null;
+}
 function renderActualBoard(){
   const cont=document.getElementById('actual-price-display');if(!cont)return;
-  const dates=Object.keys(actualPrices).sort().reverse();
-  if(!dates.length){cont.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div><div>No actual prices have been set yet. Check back before delivery day.</div></div>';return}
-  const latest=dates[0];
-  const ap=actualPrices[latest];
-  const dateDisp=new Date(latest+'T00:00:00').toLocaleDateString('en-LK',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const latest=getLatestActualDate();
+  const ap=latest?actualPrices[latest]:{};
+  const dateDisp=latest?new Date(latest+'T00:00:00').toLocaleDateString('en-LK',{weekday:'long',year:'numeric',month:'long',day:'numeric'}):'Not yet set';
+  const active=products.filter(p=>p.is_active&&p.our_price>0);
+  let setCount=active.filter(p=>ap[p.id]>0).length;
   let html=`<div style="background:var(--pale);border-radius:var(--rs);padding:12px 16px;margin-bottom:14px">
-    <div style="font-weight:700;color:var(--gd)">📅 Prices for delivery on: ${dateDisp}</div>
-    <div style="font-size:.76rem;color:var(--tm);margin-top:3px">Set by Greener's · Actual billing prices</div>
+    <div style="font-weight:700;color:var(--gd)">📅 Delivery date: ${dateDisp}</div>
+    <div style="font-size:.76rem;color:var(--tm);margin-top:3px">${setCount} of ${active.length} prices confirmed · Remaining use last known price</div>
+    <div style="font-size:.73rem;color:#854f0b;margin-top:4px;background:#faeeda;padding:4px 8px;border-radius:4px;display:inline-block;margin-top:6px">⚠️ Prices marked ★ are confirmed actual prices. Others are last known estimates.</div>
   </div>
   <div class="tbl-wrap"><table>
-    <thead><tr><th>Item (English)</th><th>Item (සිංහල)</th><th>Actual Price</th><th>Sample Price</th></tr></thead>
+    <thead><tr><th>Item (English)</th><th>Item (සිංහල)</th><th>Actual / Est. Price</th><th>Confirmed?</th></tr></thead>
     <tbody>`;
-  const active=products.filter(p=>p.is_active&&ap[p.id]>0);
-  if(!active.length){html+='<tr><td colspan="4" class="loading">No prices set for this date yet</td></tr>';}
-  active.forEach(p=>{
-    const unit=p.unit_type==='weight_kg_g'?'/kg':'/unit';
-    html+=`<tr>
-      <td>${p.name_en}</td><td>${p.name_si||'—'}</td>
-      <td><span class="price-our">Rs.${ap[p.id].toLocaleString()}${unit}</span></td>
-      <td style="color:var(--tl)">Rs.${p.our_price.toLocaleString()}${unit}</td>
-    </tr>`;
+  const grouped={};
+  active.forEach(p=>{const c=p.category_en||'Other';(grouped[c]=grouped[c]||[]).push(p)});
+  Object.entries(grouped).forEach(([cat,prods])=>{
+    html+=`<tr class="cat-row"><td colspan="4">${CAT_ICONS[cat]||'🌿'} ${catLabel(cat)}</td></tr>`;
+    prods.forEach(p=>{
+      const unit=p.unit_type==='weight_kg_g'?'/kg':'/unit';
+      const isSet=ap[p.id]>0;
+      const price=isSet?ap[p.id]:p.our_price;
+      html+=`<tr>
+        <td>${p.name_en}</td><td>${p.name_si||'—'}</td>
+        <td><span class="${isSet?'price-lower':'price-our'}">Rs.${price.toLocaleString()}${unit}</span></td>
+        <td style="text-align:center">${isSet?'<span style="color:#059669;font-weight:700">★ Confirmed</span>':'<span style="color:#718096;font-size:.75rem">Est.</span>'}</td>
+      </tr>`;
+    });
   });
   html+='</tbody></table></div>';
   cont.innerHTML=html;
@@ -1158,6 +1209,243 @@ function genProcReport(){
         <td>Rs.${p.total.toFixed(2)}</td>
       </tr>`).join('')}</tbody>
     </table></div>`;
+}
+
+
+/* ── DISTRIBUTION REPORT (Consumer Org) ── */
+function genDistribReport(){
+  const orgId=parseInt(document.getElementById('distrib-org-sel').value);
+  if(!orgId){showToast('Please select an organization','error');return}
+  const dateStr=document.getElementById('distrib-date').value;
+  const org=organizations.find(o=>o.id===orgId);
+  const ap=dateStr&&actualPrices[dateStr]?actualPrices[dateStr]:{};
+  const orgOrders=orders.filter(o=>o.org_id===orgId);
+  const out=document.getElementById('rep-distrib-out');
+  if(!orgOrders.length){out.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div>No orders found for this organization.</div>';return}
+
+  // Build member summary with actual prices
+  const memberMap={};
+  orgOrders.forEach(o=>{
+    if(!memberMap[o.member_id])memberMap[o.member_id]={name:o.member_name,nic:o.member_nic||'',items:{},estTotal:0,actualTotal:0};
+    o.items.forEach(i=>{
+      const key=i.product_id;
+      if(!memberMap[o.member_id].items[key])memberMap[o.member_id].items[key]={name_en:i.name_en,name_si:i.name_si,unit_type:i.unit_type,qty_kg:0,qty_count:0};
+      if(i.unit_type==='weight_kg_g')memberMap[o.member_id].items[key].qty_kg+=i.quantity_kg||0;
+      else memberMap[o.member_id].items[key].qty_count+=i.quantity_count||0;
+      memberMap[o.member_id].estTotal+=i.subtotal;
+    });
+  });
+
+  // Calculate actual totals using actual price board
+  Object.values(memberMap).forEach(m=>{
+    let actTotal=0;
+    Object.entries(m.items).forEach(([pid,item])=>{
+      const p=products.find(x=>x.id==pid);
+      const actPrice=ap[pid]>0?ap[pid]:(p?p.our_price:0);
+      const qty=item.unit_type==='weight_kg_g'?item.qty_kg:item.qty_count;
+      actTotal+=qty*actPrice;
+    });
+    m.actualTotal=actTotal;
+  });
+
+  const grandEstTotal=Object.values(memberMap).reduce((s,m)=>s+m.estTotal,0);
+  const grandActTotal=Object.values(memberMap).reduce((s,m)=>s+m.actualTotal,0);
+  const dateLabel=dateStr?new Date(dateStr+'T00:00:00').toLocaleDateString('en-LK',{year:'numeric',month:'long',day:'numeric'}):'(no delivery date selected)';
+
+  let html=`
+    <div style="background:var(--pale);border-radius:var(--rs);padding:12px 16px;margin-bottom:14px">
+      <div style="font-weight:700;color:var(--gd);font-size:1rem">${ORG_ICONS[org.type]||'🏛️'} ${orgName(org)}</div>
+      <div style="font-size:.78rem;color:var(--tm);margin-top:2px">Distribution Report — Delivery: ${dateLabel}</div>
+      <button class="btn btn-outline btn-sm" onclick="window.print()" style="margin-top:8px">🖨 Print</button>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-val">${Object.keys(memberMap).length}</div><div class="stat-lbl">Members</div></div>
+      <div class="stat-card"><div class="stat-val">Rs.${grandEstTotal.toFixed(2)}</div><div class="stat-lbl">Est. Total</div></div>
+      <div class="stat-card"><div class="stat-val">Rs.${grandActTotal.toFixed(2)}</div><div class="stat-lbl">Actual Total</div></div>
+    </div>`;
+
+  // Per-member detailed table
+  Object.entries(memberMap).forEach(([mid,m])=>{
+    const mem=members.find(x=>x.id==mid)||{};
+    const wa=mem.whatsapp;
+    const waMsg=buildDistribWA(orgName(org),m.name,m.items,ap,m.actualTotal,dateLabel);
+    const waLink=wa?`<a href="https://wa.me/${wa.replace(/\D/g,'')}?text=${encodeURIComponent(waMsg)}" target="_blank" class="btn btn-wa btn-sm">📱 Send</a>`:'';
+    html+=`
+      <div style="border:1.5px solid var(--border);border-radius:var(--rs);padding:14px;margin-bottom:12px;page-break-inside:avoid">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+          <div>
+            <div style="font-weight:700;color:var(--gd)">👤 ${m.name}</div>
+            <div style="font-size:.75rem;color:var(--tl)">${m.nic||''}</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">${waLink}</div>
+        </div>
+        <div class="tbl-wrap"><table style="font-size:.82rem">
+          <thead><tr><th>Product</th><th>Sinhala</th><th>Qty</th><th>Actual Price</th><th>Amount</th></tr></thead>
+          <tbody>${Object.entries(m.items).map(([pid,item])=>{
+            const p=products.find(x=>x.id==pid);
+            const actPrice=ap[pid]>0?ap[pid]:(p?p.our_price:0);
+            const isConfirmed=ap[pid]>0;
+            const qty=item.unit_type==='weight_kg_g'?item.qty_kg:item.qty_count;
+            const amt=qty*actPrice;
+            const qtyStr=item.unit_type==='weight_kg_g'?item.qty_kg.toFixed(3)+' kg':item.qty_count+' units';
+            return`<tr>
+              <td>${item.name_en}</td>
+              <td>${item.name_si||'—'}</td>
+              <td style="font-weight:600">${qtyStr}</td>
+              <td>Rs.${actPrice.toFixed(2)}${isConfirmed?'<span style="color:#059669;font-size:.68rem"> ★</span>':'<span style="color:#718096;font-size:.68rem"> est.</span>'}</td>
+              <td style="font-weight:600">Rs.${amt.toFixed(2)}</td>
+            </tr>`;
+          }).join('')}</tbody>
+          <tfoot><tr style="background:var(--pale)">
+            <td colspan="4" style="font-weight:700;text-align:right">Total to Collect:</td>
+            <td style="font-weight:800;color:var(--gd)">Rs.${m.actualTotal.toFixed(2)}</td>
+          </tr></tfoot>
+        </table></div>
+      </div>`;
+  });
+
+  // Grand total summary
+  html+=`<div style="background:var(--gd);color:#fff;border-radius:var(--rs);padding:14px;margin-top:8px">
+    <div style="font-size:1rem;font-weight:700;margin-bottom:8px">💰 Collection Summary — ${orgName(org)}</div>
+    <div style="display:flex;justify-content:space-between"><span>Estimated Total:</span><span>Rs.${grandEstTotal.toFixed(2)}</span></div>
+    <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:1.1rem;font-weight:800;border-top:1px solid rgba(255,255,255,.3);padding-top:8px"><span>Actual Total to Collect:</span><span>Rs.${grandActTotal.toFixed(2)}</span></div>
+  </div>`;
+
+  out.innerHTML=html;
+  document.getElementById('distrib-wa-btn').style.display='inline-flex';
+  window._distribData={org,memberMap,ap,dateLabel,grandActTotal};
+}
+
+function buildDistribWA(orgName,memberName,items,ap,total,dateLabel){
+  let msg=`🌿 Greener's — ${orgName}\n👤 ${memberName}\n📅 Delivery: ${dateLabel}\n\n`;
+  Object.entries(items).forEach(([pid,item])=>{
+    const p=products.find(x=>x.id==pid);
+    const actPrice=ap[pid]>0?ap[pid]:(p?p.our_price:0);
+    const qty=item.unit_type==='weight_kg_g'?item.qty_kg.toFixed(3)+' kg':item.qty_count+' units';
+    const amt=(item.unit_type==='weight_kg_g'?item.qty_kg:item.qty_count)*actPrice;
+    msg+=`${item.name_si||item.name_en}: ${qty} @ Rs.${actPrice} = Rs.${amt.toFixed(2)}\n`;
+  });
+  msg+=`\n💰 මුලු මුදල: Rs.${total.toFixed(2)}\nස්තූතියි — Greener's`;
+  return msg;
+}
+
+function shareDistribWA(){
+  if(!window._distribData)return;
+  const {org,memberMap,ap,dateLabel,grandActTotal}=window._distribData;
+  let msg=`🌿 Greener's Distribution — ${orgName(org)}\n📅 ${dateLabel}\n\n`;
+  Object.values(memberMap).forEach(m=>{msg+=`👤 ${m.name}: Rs.${m.actualTotal.toFixed(2)}\n`});
+  msg+=`\n💰 Total: Rs.${grandActTotal.toFixed(2)}`;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+
+/* ── PRODUCER REPORT ── */
+function genProducerReport(){
+  const dateStr=document.getElementById('prod-rep-date').value;
+  const ap=dateStr&&actualPrices[dateStr]?actualPrices[dateStr]:{};
+  const out=document.getElementById('rep-producer-out');
+  if(!orders.length){out.innerHTML='<div class="empty-state"><div class="empty-icon">🚚</div>No orders found.</div>';return}
+
+  const dateLabel=dateStr?new Date(dateStr+'T00:00:00').toLocaleDateString('en-LK',{year:'numeric',month:'long',day:'numeric'}):'All orders';
+
+  // Build product totals per org
+  const prodMap={};
+  const orgMap={};
+  orders.forEach(o=>{
+    const org=organizations.find(x=>x.id===o.org_id);
+    const orgLabel=org?orgName(org):'Unknown';
+    if(!orgMap[o.org_id])orgMap[o.org_id]={name:orgLabel,items:{}};
+    o.items.forEach(i=>{
+      // Global totals
+      if(!prodMap[i.product_id])prodMap[i.product_id]={name_en:i.name_en,name_si:i.name_si,category:i.category_en||'',unit_type:i.unit_type,qty_kg:0,qty_count:0,actualTotal:0,orgs:{}};
+      if(i.unit_type==='weight_kg_g')prodMap[i.product_id].qty_kg+=i.quantity_kg||0;
+      else prodMap[i.product_id].qty_count+=i.quantity_count||0;
+      const actP=ap[i.product_id]>0?ap[i.product_id]:i.price;
+      const qty=i.unit_type==='weight_kg_g'?(i.quantity_kg||0):(i.quantity_count||0);
+      prodMap[i.product_id].actualTotal+=qty*actP;
+      // Per-org breakdown
+      if(!prodMap[i.product_id].orgs[o.org_id])prodMap[i.product_id].orgs[o.org_id]={name:orgLabel,qty_kg:0,qty_count:0};
+      if(i.unit_type==='weight_kg_g')prodMap[i.product_id].orgs[o.org_id].qty_kg+=i.quantity_kg||0;
+      else prodMap[i.product_id].orgs[o.org_id].qty_count+=i.quantity_count||0;
+      // Org item totals
+      if(!orgMap[o.org_id].items[i.product_id])orgMap[o.org_id].items[i.product_id]={name_en:i.name_en,name_si:i.name_si,unit_type:i.unit_type,qty_kg:0,qty_count:0};
+      if(i.unit_type==='weight_kg_g')orgMap[o.org_id].items[i.product_id].qty_kg+=i.quantity_kg||0;
+      else orgMap[o.org_id].items[i.product_id].qty_count+=i.quantity_count||0;
+    });
+  });
+
+  const grandTotal=Object.values(prodMap).reduce((s,p)=>s+p.actualTotal,0);
+  const sortedProds=Object.values(prodMap).sort((a,b)=>{
+    if(a.category_en<b.category_en)return -1;
+    if(a.category_en>b.category_en)return 1;
+    return 0;
+  });
+
+  let html=`
+    <div style="background:var(--pale);border-radius:var(--rs);padding:12px 16px;margin-bottom:14px">
+      <div style="font-weight:700;color:var(--gd);font-size:1rem">🚚 Procurement &amp; Logistics Report</div>
+      <div style="font-size:.78rem;color:var(--tm);margin-top:2px">Delivery: ${dateLabel} — ${Object.keys(orgMap).length} organizations</div>
+      <button class="btn btn-outline btn-sm" onclick="window.print()" style="margin-top:8px">🖨 Print</button>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-val">${Object.keys(prodMap).length}</div><div class="stat-lbl">Products</div></div>
+      <div class="stat-card"><div class="stat-val">${Object.keys(orgMap).length}</div><div class="stat-lbl">Destinations</div></div>
+      <div class="stat-card"><div class="stat-val">Rs.${grandTotal.toFixed(2)}</div><div class="stat-lbl">Total Value</div></div>
+    </div>
+
+    <div class="section-hdr" style="margin-bottom:8px">📦 Consolidated Procurement List</div>
+    <div class="tbl-wrap" style="margin-bottom:18px"><table>
+      <thead><tr><th>Product</th><th>සිංහල</th><th>Total Qty to Harvest</th><th>Actual Price</th><th>Total Value</th></tr></thead>
+      <tbody>${sortedProds.map(p=>{
+        const actPrice=ap[Object.keys(p.orgs)[0]]||0;
+        const prod=products.find(x=>x.name_en===p.name_en);
+        const actualP=prod&&ap[prod.id]>0?ap[prod.id]:prod?prod.our_price:0;
+        const qtyStr=p.unit_type==='weight_kg_g'?'<strong>'+p.qty_kg.toFixed(3)+' kg</strong>':'<strong>'+p.qty_count+' units</strong>';
+        return`<tr>
+          <td>${p.name_en}</td>
+          <td>${p.name_si||'—'}</td>
+          <td>${qtyStr}</td>
+          <td>Rs.${actualP.toFixed(2)}/${p.unit_type==='weight_kg_g'?'kg':'unit'}</td>
+          <td style="font-weight:700">Rs.${p.actualTotal.toFixed(2)}</td>
+        </tr>`;
+      }).join('')}
+      <tr style="background:var(--pale);font-weight:800">
+        <td colspan="4" style="text-align:right">Grand Total:</td>
+        <td>Rs.${grandTotal.toFixed(2)}</td>
+      </tr></tbody>
+    </table></div>
+
+    <div class="section-hdr" style="margin-bottom:8px">🚚 Delivery Routing by Organization</div>`;
+
+  Object.entries(orgMap).forEach(([oid,orgData])=>{
+    const org=organizations.find(x=>x.id==oid);
+    html+=`
+      <div style="border:1.5px solid var(--gl);border-radius:var(--rs);padding:12px;margin-bottom:10px;page-break-inside:avoid">
+        <div style="font-weight:700;color:var(--gd);margin-bottom:8px">${ORG_ICONS[org?.type]||'🏛️'} ${orgData.name}</div>
+        <div class="tbl-wrap"><table style="font-size:.82rem">
+          <thead><tr><th>Product</th><th>සිංහල</th><th>Pack Qty</th></tr></thead>
+          <tbody>${Object.values(orgData.items).map(item=>{
+            const qtyStr=item.unit_type==='weight_kg_g'?item.qty_kg.toFixed(3)+' kg':item.qty_count+' units';
+            return`<tr><td>${item.name_en}</td><td>${item.name_si||'—'}</td><td style="font-weight:700">${qtyStr}</td></tr>`;
+          }).join('')}</tbody>
+        </table></div>
+      </div>`;
+  });
+
+  out.innerHTML=html;
+  document.getElementById('producer-wa-btn').style.display='inline-flex';
+  window._producerData={sortedProds,grandTotal,dateLabel,orgMap,ap};
+}
+
+function shareProducerWA(){
+  if(!window._producerData)return;
+  const {sortedProds,grandTotal,dateLabel,ap}=window._producerData;
+  let msg=`🌿 Greener's Procurement List\n📅 ${dateLabel}\n\n`;
+  sortedProds.forEach(p=>{
+    const qty=p.unit_type==='weight_kg_g'?p.qty_kg.toFixed(3)+' kg':p.qty_count+' units';
+    msg+=`${p.name_si||p.name_en}: ${qty}\n`;
+  });
+  msg+=`\n💰 Total Value: Rs.${grandTotal.toFixed(2)}\nස්තූතියි — Greener's`;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
 }
 
 /* ── ADMIN ── */
