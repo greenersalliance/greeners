@@ -884,12 +884,15 @@ function showSubTab(id,btn){
   const card=btn.closest('.card,.section');
   card.querySelectorAll('.sub-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  const prefix=id.split('-').slice(0,2).join('-')+'-';
-  card.querySelectorAll('[id^="'+prefix+'"], #pb-sample, #pb-actual, #rep-org, #rep-proc, #adm-products, #adm-actual, #adm-orgs').forEach(el=>{
-    if(el.classList.contains('sub-tab'))return;
-    el.style.display='none';
-  });
-  document.getElementById(id).style.display='block';
+  // Explicitly hide ALL known sub-panels across the whole app
+  var allPanels=['pb-sample','pb-actual','rep-org','rep-proc','rep-distrib','rep-producer','adm-products','adm-actual','adm-orgs','about-en','about-si','about-ta'];
+  allPanels.forEach(function(pid){var el=document.getElementById(pid);if(el)el.style.display='none';});
+  // Also hide by prefix
+  var prefix=id.split('-').slice(0,2).join('-')+'-';
+  card.querySelectorAll('[id^="'+prefix+'"]').forEach(function(el){if(!el.classList.contains('sub-tab'))el.style.display='none';});
+  // Show target
+  var target=document.getElementById(id);
+  if(target)target.style.display='block';
   if(id==='pb-actual')renderActualBoard();
   if(id==='adm-actual')loadActualEditor();
   if(id==='adm-orgs')renderOrgsList();
@@ -929,6 +932,7 @@ function submitReg(e){
   const id=Date.now();
   const org=organizations.find(o=>o.id==orgId);
   const mem={id,name,nic,address:addr,phone,whatsapp:wa,organization_id:orgId,org_name:org?org.name_en:'',created_at:new Date().toISOString()};
+  mem.organization_id=orgId?parseInt(orgId):null;  // ensure integer
   members.push(mem);save();
   document.getElementById('card-name').textContent=name;
   document.getElementById('card-id').textContent='#'+String(id).slice(-6);
@@ -1245,6 +1249,7 @@ function showReportContent(){
   document.getElementById('rep-gate').style.display='none';
   document.getElementById('rep-content').style.display='';
   populateOrg('rep-org-sel');
+  populateOrg('distrib-org-sel');
 }
 function genOrgReport(){
   const orgId=parseInt(document.getElementById('rep-org-sel').value);
@@ -1253,7 +1258,7 @@ function genOrgReport(){
   const to=document.getElementById('rep-to').value;
   const org=organizations.find(o=>o.id===orgId);
   const orgOrders=orders.filter(o=>{
-    if(o.org_id!==orgId)return false;
+    if(parseInt(o.org_id)!==orgId)return false;
     if(from&&o.date<from)return false;
     if(to&&o.date>to+'T23:59:59')return false;
     return true;
@@ -1369,7 +1374,7 @@ function genDistribReport(){
   const dateStr=document.getElementById('distrib-date').value;
   const org=organizations.find(o=>o.id===orgId);
   const ap=dateStr&&actualPrices[dateStr]?actualPrices[dateStr]:{};
-  const orgOrders=orders.filter(o=>o.org_id===orgId);
+  const orgOrders=orders.filter(o=>parseInt(o.org_id)===orgId);
   const out=document.getElementById('rep-distrib-out');
   if(!orgOrders.length){out.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div>No orders found for this organization.</div>';return}
 
