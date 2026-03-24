@@ -1235,17 +1235,6 @@ function renderActualBoard(){
 }
 
 /* ── REPORTS ── */
-  /**
- * Safely returns organization display name with fallback
- * Used by all report functions for consistent naming
- */
-function orgName(org) {
-  if (!org) return 'Unknown Organization';
-  // Return name in order of preference: Sinhala > English > "Unnamed"
-  return org.name_si && org.name_si.trim() 
-    ? org.name_si 
-    : (org.name_en || org.name || 'Unnamed Organization');
-}
 function initReports(){
   if(reportsOk){showReportContent();return}
   document.getElementById('rep-gate').style.display='';
@@ -1325,40 +1314,6 @@ function genOrgReport(){
 }
 
 function buildWA(orgName,memberName,memberOrders){
-  /**
- * Retrieves actual price for a product on a given date
- * Falls back to standard price if not set
- * @param {number} productId - Product ID
- * @param {string} dateStr - Date string (YYYY-MM-DD)
- * @param {number} defaultPrice - Fallback price
- * @returns {number} Actual or default price
- */
-function getActualPrice(productId, dateStr, defaultPrice = 0) {
-  /**
- * Initializes actualPrices object if not already loaded
- * Prevents undefined errors in report generation
- */
-function initActualPrices() {
-  if (typeof actualPrices === 'undefined') {
-    actualPrices = {};
-    console.warn('⚠️ Actual prices not loaded from storage. Using sample prices.');
-  }
-  // Load from localStorage if available
-  const stored = localStorage.getItem('actual_prices');
-  if (stored) {
-    try {
-      const parsed = JSON.parse(stored);
-      Object.assign(actualPrices, parsed);
-    } catch (e) {
-      console.error('Failed to parse stored actual prices:', e);
-    }
-  }
-  return actualPrices;
-}
-  if (!dateStr || !actualPrices[dateStr]) return defaultPrice;
-  const price = actualPrices[dateStr][productId];
-  return (price && price > 0) ? price : defaultPrice;
-}
   let msg=`ශ්‍රී ${orgName} සාමාජිකයා ${memberName} ගේ ඇණවුම:\n`;
   const prodMap={};
   memberOrders.forEach(o=>o.items.forEach(i=>{
@@ -1412,10 +1367,7 @@ function genProcReport(){
 }
 
 
-// NEW (FIXED):
-initActualPrices(); // Ensure actualPrices is loaded
-const ap = dateStr && actualPrices[dateStr] ? actualPrices[dateStr] : {};
-const fallbackOrg = Object.keys(ap).length === 0 ? 'est.' : '';
+/* ── DISTRIBUTION REPORT (Consumer Org) ── */
 function genDistribReport(){
   const orgId=parseInt(document.getElementById('distrib-org-sel').value);
   if(!orgId){showToast('Please select an organization','error');return}
@@ -1468,12 +1420,8 @@ function genDistribReport(){
     </div>`;
 
   // Per-member detailed table
-  const actPrice = getActualPrice(pid, dateStr, p ? p.our_price : 0);
   Object.entries(memberMap).forEach(([mid,m])=>{
-   // NEW (FIXED):
-initActualPrices(); // Ensure actualPrices is loaded
-const ap = dateStr && actualPrices[dateStr] ? actualPrices[dateStr] : {};
-const fallbackOrg = Object.keys(ap).length === 0 ? 'est.' : '';
+    const mem=members.find(x=>x.id==mid)||{};
     const wa=mem.whatsapp;
     const waMsg=buildDistribWA(orgName(org),m.name,m.items,ap,m.actualTotal,dateLabel);
     const waLink=wa?`<a href="https://wa.me/${wa.replace(/\D/g,'')}?text=${encodeURIComponent(waMsg)}" target="_blank" class="btn btn-wa btn-sm">📱 Send</a>`:'';
@@ -1535,10 +1483,6 @@ function buildDistribWA(orgName,memberName,items,ap,total,dateLabel){
   msg+=`\n💰 මුලු මුදල: Rs.${total.toFixed(2)}\nස්තූතියි — Greener's`;
   return msg;
 }
-  function genProducerReport(){
-  initActualPrices(); // Add this line
-  const dateStr=document.getElementById('prod-rep-date').value;
-  // ... rest of function
 
 function shareDistribWA(){
   if(!window._distribData)return;
@@ -1957,4 +1901,4 @@ const _dd=document.getElementById('actual-date');
 if(_dd)_dd.value=_td.toISOString().split('T')[0];
 </script>
 </body>
-</html> 
+</html>
