@@ -3,284 +3,153 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Greener's Order Collection System v2.0</title>
+<title>Greener's Order Collection System</title>
 <style>
-/* ═══════════════════════════════════════════════
-   MODERN CSS RESET & VARIABLES
-   ═══════════════════════════════════════════════ */
-*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --primary: #2d6a4f;
-  --primary-dark: #1b4332;
-  --primary-mid: #40916c;
-  --primary-light: #95d5b2;
-  --pale: #d8f3dc;
-  --faint: #f0faf3;
-  --text-dark: #1a1a1a;
-  --text-mid: #4a5568;
-  --text-light: #718096;
-  --border: #e2e8f0;
-  --shadow: 0 4px 15px rgba(0,0,0,0.08);
-  --radius-lg: 16px;
-  --radius-md: 10px;
-  --radius-sm: 6px;
-  --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Sinhala', 'Noto Sans Tamil', sans-serif;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gp:#2d6a4f;--gd:#1b4332;--gm:#40916c;--gl:#95d5b2;--pale:#d8f3dc;--faint:#f0faf3;
+  --td:#1a1a1a;--tm:#4a5568;--tl:#718096;--border:#e2e8f0;
+  --shadow:0 2px 12px rgba(0,0,0,.08);--r:12px;--rs:8px;
 }
-
-body {
-  font-family: var(--font-main);
-  background: var(--faint);
-  color: var(--text-dark);
-  line-height: 1.5;
-  min-height: 100vh;
-}
-
-/* ── HEADER & NAVIGATION ── */
-header {
-  background: var(--primary-dark);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-}
-
-.header-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 20px;
-  gap: 15px;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.brand-icon {
-  width: 42px;
-  height: 42px;
-  background: var(--primary-light);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-}
-
-.brand h1 { font-size: 1.3rem; color: #fff; line-height: 1; }
-.brand p { font-size: 0.75rem; color: var(--primary-light); }
-
-.lang-sw {
-  display: flex;
-  background: rgba(255,255,255,0.1);
-  border-radius: var(--radius-md);
-  padding: 4px;
-}
-
-.lang-btn {
-  background: transparent;
-  border: none;
-  color: rgba(255,255,255,0.8);
-  padding: 6px 12px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: 0.85rem;
-  transition: 0.3s;
-}
-
-.lang-btn.active {
-  background: var(--primary);
-  color: #fff;
-  box-shadow: var(--shadow);
-}
-
-nav {
-  display: flex;
-  background: var(--primary);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-nav::-webkit-scrollbar { display: none; }
-
-.nav-tab {
-  background: transparent;
-  border: none;
-  color: rgba(255,255,255,0.7);
-  padding: 14px 20px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 600;
-  white-space: nowrap;
-  border-bottom: 3px solid transparent;
-  transition: 0.2s;
-}
-
-.nav-tab.active, .nav-tab:hover {
-  color: #fff;
-  border-bottom-color: var(--primary-light);
-  background: rgba(255,255,255,0.05);
-}
-
-/* ── LAYOUT & CARDS ── */
-main {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 24px 16px 120px;
-}
-
-.section { display: none; animation: fadeIn 0.4s ease; }
-.section.active { display: block; }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.card {
-  background: #fff;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
-  padding: 24px;
-  margin-bottom: 20px;
-  border: 1px solid var(--border);
-}
-
-.card-title {
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: var(--primary-dark);
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--pale);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* ── FORMS & BUTTONS ── */
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-}
-
-@media(max-width: 600px) {
-  .form-grid { grid-template-columns: 1fr; }
-}
-
-.form-group { display: flex; flex-direction: column; gap: 6px; }
-.form-group.full { grid-column: 1 / -1; }
-
-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-mid);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-input, select, textarea {
-  padding: 12px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius-md);
-  font-size: 1rem;
-  font-family: inherit;
-  transition: 0.2s;
-  background: #fdfdfd;
-}
-
-input:focus, select:focus {
-  outline: none;
-  border-color: var(--primary);
-  background: #fff;
-  box-shadow: 0 0 0 4px rgba(45, 106, 79, 0.15);
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 24px;
-  border-radius: var(--radius-md);
-  border: none;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 0.95rem;
-  transition: 0.2s;
-  font-family: inherit;
-}
-
-.btn-primary { background: var(--primary); color: #fff; }
-.btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
-
-.btn-outline { background: #fff; color: var(--primary); border: 2px solid var(--primary); }
-.btn-outline:hover { background: var(--pale); }
-
-.btn-wa { background: #25d366; color: #fff; }
-.btn-wa:hover { background: #128c5e; }
-
-/* ── TABLES ── */
-.tbl-wrap {
-  overflow-x: auto;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
-  margin: 15px 0;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-  background: #fff;
-}
-
-th {
-  background: #f8fafc;
-  color: var(--text-mid);
-  padding: 14px;
-  text-align: left;
-  font-weight: 700;
-  border-bottom: 2px solid var(--border);
-}
-
-td {
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: middle;
-}
-
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: var(--faint); }
-
-.cat-row td {
-  background: var(--pale);
-  font-weight: 800;
-  color: var(--primary-dark);
-  text-transform: uppercase;
-}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans Sinhala','Noto Sans Tamil',sans-serif;background:var(--faint);color:var(--td);min-height:100vh}
+header{background:var(--gd);position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.2)}
+.header-top{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;gap:8px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-icon{width:40px;height:40px;background:var(--gl);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.brand h1{font-size:1.15rem;font-weight:700;color:#fff;line-height:1.1}
+.brand p{font-size:.65rem;color:var(--gl);margin-top:1px}
+.lang-sw{display:flex;gap:3px;background:rgba(255,255,255,.1);border-radius:8px;padding:3px}
+.lang-btn{background:transparent;border:none;color:rgba(255,255,255,.7);padding:5px 10px;border-radius:6px;cursor:pointer;font-size:.8rem;font-weight:500;font-family:inherit;transition:all .2s}
+.lang-btn.active,.lang-btn:hover{background:var(--gp);color:#fff}
+nav{display:flex;background:var(--gp);overflow-x:auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+.nav-tab{background:transparent;border:none;color:rgba(255,255,255,.75);padding:12px 18px;cursor:pointer;font-size:.83rem;font-weight:500;white-space:nowrap;border-bottom:3px solid transparent;transition:all .2s;font-family:inherit}
+.nav-tab.active,.nav-tab:hover{color:#fff;border-bottom-color:var(--gl)}
+.nav-tab.active{background:rgba(0,0,0,.15)}
+main{max-width:960px;margin:0 auto;padding:20px 14px 120px}
+.section{display:none}.section.active{display:block}
+.card{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);padding:22px;margin-bottom:18px}
+.card-title{font-size:1.05rem;font-weight:700;color:var(--gd);margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--pale)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:580px){.form-grid{grid-template-columns:1fr}.header-top{padding:8px 12px}.nav-tab{padding:10px 12px;font-size:.78rem}}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group.full{grid-column:1/-1}
+label{font-size:.72rem;font-weight:600;color:var(--tm);text-transform:uppercase;letter-spacing:.04em}
+input,select,textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:.92rem;color:var(--td);background:#fff;transition:border-color .2s;font-family:inherit;-webkit-appearance:none}
+input:focus,select:focus{outline:none;border-color:var(--gp);box-shadow:0 0 0 3px rgba(45,106,79,.1)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 20px;border-radius:var(--rs);border:none;cursor:pointer;font-size:.88rem;font-weight:600;transition:all .2s;font-family:inherit;white-space:nowrap}
+.btn-primary{background:var(--gp);color:#fff}.btn-primary:hover{background:var(--gd)}
+.btn-outline{background:transparent;color:var(--gp);border:2px solid var(--gp)}.btn-outline:hover{background:var(--pale)}
+.btn-sm{padding:5px 12px;font-size:.78rem}
+.btn-wa{background:#25d366;color:#fff}.btn-wa:hover{background:#128c5e}
+.btn-danger{background:#fee2e2;color:#991b1b}
+.toast{position:fixed;top:70px;right:16px;padding:12px 16px;border-radius:var(--rs);font-size:.86rem;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.15);z-index:9999;transform:translateX(140%);transition:transform .3s;max-width:300px}
+.toast.show{transform:translateX(0)}
+.toast-success{background:#d1fae5;color:#065f46;border-left:4px solid #059669}
+.toast-error{background:#fee2e2;color:#991b1b;border-left:4px solid #dc2626}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;padding:14px}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:var(--r);max-width:540px;width:100%;max-height:92vh;overflow-y:auto}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.modal-hdr h3{font-size:1rem;font-weight:700;color:var(--gd)}
+.modal-close{background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--tl);padding:2px 6px}
+.modal-body{padding:18px 20px}
+.modal-foot{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.pin-gate{text-align:center;padding:40px 20px}
+.pin-gate-icon{font-size:2.8rem;margin-bottom:14px}
+.pin-gate h3{font-size:1.1rem;font-weight:700;color:var(--gd);margin-bottom:6px}
+.pin-gate p{font-size:.85rem;color:var(--tm);margin-bottom:18px}
+.member-card{background:linear-gradient(135deg,var(--gp),var(--gd));color:#fff;border-radius:var(--r);padding:22px;margin-top:18px;display:none}
+.member-card.visible{display:block}
+.mc-hdr{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.mc-avatar{width:48px;height:48px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px}
+.mc-details{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.2)}
+.mdl{font-size:.65rem;opacity:.65;text-transform:uppercase}.mdv{font-size:.9rem;font-weight:600;margin-top:2px}
+.search-wrap{position:relative}
+.search-dd{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--border);border-top:none;border-radius:0 0 var(--rs) var(--rs);z-index:50;max-height:240px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.1);display:none}
+.search-dd.open{display:block}
+.si{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--faint);transition:background .15s}
+.si:hover{background:var(--faint)}
+.si-name{font-weight:600;font-size:.9rem}.si-sub{font-size:.76rem;color:var(--tl);margin-top:1px}
+.mbanner{display:none;background:var(--pale);border:1.5px solid var(--gl);border-radius:var(--rs);padding:11px 15px;margin-bottom:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.mbanner.visible{display:flex}
+.cat-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--pale);border-radius:var(--rs);cursor:pointer;user-select:none;margin-bottom:2px}
+.cat-hdr:hover{background:#b7e4c7}
+.cat-title{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--gd);font-size:.88rem}
+.chev{font-size:.72rem;color:var(--tm);transition:transform .2s}
+.cat-hdr.collapsed .chev{transform:rotate(-90deg)}
+.cat-items{display:flex;flex-direction:column;gap:2px;margin-bottom:6px}
+.cat-items.hidden{display:none}
+.prow{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;background:#fff;border:1px solid var(--border);border-radius:var(--rs);padding:9px 12px;transition:border-color .2s}
+.prow:hover{border-color:var(--gl)}
+.prow.has-qty{border-color:var(--gp);background:var(--faint)}
+.pn1{font-weight:600;color:var(--td);font-size:.88rem}
+.pn2{font-size:.73rem;color:var(--tl);margin-top:1px}
+.psub{font-size:.8rem;color:var(--gd);font-weight:700;margin-top:2px;min-height:1em}
+.w-inputs{display:flex;gap:5px;align-items:flex-end;flex-wrap:wrap}
+.w-inputs input[type=number]{width:60px;padding:6px 4px;font-size:.82rem;text-align:center}
+.w-inputs select{padding:6px 2px;font-size:.77rem;width:68px}
+.wlbl{font-size:.64rem;color:var(--tm);font-weight:500;text-align:center;margin-top:2px}
+.presets{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
+.preset-btn{background:var(--faint);border:1px solid var(--gl);border-radius:20px;padding:2px 8px;font-size:.7rem;font-weight:600;color:var(--gp);cursor:pointer;font-family:inherit}
+.preset-btn:hover{background:var(--pale)}
+.stepper{display:flex;align-items:center;border:1.5px solid var(--border);border-radius:var(--rs);overflow:hidden}
+.step-btn{background:var(--faint);border:none;padding:6px 10px;cursor:pointer;font-size:.95rem;font-weight:700;color:var(--gp);line-height:1}
+.step-btn:hover{background:var(--gl)}
+.step-val{min-width:32px;text-align:center;font-size:.86rem;font-weight:700;padding:6px 3px;border-left:1px solid var(--border);border-right:1px solid var(--border)}
+.order-footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid var(--pale);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.1);z-index:90;flex-wrap:wrap}
+.ot-lbl{font-size:.72rem;color:var(--tm)}.ot-amt{font-size:1.4rem;font-weight:800;color:var(--gd)}.ot-cnt{font-size:.72rem;color:var(--tl)}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.84rem}
+th{background:var(--gp);color:#fff;padding:9px 11px;text-align:left;font-weight:600;font-size:.76rem}
+td{padding:8px 11px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:hover td{background:var(--faint)}
+.cat-row td{background:var(--pale);font-weight:700;color:var(--gd);padding:6px 11px;font-size:.76rem;text-transform:uppercase;letter-spacing:.05em}
+.banana-row td{background:#b7e4c7;font-weight:700;color:#1b4332;padding:5px 11px;font-size:.76rem}
+.price-our{font-weight:700;color:var(--gp)}
+.price-lower{background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:20px;font-weight:700}
+.price-dash{color:var(--tl)}
+.sub-tabs{display:flex;gap:3px;margin-bottom:16px;border-bottom:2px solid var(--pale)}
+.sub-tab{background:transparent;border:none;padding:8px 14px;font-size:.83rem;font-weight:600;color:var(--tm);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;font-family:inherit}
+.sub-tab.active{color:var(--gp);border-bottom-color:var(--gp)}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px}
+.stat-card{background:#fff;border-radius:var(--rs);padding:12px;text-align:center;border:1.5px solid var(--border)}
+.stat-val{font-size:1.3rem;font-weight:800;color:var(--gd)}.stat-lbl{font-size:.68rem;color:var(--tm);margin-top:2px}
+.expand-row{background:var(--faint);display:none}.expand-row.open{display:table-row}
+.badge-active{background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:20px;font-size:.73rem;font-weight:700}
+.badge-inactive{background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:20px;font-size:.73rem;font-weight:700}
+.hist-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--faint);font-size:.8rem}
+.receipt{font-family:'Courier New',monospace;font-size:.83rem;line-height:1.6}
+.receipt-hdr{text-align:center;margin-bottom:10px;border-bottom:2px dashed #ccc;padding-bottom:10px}
+.receipt-row{display:flex;justify-content:space-between;gap:6px}
+.receipt-div{border-top:1px dashed #ccc;margin:7px 0}
+.empty-state{text-align:center;padding:36px 18px;color:var(--tm)}
+.empty-icon{font-size:2.6rem;margin-bottom:8px}
+.loading{text-align:center;padding:24px;color:var(--tl);font-size:.88rem}
+.tag{display:inline-flex;align-items:center;background:var(--pale);color:var(--gd);padding:2px 9px;border-radius:20px;font-size:.74rem;font-weight:600}
+.section-hdr{font-size:.74rem;font-weight:700;color:var(--gd);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.actual-price-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+@media(max-width:500px){.actual-price-grid{grid-template-columns:1fr 1fr}}
+.ap-card{background:var(--faint);border:1.5px solid var(--border);border-radius:var(--rs);padding:10px}
+.ap-card.set{border-color:var(--gp);background:#f0faf3}
+.ap-name{font-size:.8rem;font-weight:600;color:var(--gd)}
+.ap-name2{font-size:.7rem;color:var(--tl);margin-bottom:6px}
+.ap-input{width:100%;padding:6px 8px;font-size:.85rem;border:1.5px solid var(--border);border-radius:6px;font-family:inherit}
+.ap-input:focus{outline:none;border-color:var(--gp)}
+.ap-sample{font-size:.68rem;color:var(--tl);margin-top:3px}
 </style>
-</head>
+</head>   mmmmmmmmmmmmmmm 1
 <body>
 <div class="toast" id="toast"></div>
 
-<!-- ── MODALS ── -->
-
-<!-- CONFIRM ORDER MODAL -->
+<!-- CONFIRM MODAL -->
 <div class="modal-overlay" id="m-confirm">
   <div class="modal">
-    <div class="modal-hdr">
-      <h3 id="confirm-title">Confirm Order</h3>
-      <button class="modal-close" onclick="closeModal('m-confirm')">✕</button>
-    </div>
+    <div class="modal-hdr"><h3 id="confirm-title">Confirm Order</h3><button class="modal-close" onclick="closeModal('m-confirm')">✕</button></div>
     <div class="modal-body" id="confirm-body"></div>
     <div class="modal-foot">
       <button class="btn btn-outline" onclick="closeModal('m-confirm')">Cancel</button>
-      <button class="btn btn-primary" onclick="finalSubmit()">✓ Confirm & Place</button>
+      <button class="btn btn-primary" onclick="finalSubmit()">✓ Confirm &amp; Place</button>
     </div>
   </div>
 </div>
@@ -288,10 +157,7 @@ tr:hover td { background: var(--faint); }
 <!-- RECEIPT MODAL -->
 <div class="modal-overlay" id="m-receipt">
   <div class="modal">
-    <div class="modal-hdr">
-      <h3>🧾 Order Receipt</h3>
-      <button class="modal-close" onclick="closeModal('m-receipt')">✕</button>
-    </div>
+    <div class="modal-hdr"><h3>🧾 Order Receipt</h3><button class="modal-close" onclick="closeModal('m-receipt')">✕</button></div>
     <div class="modal-body" id="receipt-body"></div>
     <div class="modal-foot">
       <button class="btn btn-outline" onclick="window.print()">🖨 Print</button>
@@ -300,39 +166,31 @@ tr:hover td { background: var(--faint); }
   </div>
 </div>
 
-<!-- ADMIN: ADD PRODUCT MODAL -->
+<!-- ADD PRODUCT MODAL -->
 <div class="modal-overlay" id="m-addprod">
   <div class="modal">
-    <div class="modal-hdr">
-      <h3>➕ Add New Product</h3>
-      <button class="modal-close" onclick="closeModal('m-addprod')">✕</button>
-    </div>
+    <div class="modal-hdr"><h3>➕ Add New Product</h3><button class="modal-close" onclick="closeModal('m-addprod')">✕</button></div>
     <div class="modal-body">
       <div class="form-grid">
         <div class="form-group"><label>English Name *</label><input type="text" id="np-en"/></div>
         <div class="form-group"><label>Sinhala Name</label><input type="text" id="np-si"/></div>
         <div class="form-group"><label>Tamil Name</label><input type="text" id="np-ta"/></div>
-        <div class="form-group">
-          <label>Category</label>
+        <div class="form-group"><label>Category</label>
           <select id="np-cat">
-            <option value="Vegetables & Roots">Vegetables & Roots</option>
+            <option value="Vegetables &amp; Roots">Vegetables &amp; Roots</option>
             <option value="Leafy Greens">Leafy Greens</option>
             <option value="Snack Crops">Snack Crops</option>
             <option value="Fruits">Fruits</option>
             <option value="Grains">Grains</option>
             <option value="Spices">Spices</option>
-            <option value="Sweets & Desserts">Sweets & Desserts</option>
+            <option value="Sweets &amp; Desserts">Sweets &amp; Desserts</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>Unit Type</label>
-          <select id="np-unit">
-            <option value="weight_kg_g">Weight (kg/g)</option>
-            <option value="count">Count / Bundle</option>
-          </select>
+        <div class="form-group"><label>Unit Type</label>
+          <select id="np-unit"><option value="weight_kg_g">Weight (kg/g)</option><option value="count">Count / Bundle</option></select>
         </div>
-        <div class="form-group"><label>Our Price (Rs.)</label><input type="number" id="np-price" step="0.5"/></div>
-        <div class="form-group"><label>Market Price (Rs.)</label><input type="number" id="np-mkt" step="0.5"/></div>
+        <div class="form-group"><label>Our Price (Rs.)</label><input type="number" id="np-price" min="0" step="0.5"/></div>
+        <div class="form-group"><label>Market Price (Rs.)</label><input type="number" id="np-mkt" min="0" step="0.5"/></div>
       </div>
     </div>
     <div class="modal-foot">
@@ -342,7 +200,36 @@ tr:hover td { background: var(--faint); }
   </div>
 </div>
 
-<!-- ── SITE HEADER ── -->
+<!-- ADD ORG MODAL -->
+<div class="modal-overlay" id="m-addorg">
+  <div class="modal">
+    <div class="modal-hdr"><h3>➕ Add Organization</h3><button class="modal-close" onclick="closeModal('m-addorg')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>English Name *</label><input type="text" id="org-en"/></div>
+        <div class="form-group"><label>Sinhala Name</label><input type="text" id="org-si"/></div>
+        <div class="form-group"><label>Tamil Name</label><input type="text" id="org-ta"/></div>
+        <div class="form-group"><label>Type</label>
+          <select id="org-type">
+            <option value="elder_society">Elder Society</option>
+            <option value="welfare_society">Welfare Society</option>
+            <option value="women_society">Women Society</option>
+            <option value="office">Office</option>
+            <option value="school">School</option>
+            <option value="hospital">Hospital</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group"><label>WhatsApp Number</label><input type="tel" id="org-wa" placeholder="0771234567"/></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('m-addorg')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveOrg()">Save Organization</button>
+    </div>
+  </div>
+</div>
+
 <header>
   <div class="header-top">
     <div class="brand">
@@ -365,653 +252,1796 @@ tr:hover td { background: var(--faint); }
     <button class="nav-tab" onclick="showTab('prices',this)" data-i18n="navPrices">Price Board</button>
     <button class="nav-tab" onclick="showTab('reports',this)" data-i18n="navReports">Reports</button>
     <button class="nav-tab" onclick="showTab('admin',this)" data-i18n="navAdmin">Admin</button>
+    <button class="nav-tab" onclick="showTab('history',this)" data-i18n="navHistory">Order History</button>
     <button class="nav-tab" onclick="showTab('feedback',this)" data-i18n="navFeedback">💬 Feedback</button>
   </nav>
-</header>
-
+</header> 
 <main>
-  <!-- SECTION: REGISTER -->
-  <div class="section" id="tab-register">
-    <div class="card">
-      <div class="card-title">👤 <span data-i18n="regTitle">Member Registration</span></div>
-      <form id="reg-form" onsubmit="submitReg(event)">
-        <div class="form-grid">
-          <div class="form-group"><label data-i18n="nameLabel">Full Name</label><input type="text" id="r-name" required/></div>
-          <div class="form-group"><label data-i18n="nicLabel">NIC Number</label><input type="text" id="r-nic" required/></div>
-          <div class="form-group full"><label data-i18n="addrLabel">Address</label><input type="text" id="r-addr"/></div>
-          <div class="form-group"><label data-i18n="phoneLabel">Phone</label><input type="tel" id="r-phone"/></div>
-          <div class="form-group"><label data-i18n="waLabel">WhatsApp</label><input type="tel" id="r-wa"/></div>
-          <div class="form-group full">
-            <label data-i18n="orgLabel">Organization</label>
-            <select id="r-org"><option value="">— Select —</option></select>
-          </div>
+<!-- TAB 1: REGISTER -->
+<div class="section" id="tab-register">
+  <div class="card">
+    <div class="card-title" data-i18n="regTitle">Member Registration</div>
+    <form id="reg-form" onsubmit="submitReg(event)">
+      <div class="form-grid">
+        <div class="form-group"><label data-i18n="nameLabel">Full Name</label><input type="text" id="r-name" required placeholder="Kamal Perera"/></div>
+        <div class="form-group"><label data-i18n="nicLabel">NIC Number</label><input type="text" id="r-nic" required placeholder="200012345678 or 123456789V"/></div>
+        <div class="form-group full"><label data-i18n="addrLabel">Address</label><input type="text" id="r-addr" placeholder="No. 12, Main Road"/></div>
+        <div class="form-group"><label data-i18n="phoneLabel">Phone Number</label><input type="tel" id="r-phone" placeholder="0771234567"/></div>
+        <div class="form-group"><label data-i18n="waLabel">WhatsApp Number</label><input type="tel" id="r-wa" placeholder="0771234567"/></div>
+        <div class="form-group full">
+          <label data-i18n="orgLabel">Consumer Organization</label>
+          <select id="r-org"><option value="">— Select organization —</option></select>
         </div>
-        <button type="submit" class="btn btn-primary" style="margin-top:20px" data-i18n="submitReg">Register Member</button>
-      </form>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px;align-items:center">
+        <button type="submit" class="btn btn-primary" data-i18n="submitReg">Register</button>
+      </div>
+    </form>
+    <div class="member-card" id="member-card">
+      <div class="mc-hdr">
+        <div class="mc-avatar">👤</div>
+        <div><div class="mdl">GREENER'S MEMBER</div><div class="mdv" id="card-name" style="font-size:1.1rem;font-weight:700">—</div></div>
+      </div>
+      <div class="mc-details">
+        <div><div class="mdl">Member ID</div><div class="mdv" id="card-id">—</div></div>
+        <div><div class="mdl">NIC</div><div class="mdv" id="card-nic">—</div></div>
+        <div><div class="mdl" data-i18n="orgLabel">Organization</div><div class="mdv" id="card-org">—</div></div>
+        <div><div class="mdl">Status</div><div class="mdv" style="color:var(--gl)">✓ Active</div></div>
+      </div>
     </div>
   </div>
+</div>
 
-  <!-- SECTION: ORDER -->
-  <div class="section" id="tab-order">
+<!-- TAB 2: ORDER -->
+<div class="section" id="tab-order">
+  <div class="card">
+    <div class="card-title" data-i18n="orderTitle">Place Your Order</div>
+    <div style="margin-bottom:14px">
+      <div class="section-hdr">① <span data-i18n="selMember">Select Member</span></div>
+      <div class="search-wrap">
+        <input type="text" id="member-search" placeholder="Enter NIC or Name…" oninput="searchMembers(this.value)" autocomplete="off" data-i18n-placeholder="memberSearch"/>
+        <div class="search-dd" id="member-dd"></div>
+      </div>
+    </div>
+    <div class="mbanner" id="sel-banner">
+      <div>
+        <div style="font-weight:700;color:var(--gd);font-size:.94rem" id="banner-name">—</div>
+        <div style="font-size:.76rem;color:var(--tm)" id="banner-nic">—</div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="clearMember()">✕ Clear</button>
+    </div>
+    <div class="section-hdr">② <span data-i18n="chooseProds">Choose Products</span></div>
+    <div id="catalog"></div>
+  </div>
+  <div class="order-footer" id="order-footer" style="display:none">
+    <div>
+      <div class="ot-lbl" data-i18n="totalLabel">Total Amount</div>
+      <div class="ot-amt" id="total-disp">Rs. 0.00</div>
+      <div class="ot-cnt" id="items-disp">0 items</div>
+    </div>
+    <button class="btn btn-primary" style="font-size:.92rem;padding:11px 22px" onclick="initiateOrder()">🛒 <span data-i18n="placeOrder">Place Order</span></button>
+  </div>
+</div>
+
+<!-- TAB 3: PRICE BOARD -->
+<div class="section" id="tab-prices">
+  <div class="card">
+    <div class="sub-tabs">
+      <button class="sub-tab active" onclick="showSubTab('pb-sample',this)" data-i18n="sampleBoard">Sample Price Board</button>
+      <button class="sub-tab" onclick="showSubTab('pb-actual',this)" data-i18n="actualBoard">Actual Price Board</button>
+    </div>
+    <div id="pb-sample">
+      <div class="card-title" data-i18n="priceTitle">Sample Price Board (As of 2026.03.12)</div>
+      <p style="font-size:.75rem;color:var(--tl);margin-bottom:12px" data-i18n="priceNote">Prices in LKR per kg or per unit. Green = below open market price.</p>
+      <div class="tbl-wrap">
+         <table>
+          <thead> <tr><th data-i18n="colEn">Item (English)</th><th data-i18n="colSi">Item (සිංහල)</th><th data-i18n="mktPrice">Market Price</th><th data-i18n="ourPrice">Our Price</th></tr> </thead>
+          <tbody id="price-tbody"></tbody>
+         </table>
+      </div>
+    </div>
+    <div id="pb-actual" style="display:none">
+      <div class="card-title" data-i18n="actualTitle">Actual Price Board</div>
+      <p style="font-size:.75rem;color:var(--tl);margin-bottom:12px" data-i18n="actualNote">Prices set by Greener's for actual delivery. Updated before each delivery.</p>
+      <div id="actual-price-display"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 4: REPORTS -->
+<div class="section" id="tab-reports">
+  <div id="rep-gate" class="card">
+    <div class="pin-gate">
+      <div class="pin-gate-icon">🔒</div>
+      <h3 data-i18n="accessReq">Admin Access Required</h3>
+      <p data-i18n="enterPin">Enter the 4-digit PIN</p>
+      <div style="margin:14px 0">
+        <input type="password" id="rep-pin" maxlength="4" style="width:120px;font-size:1.6rem;text-align:center;letter-spacing:.3em;padding:8px" placeholder="••••" onkeydown="if(event.key==='Enter')unlockReports()"/>
+      </div>
+      <button class="btn btn-primary" onclick="unlockReports()" data-i18n="unlockBtn">Unlock</button>
+    </div>
+  </div>
+  <div id="rep-content" style="display:none">
     <div class="card">
-      <div class="card-title">🛒 <span data-i18n="orderTitle">Place Order</span></div>
-      <div class="form-group" style="margin-bottom:20px">
-        <label data-i18n="selMember">Select Member</label>
+      <div class="card-title">📊 <span data-i18n="navReports">Reports</span></div>
+      <div class="sub-tabs">
+        <button class="sub-tab active" onclick="showSubTab('rep-org',this)" data-i18n="orgReport">Org Report</button>
+        <button class="sub-tab" onclick="showSubTab('rep-proc',this)" data-i18n="procurement">Procurement List</button>
+        <button class="sub-tab" onclick="showSubTab('rep-distrib',this)">Distribution Report</button>
+        <button class="sub-tab" onclick="showSubTab('rep-producer',this)">Producer Report</button>
+      </div>
+      <div id="rep-org">
+        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
+          <div class="form-group" style="flex:1;min-width:130px"><label data-i18n="orgLabel">Organization</label><select id="rep-org-sel"><option value="">— Select —</option></select></div>
+          <div class="form-group"><label data-i18n="fromDate">From Date</label><input type="date" id="rep-from"/></div>
+          <div class="form-group"><label data-i18n="toDate">To Date</label><input type="date" id="rep-to"/></div>
+          <button class="btn btn-primary" onclick="genOrgReport()" data-i18n="generateBtn">Generate</button>
+        </div>
+        <div id="rep-org-out"></div>
+      </div>
+      <div id="rep-proc" style="display:none">
+        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
+          <div class="form-group"><label data-i18n="fromDate">From Date</label><input type="date" id="proc-from"/></div>
+          <div class="form-group"><label data-i18n="toDate">To Date</label><input type="date" id="proc-to"/></div>
+          <button class="btn btn-primary" onclick="genProcReport()" data-i18n="generateBtn">Generate</button>
+        </div>
+        <div id="rep-proc-out"></div>
+      </div>
+      <div id="rep-distrib" style="display:none">
+        <div style="background:var(--pale);border-radius:var(--rs);padding:10px 14px;margin-bottom:14px;font-size:.82rem;color:var(--gd)">
+          📋 <strong>Consumer Organization Distribution Report</strong> — Shows each member's itemized order with actual prices for internal distribution.
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
+          <div class="form-group" style="flex:1;min-width:130px"><label>Organization</label><select id="distrib-org-sel"><option value="">— Select —</option></select></div>
+          <div class="form-group"><label>Delivery Date</label><input type="date" id="distrib-date"/></div>
+          <button class="btn btn-primary" onclick="genDistribReport()">Generate</button>
+          <button class="btn btn-wa btn-sm" onclick="shareDistribWA()" id="distrib-wa-btn" style="display:none">📱 Share via WhatsApp</button>
+        </div>
+        <div id="rep-distrib-out"></div>
+      </div>
+      <div id="rep-producer" style="display:none">
+        <div style="background:var(--pale);border-radius:var(--rs);padding:10px 14px;margin-bottom:14px;font-size:.82rem;color:var(--gd)">
+          🚚 <strong>Producer Organization Procurement &amp; Logistics Report</strong> — Consolidated quantities per product with delivery destinations and packing requirements.
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
+          <div class="form-group"><label>Delivery Date</label><input type="date" id="prod-rep-date"/></div>
+          <button class="btn btn-primary" onclick="genProducerReport()">Generate</button>
+          <button class="btn btn-wa btn-sm" onclick="shareProducerWA()" id="producer-wa-btn" style="display:none">📱 Share via WhatsApp</button>
+        </div>
+        <div id="rep-producer-out"></div>
+      </div>
+    </div>
+  </div>
+</div>  
+<!-- TAB 5: ADMIN -->
+<div class="section" id="tab-admin">
+  <div id="adm-gate" class="card">
+    <div class="pin-gate">
+      <div class="pin-gate-icon">🔐</div>
+      <h3 data-i18n="adminAccess">Admin Access</h3>
+      <p data-i18n="enterPin">Enter the 4-digit admin PIN</p>
+      <div style="margin:14px 0">
+        <input type="password" id="adm-pin" maxlength="4" style="width:120px;font-size:1.6rem;text-align:center;letter-spacing:.3em;padding:8px" placeholder="••••" onkeydown="if(event.key==='Enter')unlockAdmin()"/>
+      </div>
+      <button class="btn btn-primary" onclick="unlockAdmin()" data-i18n="unlockBtn">Unlock</button>
+    </div>
+  </div>
+  <div id="adm-content" style="display:none">
+    <div class="card">
+      <div class="card-title">🔐 <span data-i18n="navAdmin">Admin</span></div>
+      <div class="sub-tabs">
+        <button class="sub-tab active" onclick="showSubTab('adm-products',this)">Products</button>
+        <button class="sub-tab" onclick="showSubTab('adm-actual',this)">Set Actual Prices</button>
+        <button class="sub-tab" onclick="showSubTab('adm-orgs',this)">Organizations</button>
+      </div>
+      <div id="adm-products">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center">
+          <input type="text" id="adm-search" placeholder="Search…" oninput="filterAdmin(this.value)" style="max-width:220px"/>
+          <select id="adm-cat" onchange="filterAdmin(document.getElementById('adm-search').value)">
+            <option value="">All Categories</option>
+            <option value="Vegetables &amp; Roots">Vegetables &amp; Roots</option>
+            <option value="Leafy Greens">Leafy Greens</option>
+            <option value="Snack Crops">Snack Crops</option>
+            <option value="Fruits">Fruits</option>
+            <option value="Grains">Grains</option>
+            <option value="Spices">Spices</option>
+            <option value="Sweets &amp; Desserts">Sweets &amp; Desserts</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="openModal('m-addprod')">➕ Add Product</button>
+          <button class="btn btn-outline btn-sm" onclick="saveAllPrices()">💾 Save All Prices</button>
+        </div>
+        <div class="tbl-wrap">
+          表格
+            <thead>
+              <tr><th>Product</th><th>Category</th><th>Our Price (Rs.)</th><th>Market Price (Rs.)</th><th>Status</th></tr>
+            </thead>
+            <tbody id="adm-tbody"></tbody>
+          表格
+        </div>
+        <div class="card" style="margin-top:14px">
+          <div class="card-title">📋 Price Change Log</div>
+          <div id="price-log"></div>
+        </div>
+      </div>
+      <div id="adm-actual" style="display:none">
+        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
+          <div class="form-group"><label>Delivery Date</label><input type="date" id="actual-date"/></div>
+          <button class="btn btn-primary" onclick="saveActualPrices()">💾 Save Actual Prices</button>
+          <button class="btn btn-outline" onclick="loadActualEditor()">🔄 Load / Refresh</button>
+        </div>
+        <p style="font-size:.78rem;color:var(--tm);margin-bottom:12px">Set actual prices for the delivery date. Leave blank to use sample price. Yellow = not yet set.</p>
+        <div id="actual-editor"></div>
+      </div>
+      <div id="adm-orgs" style="display:none">
+        <div style="margin-bottom:12px">
+          <button class="btn btn-primary btn-sm" onclick="openModal('m-addorg')">➕ Add Organization</button>
+        </div>
+        <div id="orgs-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 6: HISTORY -->
+<div class="section" id="tab-history">
+  <div class="card">
+    <div class="card-title">📦 <span data-i18n="navHistory">Order History</span></div>
+    <div style="margin-bottom:16px">
+      <div class="section-hdr" data-i18n="lookupNIC">Search by NIC or Name</div>
+      <div class="search-wrap">
+        <input type="text" id="hist-search" placeholder="Enter NIC or name…" oninput="searchHistory(this.value)" autocomplete="off"/>
+        <div class="search-dd" id="hist-dd"></div>
+      </div>
+    </div>
+    <div id="hist-out"><div class="empty-state"><div class="empty-icon">🔍</div><div data-i18n="histHint">Search a member to view their past orders</div></div></div>
+  </div>
+</div>
+
+<!-- TAB 7: ABOUT US -->
+<div class="section active" id="tab-about">
+  <div class="card" style="padding:0;overflow:hidden">
+    <img src="data:image/jpeg;base64,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" alt="Greener's Alliance — From Maker's Hand to Your Hand" style="width:100%;display:block;border-radius:12px 12px 0 0"/>
+  </div>
+  <div class="card">
+    <div id="about-en">
+      <div style="text-align:center;padding:8px 0 18px">
+        <div style="font-size:2.2rem;margin-bottom:6px">🌿</div>
+        <div style="font-size:1.3rem;font-weight:800;color:#1b4332;margin-bottom:6px">Greener's Alliance</div>
+        <div style="font-size:.9rem;font-style:italic;color:#40916c">"You for you, We for you, You for us."</div>
+      </div>
+      <p style="font-size:.9rem;line-height:1.85;color:#2d3748;margin-bottom:12px">Food is an indispensable part of our lives. It is essential not only to sustain our lives but also for our happiness and well-being. Food is a part of our very culture.</p>
+      <p style="font-size:.9rem;line-height:1.85;color:#2d3748;margin-bottom:10px">However, we believe that the food trade in our country is not functioning in a healthy manner. Due to this unfair transaction process, justice is not served to the producers who create the food, to you who consume it, or to the environment. This happens because:</p>
+      <ul style="font-size:.9rem;line-height:1.9;color:#2d3748;margin-left:20px;margin-bottom:14px">
+        <li>Middlemen unfairly increasing prices.</li>
+        <li>Damage and wastage occurring as products are exchanged from hand to hand.</li>
+        <li>The cost of selling being higher than the cost of production.</li>
+      </ul>
+      <p style="font-size:.9rem;line-height:1.85;color:#2d3748;margin-bottom:12px">The <strong>"From Maker's Hand to Your Hand"</strong> program is our answer. Through this program, we provide a way for you to directly purchase goods from the producer. This is not just a story of selling a product — it is a collective effort by all of us.</p>
+      <p style="font-size:.9rem;line-height:1.85;color:#2d3748;margin-bottom:16px">If you feel this initiative is worthwhile, we warmly invite you to join us.</p>
+      <div style="background:#f0faf3;border-radius:10px;padding:16px;font-size:.86rem;color:#2d6a4f;line-height:2">
+        <strong>Greener's Alliance</strong><br/>
+        No 465/01, Sri Dewanandathissa Mawatha, Polpitimukalana, Kandana, Sri Lanka.<br/>
+        📧 greenersalliance4 [at] gmail [dot] com<br/>
+        📱 WhatsApp: <a href="https://wa.me/94702045900" target="_blank" style="color:#2d6a4f">+94 70 204 5900</a><br/>
+        <a href="https://www.linkedin.com/company/111495098" target="_blank" style="color:#2d6a4f">🔗 LinkedIn</a> &nbsp;|&nbsp;
+        <a href="https://web.facebook.com/greentef" target="_blank" style="color:#2d6a4f">📘 Facebook</a>
+      </div>
+    </div>
+    <div id="about-si" style="display:none">
+      <div style="text-align:center;padding:8px 0 18px">
+        <div style="font-size:2.2rem;margin-bottom:6px">🌿</div>
+        <div style="font-size:1.3rem;font-weight:800;color:#1b4332;margin-bottom:6px">Greener's Alliance</div>
+        <div style="font-size:.9rem;font-style:italic;color:#40916c">"ඔබ වෙනුවෙන් ඔබ, ඔබ වෙනුවෙන් අපි, අපි වෙනුවෙන් ඔබ."</div>
+      </div>
+      <p style="font-size:.9rem;line-height:1.9;color:#2d3748;margin-bottom:12px">ආහාර කියන්නේ අපේ ජීවිතයේ නැතුවම බැරි දෙයකි. අපේ ජීවිතය රැකගැනීමට මෙන්ම ජීවිතයේ සතුට සැනසුම වෙනුවෙන් ආහාර අපට ඕනම දෙයකි. ආහාර කියන්නේ සංස්කෘතියේම කොටසකි.</p>
+      <p style="font-size:.9rem;line-height:1.9;color:#2d3748;margin-bottom:10px">එත් ආහාර වෙළඳාම අපේ රටේ යහපත් ලෙස සිදු නොවන බව අප සිතමු. යහපත් ලෙස සිදු නොවන මේ ගනුදෙනුව නිසා ඒවා හදන නිෂ්පාදකයින්ට, පාවිච්චිකරන ඔබට සහ පරිසරයට විය යුතු සාධාරණය සිද්ධ වෙන්නේ නැත. එහෙම වෙන්නේ:</p>
+      <ul style="font-size:.9rem;line-height:1.9;color:#2d3748;margin-left:20px;margin-bottom:14px">
+        <li>අතරමැදියන් විසින් අසාධාරණ ලෙස මිල ඉහළ දැමීම.</li>
+        <li>අතින් අතට නිෂ්පාදන හුවමාරු වීමේදී සිදු වන හානිය සහ නාස්තිය.</li>
+        <li>විකිනීම වෙනුවෙන් ඒවා හදනවාට වඩා වැඩි වියදමක් වැය වීම.</li>
+      </ul>
+      <p style="font-size:.9rem;line-height:1.9;color:#2d3748;margin-bottom:12px"><strong>"හදන අතින් ඔබේ අතට"</strong> වැඩසටහන ඒ උත්සාහයේ එක ප්‍රතිඵලයකි. මේ වැඩසටහන හරහා හදන කෙනාගේ බඩු පාවිච්චිකරන ඔබට කෙලින්ම ගන්න විදියක් තමයි මේ. මේක නිකම්ම නිකං වෙළඳාමක්, ගනුදෙනුවක් නෙවෙයි — මේ වැඩේ ඔබ අප සැම එකතු වෙලා පොදු වැඩක්.</p>
+      <p style="font-size:.9rem;line-height:1.9;color:#2d3748;margin-bottom:16px">මේ වැඩේ හොඳයි කියල හිතෙනවනම් ඔබත් එකතු වෙන්න කියල ආදරයෙන් ඉල්ලනවා.</p>
+      <div style="background:#f0faf3;border-radius:10px;padding:16px;font-size:.86rem;color:#2d6a4f;line-height:2">
+        <strong>ග්‍රීනර්ස් එලයන්ස්</strong><br/>
+        📧 විද්‍යුත් තැපෑල: greenersalliance4 [at] gmail [dot] com<br/>
+        📱 වට්සැප්: <a href="https://wa.me/94702045900" target="_blank" style="color:#2d6a4f">94702045900</a><br/>
+        <a href="https://www.linkedin.com/company/111495098" target="_blank" style="color:#2d6a4f">🔗 ලින්ක්ඩ්ඉන්</a> &nbsp;|&nbsp;
+        <a href="https://web.facebook.com/greentef" target="_blank" style="color:#2d6a4f">📘 ෆේස්බුක්</a> &nbsp;|&nbsp;
+        <a href="https://green-web-architect--greenersallianc.replit.app" target="_blank" style="color:#2d6a4f">🌐 වෙබ් අඩවිය</a>
+      </div>
+    </div>
+    <div id="about-ta" style="display:none">
+      <div style="text-align:center;padding:8px 0 18px">
+        <div style="font-size:2.2rem;margin-bottom:6px">🌿</div>
+        <div style="font-size:1.3rem;font-weight:800;color:#1b4332;margin-bottom:6px">Greener's Alliance</div>
+        <div style="font-size:.9rem;font-style:italic;color:#40916c">"உங்களுக்காக நீங்கள், உங்களுக்காக நாங்கள், எங்களுக்காக நீங்கள்."</div>
+      </div>
+      <p style="font-size:.9rem;line-height:1.9;color:#2d3748;margin-bottom:12px">உணவு என்பது நமது வாழ்வின் இன்றியமையாத ஒரு அங்கமாகும். நமது உயிரைத் தக்கவைத்துக்கொள்வதற்கு மட்டுமல்லாமல், நமது மகிழ்ச்சிக்கும் ஆரோக்கியத்திற்கும் இது அவசியமானது. உணவு என்பது நமது கலாச்சாரத்தின் ஒரு பகுதியாகும்.</p>
+      <p style="font-size:.9rem;line-height:1.9;color:#2d3748;margin-bottom:10px">இருப்பினும், நமது நாட்டில் உணவு வர்த்தகம் ஆரோக்கியமான முறையில் செயல்படவில்லை என்று நாங்கள் நம்புகிறோம். இதற்கு பின்வரும் காரணங்களே முக்கியமாகும்:</p>
+      <ul style="font-size:.9rem;line-height:1.9;color:#2d3748;margin-left:20px;margin-bottom:14px">
+        <li>இடைத்தரகர்கள் நியாயமற்ற முறையில் விலையை உயர்த்துதல்.</li>
+        <li>பொருட்கள் கைமாறிச் செல்லும்போது ஏற்படும் சேதம் மற்றும் விரயம்.</li>
+        <li>உற்பத்திச் செலவை விட விற்பனைச் செலவு அதிகமாக இருத்தல்.</li>
+      </ul>
+      <p style="font-size:.9rem;line-height:1.9;color:#2d3748;margin-bottom:12px"><strong>"உற்பத்தியாளரின் கையிலிருந்து உங்கள் கைக்கு"</strong> எனும் திட்டமானது நமது முயற்சியின் ஒரு முடிவாகும். இது வெறும் வர்த்தகமோ அல்லது கொடுக்கல் வாங்கலோ அல்ல — இது நம் அனைவரின் கூட்டு முயற்சியாகும்.</p>
+      <p style="font-size:.9rem;line-height:1.9;color:#2d3748;margin-bottom:16px">இந்த முயற்சி பயனுள்ளது என்று நீங்கள் கருதினால், எங்களுடன் இணையுமாறு உங்களை அன்புடன் அழைக்கிறோம்.</p>
+      <div style="background:#f0faf3;border-radius:10px;padding:16px;font-size:.86rem;color:#2d6a4f;line-height:2">
+        <strong>கிரீனர்ஸ் அலையன்ஸ்</strong><br/>
+        இல.465/01, ஸ்ரீ தேவானந்ததிஸ்ஸ மாவத்தை, பொல்பிடிமுகலான, கந்தானை, இலங்கை.<br/>
+        📧 greenersalliance4 [at] gmail [dot] com<br/>
+        📱 WhatsApp: <a href="https://wa.me/94702045900" target="_blank" style="color:#2d6a4f">+94 70 204 5900</a><br/>
+        <a href="https://www.linkedin.com/company/111495098" target="_blank" style="color:#2d6a4f">🔗 LinkedIn</a> &nbsp;|&nbsp;
+        <a href="https://web.facebook.com/greentef" target="_blank" style="color:#2d6a4f">📘 Facebook</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 8: FEEDBACK -->
+<div class="section" id="tab-feedback">
+  <div class="card">
+    <div class="card-title" data-i18n="feedbackTitle">Help &amp; Feedback</div>
+    <p style="font-size:.85rem;color:#718096;margin-bottom:18px" data-i18n="feedbackSubtitle">We value your voice. Send complaints or suggestions directly to Greener's via WhatsApp.</p>
+    <div class="form-grid">
+      <div class="form-group">
+        <label data-i18n="feedbackType">Feedback Type</label>
+        <select id="fb-type">
+          <option value="" data-i18n="selectType">— Select type —</option>
+          <option value="complaint" data-i18n="fbComplaint">Complaint (Price / Quality)</option>
+          <option value="suggestion" data-i18n="fbSuggestion">Suggestion (New Product / Other)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label data-i18n="memberSearch">Your NIC or Name</label>
         <div class="search-wrap">
-          <input type="text" id="member-search" oninput="searchMembers(this.value)" autocomplete="off" data-i18n-placeholder="memberSearch"/>
-          <div class="search-dd" id="member-dd"></div>
+          <input type="text" id="fb-member-search" placeholder="Enter NIC or name…" oninput="searchFbMember(this.value)" autocomplete="off" data-i18n-placeholder="memberSearch"/>
+          <div class="search-dd" id="fb-member-dd"></div>
         </div>
       </div>
-      <div id="catalog"></div>
+      <div class="form-group full">
+        <label data-i18n="fbMessage">Your Message</label>
+        <textarea id="fb-message" rows="5" style="resize:vertical;font-family:inherit;font-size:.92rem;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:8px;width:100%" placeholder="Type your complaint or suggestion here…" data-i18n-placeholder="fbPlaceholder"></textarea>
+      </div>
     </div>
+    <div style="margin-top:6px;margin-bottom:18px">
+      <label style="font-size:.72rem;font-weight:600;color:#4a5568;text-transform:uppercase;letter-spacing:.04em" data-i18n="fbPhoto">Attach Photo (Optional)</label>
+      <div style="margin-top:6px">
+        <input type="file" id="fb-photo" accept="image/*" style="font-size:.85rem"/>
+      </div>
+      <div style="font-size:.74rem;color:#718096;margin-top:4px" data-i18n="fbPhotoNote">Photo will be referenced in the WhatsApp message. Please send it separately via WhatsApp.</div>
+    </div>
+    <div id="fb-member-banner" style="display:none;background:#d8f3dc;border:1.5px solid #95d5b2;border-radius:8px;padding:10px 14px;margin-bottom:14px">
+      <span style="font-weight:700;color:#1b4332" id="fb-banner-name">—</span>
+      <span style="font-size:.78rem;color:#40916c" id="fb-banner-nic"></span>
+    </div>
+    <button class="btn btn-wa" style="width:100%;font-size:.95rem;padding:13px" onclick="submitFeedback()">
+      🚀 <span data-i18n="fbSubmit">Submit via WhatsApp</span>
+    </button>
+    <div style="margin-top:10px;font-size:.78rem;color:#718096;text-align:center" data-i18n="fbNote">This opens WhatsApp with your message pre-filled. Your feedback is also saved for admin review.</div>
   </div>
-
-  <!-- SECTION: REPORTS -->
-  <div class="section" id="tab-reports">
-    <div id="rep-gate" class="card">
-      <!-- PIN Gate for Reports -->
-      <div style="text-align:center; padding:40px 0;">
-        <h3 data-i18n="accessReq">Admin Access Required</h3>
-        <input type="password" id="rep-pin" maxlength="4" style="width:150px; text-align:center; margin:20px 0; font-size:1.5rem;" placeholder="••••"/>
-        <br/>
-        <button class="btn btn-primary" onclick="unlockReports()" data-i18n="unlockBtn">Unlock Reports</button>
-      </div>
-    </div>
-    <div id="rep-content" style="display:none">
-      <div class="card">
-        <div class="sub-tabs" style="display:flex; gap:10px; margin-bottom:20px;">
-          <button class="sub-tab active" onclick="showSubTab('rep-org',this)" data-i18n="orgReport">Org Report</button>
-          <button class="sub-tab" onclick="showSubTab('rep-proc',this)" data-i18n="procurement">Procurement</button>
-          <button class="sub-tab" onclick="showSubTab('rep-distrib',this)">Distribution</button>
-        </div>
-        
-        <div id="rep-org">
-          <div class="form-grid" style="margin-bottom:20px">
-            <div class="form-group"><label>Organization</label><select id="rep-org-sel"><option value="">— Select —</option></select></div>
-            <div class="form-group"><label>From</label><input type="date" id="rep-from"/></div>
-            <div class="form-group"><label>To</label><input type="date" id="rep-to"/></div>
-            <div class="form-group" style="justify-content: flex-end;"><button class="btn btn-primary" onclick="genOrgReport()">Generate</button></div>
-          </div>
-          <div id="rep-org-out"></div>
-        </div>
-
-        <div id="rep-proc" style="display:none">
-          <div class="form-grid" style="margin-bottom:20px">
-            <div class="form-group"><label>From</label><input type="date" id="proc-from"/></div>
-            <div class="form-group"><label>To</label><input type="date" id="proc-to"/></div>
-            <div class="form-group" style="justify-content: flex-end;"><button class="btn btn-primary" onclick="genProcReport()">Generate</button></div>
-          </div>
-          <div id="rep-proc-out"></div>
-        </div>
-
-        <div id="rep-distrib" style="display:none">
-          <div class="form-grid" style="margin-bottom:20px">
-            <div class="form-group"><label>Organization</label><select id="distrib-org-sel"><option value="">— Select —</option></select></div>
-            <div class="form-group"><label>Delivery Date</label><input type="date" id="distrib-date"/></div>
-            <div class="form-group" style="justify-content: flex-end;"><button class="btn btn-primary" onclick="genDistribReport()">Generate</button></div>
-          </div>
-          <div id="rep-distrib-out"></div>
-        </div>
-      </div>
-    </div>
+  <div class="card" id="fb-log-card" style="display:none">
+    <div class="card-title">📋 Submitted Feedback</div>
+    <div id="fb-log-list"></div>
   </div>
-</main>
+</div> 
 <script>
 /* ═══════════════════════════════════════════════
-   GLOBAL STATE & STORAGE
-   ═══════════════════════════════════════════════ */
+   TRANSLATIONS
+═══════════════════════════════════════════════ */
+const LANG = {
+  en: {
+    tagline: "Collaborating with producers for organized consumers",
+    navReg: "Register", navOrder: "Place Order", navPrices: "Price Board", navReports: "Reports", navAdmin: "Admin", navHistory: "Order History",
+    regTitle: "Member Registration", nameLabel: "Full Name", nicLabel: "NIC Number", addrLabel: "Address", phoneLabel: "Phone Number", waLabel: "WhatsApp Number", orgLabel: "Consumer Organization", submitReg: "Register",
+    orderTitle: "Place Your Order", selMember: "Select Member", chooseProds: "Choose Products", memberSearch: "Enter NIC or Name", placeOrder: "Place Order", totalLabel: "Total Amount",
+    sampleBoard: "Sample Price Board", actualBoard: "Actual Price Board",
+    priceTitle: "Sample Price Board (As of 2026.03.12)", actualTitle: "Actual Price Board",
+    priceNote: "Prices in LKR per kg or per unit. Green = below open market price.",
+    actualNote: "Prices set by Greener's for actual delivery. Updated before each delivery.",
+    mktPrice: "Market Price", ourPrice: "Our Price", colEn: "Item (English)", colSi: "Item (සිංහල)",
+    accessReq: "Admin Access Required", enterPin: "Enter the 4-digit PIN", unlockBtn: "Unlock", adminAccess: "Admin Access",
+    orgReport: "Org Report", procurement: "Procurement List", fromDate: "From Date", toDate: "To Date", generateBtn: "Generate",
+    lookupNIC: "Search by NIC or Name", histHint: "Search a member to view their past orders",
+    kg: "kg", gram: "grams", count: "nos",
+    bananaSub: "Banana varieties — කෙසෙල් වර්ග",
+    catVeg: "Vegetables & Roots", catLeafy: "Leafy Greens (Bundles)", catSnack: "Snack Crops", catFruit: "Fruits", catGrain: "Grains", catSpice: "Spices", catSweet: "Sweets & Desserts",
+    navAbout: "About Us", navFeedback: "Feedback", aboutSlogan: '"You for you, We for you, You for us."',
+    feedbackTitle: "Help & Feedback", feedbackSubtitle: "We value your voice. Send complaints or suggestions directly via WhatsApp.",
+    feedbackType: "Feedback Type", selectType: "— Select type —", fbComplaint: "Complaint (Price / Quality)", fbSuggestion: "Suggestion (New Product / Other)",
+    fbMessage: "Your Message", fbPhoto: "Attach Photo (Optional)", fbPhotoNote: "Photo will be referenced in the WhatsApp message. Please send it separately.",
+    fbSubmit: "Submit via WhatsApp", fbNote: "This opens WhatsApp with your message pre-filled. Feedback is also saved for admin review.",
+    fbPlaceholder: "Type your complaint or suggestion here…"
+  },
+  si: {
+    tagline: "නිෂ්පාදකයින් සමඟ සංවිධිත පාරිභෝගිකයන් සඳහා",
+    navReg: "ලියාපදිංචිය", navOrder: "ඇණවුම", navPrices: "මිල පුවරුව", navReports: "වාර්තා", navAdmin: "පරිපාලන", navHistory: "ඇණවුම් ඉතිහාසය",
+    regTitle: "සාමාජික ලියාපදිංචිය", nameLabel: "සම්පූර්ණ නම", nicLabel: "ජා.හැ.අ. අංකය", addrLabel: "ලිපිනය", phoneLabel: "දුරකථන අංකය", waLabel: "WhatsApp අංකය", orgLabel: "පාරිභෝගික සංවිධානය", submitReg: "ලියාපදිංචි කරන්න",
+    orderTitle: "ඇණවුම ලබා දෙන්න", selMember: "සාමාජිකයා තෝරන්න", chooseProds: "භාණ්ඩ තෝරන්න", memberSearch: "ජා.හැ.අ. හෝ නම", placeOrder: "ඇණවුම කරන්න", totalLabel: "මුළු මුදල",
+    sampleBoard: "ආදර්ශ මිල පුවරුව", actualBoard: "සැබෑ මිල පුවරුව",
+    priceTitle: "ආදර්ශ මිල පුවරුව (2026.03.12 දින පැවති)", actualTitle: "සැබෑ මිල පුවරුව",
+    priceNote: "මිල ශ්‍රී ලංකා රුපියල් වලිනි. කොළ = වෙළඳ මිලට වඩා අඩු.",
+    actualNote: "ග්‍රීනර්ස් විසින් නියම කළ සැබෑ මිල. බෙදාහැරීමට පෙර යාවත්කාලීන කෙරේ.",
+    mktPrice: "සාමාන්‍ය වෙළඳ මිල", ourPrice: "අපේ මිල", colEn: "භාණ්ඩය (ඉංග්‍රීසි)", colSi: "භාණ්ඩය (සිංහල)",
+    accessReq: "පරිපාලන ප්‍රවේශය", enterPin: "PIN ඇතුළු කරන්න", unlockBtn: "ඇතුළු වන්න", adminAccess: "පරිපාලන",
+    orgReport: "සංවිධාන වාර්තාව", procurement: "ප්‍රසම්පාදන ලැයිස්තුව", fromDate: "ආරම්භ දිනය", toDate: "අවසාන දිනය", generateBtn: "ජනනය කරන්න",
+    lookupNIC: "ජා.හැ.අ. හෝ නම සොයන්න", histHint: "සාමාජිකයා සොයා ඇණවුම් බලන්න",
+    kg: "කිලෝ", gram: "ග්‍රෑම්", count: "ගණන",
+    bananaSub: "කෙසෙල් වර්ග — Banana varieties",
+    catVeg: "එළවළු සහ අල", catLeafy: "පළා වර්ග (මිටි)", catSnack: "කෙටි ආහාර", catFruit: "පළතුරු", catGrain: "ධාන්‍ය", catSpice: "කුළුබඩු", catSweet: "රස කැවිලි",
+    navAbout: "අප ගැන", navFeedback: "ප්‍රතිපෝෂණය", aboutSlogan: '"ඔබ වෙනුවෙන් ඔබ, ඔබ වෙනුවෙන් අපි, අපි වෙනුවෙන් ඔබ."',
+    feedbackTitle: "සහාය සහ ප්‍රතිපෝෂණය", feedbackSubtitle: "අපි ඔබගේ හඬ අගය කරමු. WhatsApp හරහා කෙලින්ම යොමු කරන්න.",
+    feedbackType: "ප්‍රතිපෝෂණ වර්ගය", selectType: "— වර්ගය තෝරන්න —", fbComplaint: "පැමිණිල්ල (මිල/ගුණාත්මකභාවය)", fbSuggestion: "යෝජනාව (නව නිෂ්පාදන)",
+    fbMessage: "ඔබේ පණිවිඩය", fbPhoto: "ඡායාරූපයක් එක් කරන්න (අමතර)", fbPhotoNote: "ඡායාරූපය WhatsApp හරහා වෙනම යවන්න.",
+    fbSubmit: "WhatsApp හරහා යොමු කරන්න", fbNote: "ඔබේ පණිවිඩය සමඟ WhatsApp විවෘත වේ. ප්‍රතිපෝෂණය පරිපාලකයාට සුරකිනු ලැබේ.",
+    fbPlaceholder: "ඔබේ පැමිණිල්ල හෝ යෝජනාව මෙහි ලියන්න…"
+  },
+  ta: {
+    tagline: "உற்பத்தியாளர்களுடன் இணைந்து ஒழுங்கான நுகர்வோருக்காக",
+    navReg: "பதிவு", navOrder: "ஆர்டர்", navPrices: "விலை பலகை", navReports: "அறிக்கைகள்", navAdmin: "நிர்வாகம்", navHistory: "ஆர்டர் வரலாறு",
+    regTitle: "உறுப்பினர் பதிவு", nameLabel: "முழு பெயர்", nicLabel: "NIC எண்", addrLabel: "முகவரி", phoneLabel: "தொலைபேசி", waLabel: "WhatsApp எண்", orgLabel: "நுகர்வோர் அமைப்பு", submitReg: "பதிவு செய்க",
+    orderTitle: "ஆர்டர் செய்க", selMember: "உறுப்பினரை தேர்ந்தெடுக்கவும்", chooseProds: "பொருட்களை தேர்ந்தெடுக்கவும்", memberSearch: "NIC அல்லது பெயர்", placeOrder: "ஆர்டர் செய்க", totalLabel: "மொத்த தொகை",
+    sampleBoard: "மாதிரி விலை பலகை", actualBoard: "உண்மையான விலை பலகை",
+    priceTitle: "மாதிரி விலை பலகை (2026.03.12 அன்று நிலவிய)", actualTitle: "உண்மையான விலை பலகை",
+    priceNote: "விலைகள் இலங்கை ரூபாயில். பச்சை = சந்தை விலையை விட குறைவு.",
+    actualNote: "கிரீனர்ஸ் நிர்ணயித்த உண்மையான விலை. ஒவ்வொரு டெலிவரிக்கும் முன் புதுப்பிக்கப்படும்.",
+    mktPrice: "சந்தை விலை", ourPrice: "எங்கள் விலை", colEn: "பொருள் (ஆங்கிலம்)", colSi: "பொருள் (சிங்களம்)",
+    accessReq: "நிர்வாக அணுகல் தேவை", enterPin: "4-இலக்க PIN உள்ளிடுக", unlockBtn: "திறக்க", adminAccess: "நிர்வாகம்",
+    orgReport: "நிறுவன அறிக்கை", procurement: "கொள்முதல் பட்டியல்", fromDate: "தொடக்க தேதி", toDate: "முடிவு தேதி", generateBtn: "உருவாக்க",
+    lookupNIC: "NIC அல்லது பெயரால் தேடுக", histHint: "உறுப்பினரை தேடி ஆர்டர்களை பாருங்கள்",
+    kg: "கிலோ", gram: "கிராம்", count: "எண்ணிக்கை",
+    bananaSub: "வாழை வகைகள் — Banana varieties",
+    catVeg: "காய்கறிகள் மற்றும் கிழங்குகள்", catLeafy: "கீரை வகைகள் (கட்டுகள்)", catSnack: "சிற்றுண்டி பயிர்கள்", catFruit: "பழங்கள்", catGrain: "தானியங்கள்", catSpice: "மசாலா", catSweet: "இனிப்புகள்",
+    navAbout: "எங்களைப் பற்றி", navFeedback: "கருத்து", aboutSlogan: '"உங்களுக்காக நீங்கள், உங்களுக்காக நாங்கள், எங்களுக்காக நீங்கள்."',
+    feedbackTitle: "உதவி மற்றும் கருத்து", feedbackSubtitle: "உங்கள் குரலை நாங்கள் மதிக்கிறோம். WhatsApp வழியாக நேரடியாக அனுப்பவும்.",
+    feedbackType: "கருத்து வகை", selectType: "— வகையைத் தேர்ந்தெடுக்கவும் —", fbComplaint: "புகார் (விலை/தரம்)", fbSuggestion: "ஆலோசனை (புதிய தயாரிப்பு)",
+    fbMessage: "உங்கள் செய்தி", fbPhoto: "புகைப்படத்தை இணைக்கவும் (விருப்பமானது)", fbPhotoNote: "புகைப்படத்தை WhatsApp வழியாக தனியாக அனுப்பவும்.",
+    fbSubmit: "WhatsApp வழியாக சமர்ப்பிக்கவும்", fbNote: "உங்கள் செய்தியுடன் WhatsApp திறக்கும். கருத்து நிர்வாகத்திற்காக சேமிக்கப்படும்.",
+    fbPlaceholder: "உங்கள் புகார் அல்லது ஆலோசனையை இங்கே தட்டச்சு செய்யவும்…"
+  }
+};
+
+const CAT_ICONS = { 'Vegetables & Roots': '🥕', 'Leafy Greens': '🥬', 'Snack Crops': '🌽', 'Fruits': '🍈', 'Grains': '🌾', 'Spices': '🌶️', 'Sweets & Desserts': '🍯' };
+const CAT_KEYS = { 'Vegetables & Roots': 'catVeg', 'Leafy Greens': 'catLeafy', 'Snack Crops': 'catSnack', 'Fruits': 'catFruit', 'Grains': 'catGrain', 'Spices': 'catSpice', 'Sweets & Desserts': 'catSweet' };
+const ORG_ICONS = { elder_society: '👴', welfare_society: '🏡', women_society: '👩', office: '🏢', school: '🏫', hospital: '🏥', other: '🏛️' };
+const BANANA_NAMES = ['Embul banana', 'Seeni banana', 'Embun banana', 'Red banana', 'Cavendish', 'Anamalu'];
+const ADMIN_PIN = '1234';
+
+/* ── STATE (all stored in localStorage) ── */
 let lang = localStorage.getItem('g_lang') || 'en';
-let products = JSON.parse(localStorage.getItem('g_products'));
+let products = JSON.parse(localStorage.getItem('g_products') || 'null');
 let members = JSON.parse(localStorage.getItem('g_members') || '[]');
-let organizations = JSON.parse(localStorage.getItem('g_orgs'));
+let organizations = JSON.parse(localStorage.getItem('g_orgs') || 'null');
 let orders = JSON.parse(localStorage.getItem('g_orders') || '[]');
 let actualPrices = JSON.parse(localStorage.getItem('g_actual') || '{}');
+let priceLog = JSON.parse(localStorage.getItem('g_pricelog') || '[]');
 let feedbackLog = JSON.parse(localStorage.getItem('g_feedback') || '[]');
-
-let selMemberId = null;
-let selMemberObj = null;
-let quantities = {}; // Tracks current order session
-let reportsOk = sessionStorage.getItem('rep_ok') === '1';
+let selMemberId = null, selMemberObj = null;
+let quantities = {};
+let pendingItems = [];
 let adminOk = sessionStorage.getItem('adm_ok') === '1';
+let reportsOk = sessionStorage.getItem('rep_ok') === '1';
+let searchT = null, histT = null, fbSearchT = null;
+let fbSelectedMember = null;
 
-const ADMIN_PIN = "1234"; // Consistent with your original requirement
-
-/* ── PERSISTENCE ── */
+/* ── Helper functions ── */
 function save() {
-    localStorage.setItem('g_products', JSON.stringify(products));
-    localStorage.setItem('g_members', JSON.stringify(members));
-    localStorage.setItem('g_orgs', JSON.stringify(organizations));
-    localStorage.setItem('g_orders', JSON.stringify(orders));
-    localStorage.setItem('g_actual', JSON.stringify(actualPrices));
-    localStorage.setItem('g_lang', lang);
+  localStorage.setItem('g_products', JSON.stringify(products));
+  localStorage.setItem('g_members', JSON.stringify(members));
+  localStorage.setItem('g_orgs', JSON.stringify(organizations));
+  localStorage.setItem('g_orders', JSON.stringify(orders));
+  localStorage.setItem('g_actual', JSON.stringify(actualPrices));
+  localStorage.setItem('g_pricelog', JSON.stringify(priceLog));
+  localStorage.setItem('g_feedback', JSON.stringify(feedbackLog));
 }
 
-/* ── INITIALIZATION ── */
-function initDefaults() {
-    // Standard Organization
-    if (!organizations || organizations.length === 0) {
-        organizations = [{
-            id: 1,
-            name_en: 'Ekamuthu Elders Society Niwandama North, Ja Ela',
-            name_si: 'එකමුතු වැඩිහිටි සමිතිය උතුරු නිවන්දම, ජා ඇල',
-            name_ta: 'ஒன்றுபட்ட மூத்தோர் சங்கம் நிவந்தம வடக்கு, ஜா-ஏலா',
-            type: 'elder_society',
-            whatsapp: '0771234567'
-        }];
-    }
-
-    // Default Products (Simplified list for logic, expand as needed)
-    if (!products) {
-        products = buildDefaultProducts();
-    }
-    save();
+function getOrgById(id) {
+  return organizations.find(o => o.id === id) || null;
 }
 
-function buildDefaultProducts() {
-    let id = 1;
-    const mk = (cat, en, si, ta, unit, mkt, our) => ({
-        id: id++,
-        category_en: cat,
-        name_en: en,
-        name_si: si,
-        name_ta: ta,
-        unit_type: unit,
-        market_price: mkt,
-        our_price: our,
-        is_active: 1
-    });
-    const V = 'Vegetables & Roots', L = 'Leafy Greens', F = 'Fruits', SW = 'Sweets & Desserts';
-    return [
-        mk(V, 'Lime', 'දෙහි', 'தேக்கு', 'weight_kg_g', 250, 190),
-        mk(V, 'Sweet potato', 'බතල', 'இனிப்பு உருளை', 'weight_kg_g', 325, 315),
-        mk(V, 'Tomato', 'තක්කාලි', 'தக்காளி', 'weight_kg_g', 150, 140),
-        mk(L, 'Gotukola', 'ගොටුකොල', 'கோட்டுக்கொல', 'count', 0, 150),
-        mk(F, 'Embul banana', 'ඇඹුල්', 'புளிப்பு வாழை', 'weight_kg_g', 250, 180),
-        mk(SW, 'Curd 1L pot', 'මුදවපු කිරි ලීටර 1', 'தயிர் 1L', 'count', 0, 470)
-    ];
+function getProductById(id) {
+  return products.find(p => p.id === id) || null;
 }
 
-/* ── TRANSLATION ENGINE ── */
-function t(k) {
-    return (LANG[lang] || LANG.en)[k] || LANG.en[k] || k;
+function orgName(o) {
+  if (!o) return '—';
+  return lang === 'si' ? (o.name_si || o.name_en) : lang === 'ta' ? (o.name_ta || o.name_en) : o.name_en;
 }
 
-function setLang(l) {
-    lang = l;
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${l}'`));
-    });
-    applyI18n();
-    refreshOrgSelects();
-    if (document.getElementById('tab-order').classList.contains('active')) renderCatalog();
-}
-
-function applyI18n() {
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        el.textContent = t(el.dataset.i18n);
-    });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        el.placeholder = t(el.dataset.i18nPlaceholder);
-    });
-}
-
-/* ── CORE UTILITIES ── */
-
-/**
- * FIXED LOGIC: Gets actual price for a specific date or falls back to sample price.
- * Solves the issue where reports were empty due to missing price links.
- */
-function getEffectivePrice(productId, dateStr) {
-    // If no date provided, use "Tomorrow" as default for the order screen
-    if (!dateStr) {
-        const d = new Date();
-        d.setDate(d.getDate() + 1);
-        dateStr = d.toISOString().split('T')[0];
-    }
-    
-    // Check if Greener's set a specific price for this delivery day
-    if (actualPrices[dateStr] && actualPrices[dateStr][productId] > 0) {
-        return actualPrices[dateStr][productId];
-    }
-
-    // Fallback to the standard product price
-    const p = products.find(x => x.id == productId);
-    return p ? p.our_price : 0;
+function t(key) {
+  return (LANG[lang] || LANG.en)[key] || LANG.en[key] || key;
 }
 
 function showToast(msg, type = 'success') {
-    const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.className = `toast show toast-${type}`;
-    setTimeout(() => el.classList.remove('show'), 3000);
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast toast-' + type + ' show';
+  setTimeout(() => el.classList.remove('show'), 3200);
 }
 
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-function refreshOrgSelects() {
-    const selects = ['r-org', 'rep-org-sel', 'distrib-org-sel'];
-    selects.forEach(id => {
-        const sel = document.getElementById(id);
-        if (!sel) return;
-        sel.innerHTML = `<option value="">— ${t('selectType')} —</option>`;
-        organizations.forEach(o => {
-            const name = lang === 'si' ? o.name_si : (lang === 'ta' ? o.name_ta : o.name_en);
-            sel.add(new Option(name, o.id));
-        });
-    });
-}
-/* ═══════════════════════════════════════════════
-   MEMBER SEARCH & REGISTRATION
-   ═══════════════════════════════════════════════ */
-
-/**
- * Searches members by Name or NIC and populates a dropdown
- */
-function searchMembers(query) {
-    const dd = document.getElementById('member-dd');
-    const q = query.toLowerCase().trim();
-    
-    if (q.length < 1) {
-        dd.style.display = 'none';
-        return;
-    }
-
-    // Filter members based on name or NIC
-    const matches = members.filter(m => 
-        m.name.toLowerCase().includes(q) || 
-        m.nic.toLowerCase().includes(q)
-    ).slice(0, 10); // Limit to top 10 for performance
-
-    if (matches.length > 0) {
-        dd.innerHTML = matches.map(m => `
-            <div class="si" onclick="selectMember(${m.id})">
-                <div class="si-name">👤 ${m.name}</div>
-                <div class="si-sub">NIC: ${m.nic}</div>
-            </div>
-        `).join('');
-        dd.style.display = 'block';
-    } else {
-        dd.innerHTML = `<div class="si"><div class="si-sub">No members found</div></div>`;
-        dd.style.display = 'block';
-    }
+/* ── Language ── */
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('g_lang', l);
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.trim() === { si: 'සිංහල', en: 'English', ta: 'தமிழ்' }[l]);
+  });
+  applyI18n();
+  refreshOrgSelects();
+  renderCatalog();
+  renderPriceBoard();
+  renderActualBoard();
+  const aboutMap = { en: 'about-en', si: 'about-si', ta: 'about-ta' };
+  const target = aboutMap[l] || 'about-en';
+  ['about-en', 'about-si', 'about-ta'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = id === target ? 'block' : 'none';
+  });
 }
 
-/**
- * Sets the selected member for the current order session
- */
-function selectMember(id) {
-    const m = members.find(x => x.id == id);
-    if (!m) return;
-
-    selMemberId = m.id;
-    selMemberObj = m;
-    
-    document.getElementById('member-search').value = m.name;
-    document.getElementById('member-dd').style.display = 'none';
-    
-    showToast(`Member Selected: ${m.name}`);
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => el.placeholder = t(el.dataset.i18nPlaceholder));
 }
 
-/**
- * Handles new member form submission
- */
-function submitReg(e) {
-    e.preventDefault();
-    const nic = document.getElementById('r-nic').value.trim();
-    
-    // Check for duplicates
-    if (members.some(m => m.nic === nic)) {
-        showToast("This NIC is already registered.", "error");
-        return;
-    }
+/* ── Tab handling ── */
+function showTab(name, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  document.getElementById('order-footer').style.display = (name === 'order') ? 'flex' : 'none';
+  if (name === 'prices') { renderPriceBoard(); renderActualBoard(); }
+  if (name === 'order') renderCatalog();
+  if (name === 'reports') initReports();
+  if (name === 'admin') initAdmin();
+  if (name === 'history') document.getElementById('hist-out').innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div>' + t('histHint') + '</div></div>';
+  if (name === 'feedback') {
+    document.getElementById('fb-log-card').style.display = feedbackLog.length ? 'block' : 'none';
+    renderFeedbackLog();
+  }
+}
 
-    const newMember = {
-        id: Date.now(), // Unique numeric ID
-        name: document.getElementById('r-name').value.trim(),
-        nic: nic,
-        address: document.getElementById('r-addr').value.trim(),
-        phone: document.getElementById('r-phone').value.trim(),
-        whatsapp: document.getElementById('r-wa').value.trim(),
-        organization_id: Number(document.getElementById('r-org').value) || null,
-        created_at: new Date().toISOString()
-    };
+function showSubTab(id, btn) {
+  const card = btn.closest('.card,.section');
+  card.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const allPanels = ['pb-sample', 'pb-actual', 'rep-org', 'rep-proc', 'rep-distrib', 'rep-producer', 'adm-products', 'adm-actual', 'adm-orgs', 'about-en', 'about-si', 'about-ta'];
+  allPanels.forEach(pid => {
+    const el = document.getElementById(pid);
+    if (el) el.style.display = 'none';
+  });
+  const target = document.getElementById(id);
+  if (target) target.style.display = 'block';
+  if (id === 'pb-actual') renderActualBoard();
+  if (id === 'adm-actual') loadActualEditor();
+  if (id === 'adm-orgs') renderOrgsList();
+  if (id === 'pb-sample') renderPriceBoard();
+}
 
-    members.push(newMember);
+/* ── Data initialization (preserve existing data) ── */
+function initDefaults() {
+  if (!organizations) {
+    organizations = [{
+      id: 1,
+      name_en: 'Ekamuthu Elders Society Niwandama North, Ja Ela',
+      name_si: 'එකමුතු වැඩිහිටි සමිතිය උතුරු නිවන්දම, ජා ඇල',
+      name_ta: 'ஒன்றுபட்ட மூத்தோர் சங்கம் நிவந்தம வடக்கு, ஜா-ஏலா',
+      type: 'elder_society',
+      whatsapp: '0771234567'
+    }];
     save();
-    e.target.reset();
-    showToast("Registration Successful!");
+  }
+  if (!products) {
+    products = buildDefaultProducts();
+    save();
+  }
 }
 
-/* ═══════════════════════════════════════════════
-   CATALOG & QUANTITY LOGIC
-   ═══════════════════════════════════════════════ */
+function buildDefaultProducts() {
+  let id = 1;
+  const mk = (cat, en, si, ta, unit, mkt, our) => ({ id: id++, category_en: cat, name_en: en, name_si: si, name_ta: ta, unit_type: unit, market_price: mkt, our_price: our, is_active: 1, updated_at: new Date().toISOString() });
+  const V = 'Vegetables & Roots', L = 'Leafy Greens', S = 'Snack Crops', F = 'Fruits', G = 'Grains', SP = 'Spices', SW = 'Sweets & Desserts';
+  return [
+    mk(V, 'Lime', 'දෙහි', 'தேக்கு', 'weight_kg_g', 250, 190),
+    mk(V, 'Sweet potato', 'බතල', 'இனிப்பு உருளை', 'weight_kg_g', 325, 315),
+    mk(V, 'Radish', 'රාබු', 'முள்ளங்கி', 'weight_kg_g', 280, 180),
+    mk(V, 'Tomato', 'තක්කාලි', 'தக்காளி', 'weight_kg_g', 150, 140),
+    mk(V, 'Ash plantain', 'අළු කෙසෙල්', 'வாழைக்காய்', 'weight_kg_g', 230, 210),
+    mk(V, 'Banana blossom', 'කෙසෙල් මුව', 'வாழைப்பூ', 'weight_kg_g', 150, 115),
+    mk(V, 'Green chili', 'අමු මිරිස්', 'பச்சை மிளகாய்', 'weight_kg_g', 1800, 750),
+    mk(V, 'Cobra chili', 'නයි මිරිස්', 'நாகமிளகாய்', 'weight_kg_g', 0, 1250),
+    mk(V, "Bird's eye chili", 'කොච්චි මිරිස්', 'கொச்சி மிளகாய்', 'weight_kg_g', 0, 1300),
+    mk(V, 'June plum', 'අඹරල්ලා', 'அம்பரல்லா', 'weight_kg_g', 500, 250),
+    mk(V, 'Capsicum', 'මාලු මිරිස්', 'குடைமிளகாய்', 'weight_kg_g', 410, 390),
+    mk(V, 'Eggplant', 'වම්බටු', 'கத்தரிக்காய்', 'weight_kg_g', 380, 340),
+    mk(V, 'Okra', 'බණ්ඩක්කා', 'வெண்டைக்காய்', 'weight_kg_g', 400, 195),
+    mk(V, 'Winged bean', 'දඹල', 'சிறகு அவரை', 'weight_kg_g', 480, 190),
+    mk(V, 'Cucumber', 'පිපිඤ්ඤා', 'வெள்ளரிக்காய்', 'weight_kg_g', 150, 120),
+    mk(V, 'Bottle gourd', 'දිය ලබූ', 'சுரைக்காய்', 'weight_kg_g', 350, 240),
+    mk(V, 'Peas', 'බටානා', 'பட்டாணி', 'weight_kg_g', 390, 280),
+    mk(V, 'Luffa', 'වැටකොළු', 'பீர்க்கங்காய்', 'weight_kg_g', 480, 270),
+    mk(V, 'Bitter gourd', 'කරවිල', 'பாகற்காய்', 'weight_kg_g', 480, 420),
+    mk(V, 'Turkey berry', 'තිබ්බටු', 'சுண்டை', 'weight_kg_g', 950, 720),
+    mk(V, 'Spiny gourd', 'තුඹ කරවිල', 'முட்பாகற்காய்', 'weight_kg_g', 1100, 850),
+    mk(V, 'Thai eggplant', 'තලන බටු', 'தாய் கத்தரி', 'weight_kg_g', 400, 280),
+    mk(V, 'White eggplant', 'එළබටු', 'வெள்ளை கத்தரி', 'weight_kg_g', 0, 370),
+    mk(V, 'Cooking melon', 'කැකිරි', 'சமையல் தர்பூசணி', 'weight_kg_g', 280, 140),
+    mk(V, 'Drumstick', 'මුරුංගා', 'முருங்கைக்காய்', 'weight_kg_g', 0, 680),
+    mk(V, 'Lotus root', 'නෙලුම් අල', 'தாமரை வேர்', 'weight_kg_g', 0, 720),
+    mk(V, 'Kohila yam', 'කොහිල අල', 'கோகிலா', 'weight_kg_g', 0, 200),
+    mk(L, 'Gotukola', 'ගොටුකොල', 'கோட்டுக்கொல', 'count', 0, 150),
+    mk(L, 'Spinach', 'නිවිති', 'பசலைக்கீரை', 'count', 0, 150),
+    mk(L, 'Mukunuwenna', 'මුකුණුවැන්න', 'முகுணுவென்னா', 'count', 0, 140),
+    mk(L, 'Sarana', 'සාරන', 'சாரணா', 'count', 0, 150),
+    mk(L, 'Thampala', 'තම්පලා', 'தம்பலா', 'count', 0, 160),
+    mk(L, 'Drumstick leaves', 'මුරුංගා කොළ', 'முருங்கை இலை', 'count', 0, 150),
+    mk(L, 'Kathurumurunga', 'කතුරු මුරුංගා', 'கதுருமுருங்கா', 'count', 0, 150),
+    mk(L, 'Mixed greens', 'කලවම් පලා', 'கலவை கீரை', 'count', 0, 150),
+    mk(S, 'Raw corn', 'අමු බඩඉරිඟු', 'கச்சா மக்காச்சோளம்', 'count', 0, 80),
+    mk(S, 'Raw peanuts', 'අමු රටකජු', 'கச்சா வேர்க்கடலை', 'weight_kg_g', 650, 490),
+    mk(F, 'Embul banana', 'ඇඹුල්', 'புளிப்பு வாழை', 'weight_kg_g', 250, 180),
+    mk(F, 'Seeni banana', 'සිනි', 'இனிப்பு வாழை', 'weight_kg_g', 250, 170),
+    mk(F, 'Embun banana', 'ඇමබුන්', 'எம்பன் வாழை', 'weight_kg_g', 550, 490),
+    mk(F, 'Red banana', 'රත් කෙසෙල්', 'சிவப்பு வாழை', 'weight_kg_g', 540, 460),
+    mk(F, 'Cavendish', 'කැවෙන්ඩිෂ්', 'காவேண்டிஷ்', 'weight_kg_g', 380, 280),
+    mk(F, 'Anamalu', 'ආනමාලු', 'ஆனமாலு', 'weight_kg_g', 0, 370),
+    mk(F, 'Mango', 'අඹ', 'மாம்பழம்', 'weight_kg_g', 0, 650),
+    mk(F, 'Avocado', 'අලිගැටපේර', 'வெண்ணெய்ப்பழம்', 'weight_kg_g', 0, 480),
+    mk(F, 'Watermelon', 'පැණි කොමඩු', 'தர்பூசணி', 'weight_kg_g', 250, 160),
+    mk(F, 'Sweet melon', 'සිනි කැකිරි', 'இனிப்பு தர்பூசணி', 'weight_kg_g', 300, 250),
+    mk(F, 'Papaya', 'ගස්ලබු', 'பப்பாளி', 'weight_kg_g', 450, 360),
+    mk(F, 'Guava', 'පේර', 'கொய்யாப்பழம்', 'weight_kg_g', 450, 360),
+    mk(F, 'Wood apple', 'දිවුල්', 'விளாம்பழம்', 'weight_kg_g', 600, 400),
+    mk(F, 'Beli', 'බෙලි', 'விளாங்கனி', 'weight_kg_g', 0, 380),
+    mk(F, 'Pomegranate', 'දෙළුම්', 'மாதுளை', 'weight_kg_g', 0, 1400),
+    mk(F, 'Dragon fruit', 'ඩ්‍රැගන් ෆෘට්', 'டிராகன் பழம்', 'weight_kg_g', 0, 480),
+    mk(F, 'Passion fruit', 'පැශන් ෆෘට්', 'பேஷன் பழம்', 'weight_kg_g', 1600, 900),
+    mk(F, 'Soursop', 'කටු අනෝදා', 'முள்ளு சீதா', 'weight_kg_g', 0, 360),
+    mk(F, 'Custard apple', 'අනෝදා', 'சீதாப்பழம்', 'weight_kg_g', 0, 350),
+    mk(F, 'Flacourtia', 'උගුරැස්ස', 'கவுனர் பழம்', 'weight_kg_g', 0, 300),
+    mk(F, 'Star fruit', 'කාමරංගා', 'கம்பலி', 'weight_kg_g', 0, 220),
+    mk(F, 'Indian gooseberry', 'නෙල්ලි', 'நெல்லிக்கனி', 'weight_kg_g', 0, 360),
+    mk(F, 'Ceylon olive', 'වෙරළු', 'வேரளு', 'weight_kg_g', 0, 420),
+    mk(F, 'Water apple', 'ජම්බු', 'ஜாம்பு', 'weight_kg_g', 0, 200),
+    mk(G, 'Kurakkan flour', 'කුරක්කන් පිටි', 'குரக்கன் மாவு', 'weight_kg_g', 0, 770),
+    mk(G, 'Corn flour', 'බඩඉරිඟු පිටි', 'சோள மாவு', 'weight_kg_g', 0, 0),
+    mk(G, 'Kurakkan seeds', 'කුරක්කන් ඇට', 'குரக்கன் விதை', 'weight_kg_g', 0, 670),
+    mk(G, 'Mung beans', 'මුං ඇට', 'பச்சைப் பயறு', 'weight_kg_g', 0, 700),
+    mk(G, 'Cowpea red', 'කවුපි රතු', 'சிவப்பு காராமணி', 'weight_kg_g', 0, 670),
+    mk(G, 'Cowpea white', 'කවුපි සුදු', 'வெள்ளை காராமணி', 'weight_kg_g', 0, 670),
+    mk(G, 'Cowpea brown', 'කවුපි දුඔරු', 'பழுப்பு காராமணி', 'weight_kg_g', 0, 670),
+    mk(G, 'Black sesame', 'කළු තල', 'கருப்பு எள்', 'weight_kg_g', 0, 670),
+    mk(G, 'White sesame', 'සුදු තල', 'வெள்ளை எள்', 'weight_kg_g', 0, 950),
+    mk(G, 'Peanuts white', 'රටකජු සුදු', 'வெள்ளை வேர்க்கடலை', 'weight_kg_g', 0, 1400),
+    mk(G, 'Corn seeds', 'බඩඉරිඟු ඇට', 'சோள விதை', 'weight_kg_g', 0, 370),
+    mk(G, 'Proso millet', 'මෙනේරි', 'சாமை', 'weight_kg_g', 0, 1750),
+    mk(G, 'Foxtail millet', 'තණහාල්', 'தினை', 'weight_kg_g', 0, 1850),
+    mk(SP, 'Cinnamon pieces', 'කුරුඳු කෑලි', 'இலவங்கப்பட்டை', 'weight_kg_g', 0, 0),
+    mk(SP, 'Cinnamon rolls', 'කුරුඳු රෝල්', 'இலவங்கப்பட்டை சுருள்', 'weight_kg_g', 0, 0),
+    mk(SP, 'Goraka', 'ගොරකා', 'கோரக்கா', 'weight_kg_g', 0, 0),
+    mk(SP, 'Tamarind', 'සියඹලා', 'புளி', 'weight_kg_g', 0, 0),
+    mk(SP, 'Black pepper seeds', 'ගම්මිරිස් ඇට', 'மிளகு விதை', 'weight_kg_g', 0, 0),
+    mk(SP, 'Black pepper powder', 'ගම්මිරිස් කුඩු', 'மிளகு தூள்', 'weight_kg_g', 0, 0),
+    mk(SP, 'Cardamom', 'එනසාල්', 'ஏலக்காய்', 'weight_kg_g', 0, 0),
+    mk(SW, 'Curd 1L pot', 'මුදවපු කිරි ලීටර 1', 'தயிர் 1L', 'count', 0, 470),
+    mk(SW, 'Jaggery with ginger', 'උක් හකුරු ඉඟුරු', 'இஞ்சி வெல்லம்', 'weight_kg_g', 0, 1000),
+    mk(SW, 'Jaggery plain', 'උක් හකුරු සාමාන්‍ය', 'சாதா வெல்லம்', 'weight_kg_g', 0, 900),
+    mk(SW, 'Sugarcane syrup thin', 'උක් පැණි උකු අඩු', 'மெல்லிய கரும்பு சிரப்', 'count', 0, 500),
+    mk(SW, 'Sugarcane syrup thick', 'උක් පැණි උකු වැඩි', 'கனமான கரும்பு சிரப்', 'count', 0, 550),
+    mk(SW, 'Sesame rolls large', 'තල කැරලි ලොකු', 'பெரிய எள் சுருள்', 'count', 0, 14),
+    mk(SW, 'Sesame rolls small', 'තල කැරලි පොඩි', 'சிறிய எள் சுருள்', 'count', 0, 6),
+  ];
+}
 
-/**
- * Renders the product list grouped by category
- */
+/* ── Organization selects ── */
+function populateOrg(id) {
+  const sel = document.getElementById(id);
+  if (!sel) return;
+  const prev = sel.value;
+  while (sel.options.length > 1) sel.remove(1);
+  organizations.forEach(o => sel.add(new Option((ORG_ICONS[o.type] || '🏛️') + ' ' + orgName(o), o.id)));
+  sel.value = prev;
+}
+
+function refreshOrgSelects() {
+  populateOrg('r-org');
+  populateOrg('rep-org-sel');
+  populateOrg('distrib-org-sel');
+}
+
+/* ── Registration ── */
+function submitReg(e) {
+  e.preventDefault();
+  const name = document.getElementById('r-name').value.trim();
+  const nic = document.getElementById('r-nic').value.trim();
+  const addr = document.getElementById('r-addr').value.trim();
+  const phone = document.getElementById('r-phone').value.trim();
+  const wa = document.getElementById('r-wa').value.trim();
+  const orgId = parseInt(document.getElementById('r-org').value) || null;
+  const nicRx = /^([0-9]{9}[vVxX]|[0-9]{12})$/;
+  if (!nicRx.test(nic)) { showToast('Invalid NIC format. Use 123456789V or 200012345678', 'error'); return; }
+  if (members.find(m => m.nic === nic)) { showToast('NIC already registered', 'error'); return; }
+  const id = Date.now();
+  const org = organizations.find(o => o.id === orgId);
+  const mem = { id, name, nic, address: addr, phone, whatsapp: wa, organization_id: orgId, org_name: org ? org.name_en : '', created_at: new Date().toISOString() };
+  members.push(mem);
+  save();
+  document.getElementById('card-name').textContent = name;
+  document.getElementById('card-id').textContent = '#' + String(id).slice(-6);
+  document.getElementById('card-nic').textContent = nic.slice(0, -4).replace(/./g, '•') + nic.slice(-4);
+  document.getElementById('card-org').textContent = org ? (ORG_ICONS[org.type] || '') + ' ' + orgName(org) : '—';
+  document.getElementById('member-card').classList.add('visible');
+  showToast('✓ Member registered successfully!');
+  document.getElementById('reg-form').reset();
+}
+
+/* ── Member search (order) ── */
+function searchMembers(q) {
+  clearTimeout(searchT);
+  searchT = setTimeout(() => {
+    const dd = document.getElementById('member-dd');
+    const qr = q.toLowerCase().trim();
+    if (!qr) { dd.classList.remove('open'); return; }
+    const res = members.filter(m => m.name.toLowerCase().includes(qr) || m.nic.toLowerCase().includes(qr)).slice(0, 8);
+    dd.innerHTML = res.length ?
+      res.map(m => `<div class="si" onclick="selectMember(${m.id})"><div class="si-name">👤 ${m.name}</div><div class="si-sub">${m.nic}${m.org_name ? ' · ' + m.org_name : ''}</div></div>`).join('') :
+      '<div class="si"><span class="si-name" style="color:var(--tl)">No members found</span></div>';
+    dd.classList.add('open');
+  }, 180);
+}
+
+function selectMember(id) {
+  const m = members.find(x => x.id === id);
+  if (!m) return;
+  selMemberId = id;
+  selMemberObj = m;
+  document.getElementById('member-search').value = m.name;
+  document.getElementById('member-dd').classList.remove('open');
+  document.getElementById('banner-name').textContent = '👤 ' + m.name;
+  document.getElementById('banner-nic').textContent = m.nic + (m.org_name ? ' · ' + m.org_name : '');
+  document.getElementById('sel-banner').classList.add('visible');
+}
+
+function clearMember() {
+  selMemberId = null;
+  selMemberObj = null;
+  document.getElementById('member-search').value = '';
+  document.getElementById('sel-banner').classList.remove('visible');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-wrap')) document.querySelectorAll('.search-dd').forEach(d => d.classList.remove('open'));
+});
+
+/* ── Catalog & Order ── */
+function catLabel(cat) { return t(CAT_KEYS[cat] || 'catVeg') || cat; }
+
+function getEffectivePrice(p, dateStr) {
+  if (!dateStr) dateStr = getTomorrowDate();
+  const ap = actualPrices[dateStr];
+  if (ap && ap[p.id] != null && ap[p.id] > 0) return ap[p.id];
+  return p.our_price || 0;
+}
+
+function getTomorrowDate() {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().split('T')[0];
+}
+
+function toggleCat(hdr) {
+  hdr.nextElementSibling.classList.toggle('hidden');
+  hdr.classList.toggle('collapsed');
+}
+
+function applyPreset(pid, kg, grams) {
+  if (!quantities[pid]) quantities[pid] = {};
+  quantities[pid].kg = kg;
+  quantities[pid].grams = grams;
+  const row = document.getElementById('row-' + pid);
+  if (row) {
+    const inp = row.querySelector('input[type=number]');
+    const sel = row.querySelector('select');
+    if (inp) inp.value = kg || '';
+    if (sel) sel.value = grams;
+  }
+  updateRowHL(pid);
+  updateTotal();
+}
+
+function setQty(id, field, val) {
+  if (!quantities[id]) quantities[id] = {};
+  quantities[id][field] = parseFloat(val) || 0;
+  updateRowHL(id);
+  updateTotal();
+}
+
+function stepCount(id, delta) {
+  if (!quantities[id]) quantities[id] = { count: 0 };
+  quantities[id].count = Math.max(0, (quantities[id].count || 0) + delta);
+  const el = document.getElementById('cnt-' + id);
+  if (el) el.textContent = quantities[id].count;
+  updateRowHL(id);
+  updateTotal();
+}
+
+function updateRowHL(id) {
+  const q = quantities[id] || {};
+  const row = document.getElementById('row-' + id);
+  if (!row) return;
+  const hasQty = (q.kg > 0 || q.grams > 0 || q.count > 0);
+  row.classList.toggle('has-qty', hasQty);
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  const price = getEffectivePrice(p);
+  let sub = 0;
+  if (p.unit_type === 'weight_kg_g') {
+    sub = ((q.kg || 0) + (q.grams || 0) / 1000) * price;
+  } else {
+    sub = (q.count || 0) * price;
+  }
+  const el = document.getElementById('sub-' + id);
+  if (el) el.textContent = sub > 0 ? '= Rs. ' + sub.toFixed(2) : '';
+}
+
+function updateTotal() {
+  let total = 0, cnt = 0;
+  products.forEach(p => {
+    const q = quantities[p.id];
+    if (!q) return;
+    const price = getEffectivePrice(p);
+    if (p.unit_type === 'weight_kg_g') {
+      const kg = (q.kg || 0) + (q.grams || 0) / 1000;
+      if (kg > 0) { total += kg * price; cnt++; }
+    } else if ((q.count || 0) > 0) {
+      total += q.count * price;
+      cnt++;
+    }
+  });
+  document.getElementById('total-disp').textContent = 'Rs. ' + total.toFixed(2);
+  document.getElementById('items-disp').textContent = cnt + ' item' + (cnt !== 1 ? 's' : '') + ' selected';
+}
+
 function renderCatalog() {
-    const cont = document.getElementById('catalog');
-    if (!cont) return;
-
-    const grouped = {};
-    products.filter(p => p.is_active).forEach(p => {
-        if (!grouped[p.category_en]) grouped[p.category_en] = [];
-        grouped[p.category_en].push(p);
-    });
-
-    let html = "";
-    for (const cat in grouped) {
-        html += `
-            <div class="cat-section" style="margin-bottom: 25px;">
-                <h3 style="color: var(--primary); margin-bottom: 10px; border-bottom: 1px solid var(--border);">
-                    ${cat}
-                </h3>
-                <div class="prod-grid" style="display: grid; gap: 10px;">
-                    ${grouped[cat].map(p => renderProductRow(p)).join('')}
-                </div>
-            </div>
-        `;
-    }
-    cont.innerHTML = html;
+  const cont = document.getElementById('catalog');
+  const active = products.filter(p => p.is_active);
+  const grouped = {};
+  active.forEach(p => { const c = p.category_en || 'Other'; (grouped[c] = grouped[c] || []).push(p); });
+  cont.innerHTML = Object.entries(grouped).map(([cat, prods]) => `
+    <div style="margin-bottom:4px">
+      <div class="cat-hdr" onclick="toggleCat(this)">
+        <div class="cat-title"><span>${CAT_ICONS[cat] || '🌿'}</span><span>${catLabel(cat)}</span></div>
+        <span class="chev">▼</span>
+      </div>
+      <div class="cat-items">${prods.map(p => prodRow(p)).join('')}</div>
+    </div>`).join('');
+  updateTotal();
 }
 
-/**
- * Helper to render individual product rows with logic for Kg vs Count
- */
-function renderProductRow(p) {
-    const name = lang === 'si' ? (p.name_si || p.name_en) : (lang === 'ta' ? (p.name_ta || p.name_en) : p.name_en);
-    const price = getEffectivePrice(p.id);
-    const qty = quantities[p.id] || 0;
-
-    return `
-        <div class="prow" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-md);">
-            <div>
-                <div style="font-weight: 600;">${name}</div>
-                <div style="font-size: 0.8rem; color: var(--text-light);">Rs. ${price.toFixed(2)} / ${p.unit_type === 'weight_kg_g' ? 'kg' : 'unit'}</div>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                ${p.unit_type === 'weight_kg_g' ? 
-                    `<input type="number" step="0.1" placeholder="0.0kg" style="width: 80px;" oninput="updateQty(${p.id}, this.value)" value="${qty || ''}">` : 
-                    `<input type="number" step="1" placeholder="0" style="width: 80px;" oninput="updateQty(${p.id}, this.value)" value="${qty || ''}">`
-                }
-            </div>
-        </div>
-    `;
+function prodRow(p) {
+  const q = quantities[p.id] || {};
+  const primary = lang === 'si' ? (p.name_si || p.name_en) : lang === 'ta' ? (p.name_ta || p.name_en) : p.name_en;
+  const secondary = p.name_si && lang !== 'si' ? p.name_si : lang === 'si' && p.name_en ? p.name_en : '';
+  const hasQty = p.unit_type === 'weight_kg_g' ? (q.kg > 0 || q.grams > 0) : (q.count > 0);
+  const price = getEffectivePrice(p);
+  const kg = (q.kg || 0) + (q.grams || 0) / 1000;
+  const sub = p.unit_type === 'weight_kg_g' ? kg * price : (q.count || 0) * price;
+  const isSpice = p.category_en === 'Spices';
+  let ctrl;
+  if (p.unit_type === 'weight_kg_g') {
+    const gOpts = isSpice ?
+      `<option value="0" ${!q.grams ? 'selected' : ''}>0g</option><option value="100" ${q.grams == 100 ? 'selected' : ''}>100g</option><option value="250" ${q.grams == 250 ? 'selected' : ''}>250g</option><option value="500" ${q.grams == 500 ? 'selected' : ''}>500g</option>` :
+      `<option value="0" ${!q.grams ? 'selected' : ''}>0g</option><option value="500" ${q.grams == 500 ? 'selected' : ''}>500g</option>`;
+    const presets = isSpice ?
+      `<button class="preset-btn" onclick="applyPreset(${p.id},0,100)">100g</button><button class="preset-btn" onclick="applyPreset(${p.id},0,250)">250g</button><button class="preset-btn" onclick="applyPreset(${p.id},0,500)">500g</button><button class="preset-btn" onclick="applyPreset(${p.id},1,0)">1kg</button><button class="preset-btn" onclick="applyPreset(${p.id},2,0)">2kg</button>` :
+      `<button class="preset-btn" onclick="applyPreset(${p.id},0,500)">500g</button><button class="preset-btn" onclick="applyPreset(${p.id},1,0)">1kg</button><button class="preset-btn" onclick="applyPreset(${p.id},2,0)">2kg</button><button class="preset-btn" onclick="applyPreset(${p.id},5,0)">5kg</button>`;
+    ctrl = `<div><div class="w-inputs">
+      <div><input type="number" min="0" step="1" placeholder="0" value="${q.kg || ''}" onchange="setQty(${p.id},'kg',this.value)" style="width:58px"/><div class="wlbl">${t('kg')}</div></div>
+      <div><select onchange="setQty(${p.id},'grams',this.value)">${gOpts}</select><div class="wlbl">${t('gram')}</div></div>
+    </div><div class="presets">${presets}</div></div>`;
+  } else {
+    ctrl = `<div style="display:flex;align-items:center;gap:5px">
+      <div class="stepper">
+        <button class="step-btn" onclick="stepCount(${p.id},-1)">−</button>
+        <span class="step-val" id="cnt-${p.id}">${q.count || 0}</span>
+        <button class="step-btn" onclick="stepCount(${p.id},1)">+</button>
+      </div>
+      <span class="wlbl">${t('count')}</span>
+    </div>`;
+  }
+  return `<div class="prow${hasQty ? ' has-qty' : ''}" id="row-${p.id}">
+    <div>
+      <div class="pn1">${primary}</div>
+      ${secondary ? `<div class="pn2">${secondary}</div>` : ''}
+      <div class="psub" id="sub-${p.id}">${sub > 0 ? '= Rs. ' + sub.toFixed(2) : ''}</div>
+    </div>
+    <div>${ctrl}</div>
+  </div>`;
 }
 
-function updateQty(productId, val) {
-    const num = parseFloat(val);
-    if (num > 0) {
-        quantities[productId] = num;
-    } else {
-        delete quantities[productId];
+function buildItems() {
+  const items = [];
+  products.forEach(p => {
+    const q = quantities[p.id];
+    if (!q) return;
+    const price = getEffectivePrice(p);
+    if (p.unit_type === 'weight_kg_g') {
+      const kg = (q.kg || 0) + (q.grams || 0) / 1000;
+      if (kg > 0) items.push({ product_id: p.id, name_en: p.name_en, name_si: p.name_si, qtyStr: kg.toFixed(3) + ' kg', quantity_kg: kg, price, subtotal: kg * price, unit_type: 'weight_kg_g' });
+    } else if ((q.count || 0) > 0) {
+      items.push({ product_id: p.id, name_en: p.name_en, name_si: p.name_si, qtyStr: q.count + ' ' + t('count'), quantity_count: q.count, price, subtotal: q.count * price, unit_type: 'count' });
     }
-    updateOrderSummary();
+  });
+  return items;
 }
-
-/**
- * Calculates current total and updates the persistent "Order Footer"
- */
-function updateOrderSummary() {
-    let total = 0;
-    let itemCount = 0;
-
-    for (const pid in quantities) {
-        const p = products.find(x => x.id == pid);
-        if (p) {
-            const price = getEffectivePrice(p.id);
-            total += quantities[pid] * price;
-            itemCount++;
-        }
-    }
-
-    // Since we need a footer, let's create it dynamically if it doesn't exist
-    let footer = document.getElementById('dyn-order-footer');
-    if (!footer) {
-        footer = document.createElement('div');
-        footer.id = 'dyn-order-footer';
-        footer.style = "position: fixed; bottom: 0; left:0; width: 100%; background: #fff; padding: 15px 20px; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; z-index: 900;";
-        document.body.appendChild(footer);
-    }
-
-    footer.innerHTML = `
-        <div>
-            <div style="font-size: 0.8rem; color: var(--text-mid);">${itemCount} items selected</div>
-            <div style="font-size: 1.2rem; font-weight: 800; color: var(--primary-dark);">Rs. ${total.toFixed(2)}</div>
-        </div>
-        <button class="btn btn-primary" onclick="initiateOrder()">Place Order</button>
-    `;
-    
-    footer.style.display = itemCount > 0 ? 'flex' : 'none';
-}
-/* ═══════════════════════════════════════════════
-   FINAL ORDER SUBMISSION
-   ═══════════════════════════════════════════════ */
 
 function initiateOrder() {
-    if (!selMemberId) {
-        showToast("Please select a member first.", "error");
-        return;
-    }
-
-    const items = [];
-    let total = 0;
-
-    for (const pid in quantities) {
-        const p = products.find(x => x.id == pid);
-        const price = getEffectivePrice(pid);
-        const qty = quantities[pid];
-        const sub = qty * price;
-        
-        items.push({
-            product_id: p.id,
-            name_en: p.name_en,
-            name_si: p.name_si,
-            unit_type: p.unit_type,
-            qty: qty,
-            price: price,
-            subtotal: sub
-        });
-        total += sub;
-    }
-
-    const body = document.getElementById('confirm-body');
-    body.innerHTML = `
-        <div style="margin-bottom:15px; padding:10px; background:var(--faint); border-radius:8px;">
-            <strong>Member:</strong> ${selMemberObj.name}<br>
-            <strong>NIC:</strong> ${selMemberObj.nic}
-        </div>
-        <table style="width:100%; font-size:0.9rem;">
-            ${items.map(i => `
-                <tr>
-                    <td>${i.name_en} x ${i.qty}</td>
-                    <td style="text-align:right;">Rs. ${i.subtotal.toFixed(2)}</td>
-                </tr>
-            `).join('')}
-            <tr style="font-weight:800; border-top: 1px solid #ccc;">
-                <td style="padding-top:10px;">Total Estimated</td>
-                <td style="padding-top:10px; text-align:right;">Rs. ${total.toFixed(2)}</td>
-            </tr>
-        </table>
-    `;
-    openModal('m-confirm');
+  if (!selMemberId) { showToast('Please select a member first', 'error'); return; }
+  const items = buildItems();
+  if (!items.length) { showToast('Please add at least one product', 'error'); return; }
+  pendingItems = items;
+  const total = items.reduce((s, i) => s + i.subtotal, 0);
+  const org = organizations.find(o => o.id == selMemberObj?.organization_id);
+  document.getElementById('confirm-title').textContent = 'Confirm Order — ' + selMemberObj?.name;
+  document.getElementById('confirm-body').innerHTML = `
+    <div style="background:var(--faint);border-radius:var(--rs);padding:11px;margin-bottom:12px">
+      <div style="font-weight:700;color:var(--gd)">${selMemberObj?.name || '—'}</div>
+      <div style="font-size:.78rem;color:var(--tm)">${selMemberObj?.nic || ''}${org ? ' · ' + orgName(org) : ''}</div>
+    </div>
+    <div style="background:#faeeda;border-radius:var(--rs);padding:8px 12px;margin-bottom:10px;font-size:.78rem;color:#854f0b">
+      ⚠️ <strong>Estimated prices only.</strong> Final bill will be calculated at actual delivery prices.
+    </div>
+    <div class="tbl-wrap">  表
+      <thead>   <th>Product</th><th>Qty</th><th>Est. Price</th><th>Est. Value</th> </thead>
+      <tbody>${items.map(i => `<tr><td>${i.name_en}<br><small style="color:var(--tl)">${i.name_si || ''}</small></td><td>${i.qtyStr}</td><td>Rs.${i.price.toFixed(2)}</td><td>Rs.${i.subtotal.toFixed(2)}</td></tr>`).join('')}</tbody>
+     </div>
+    <div style="text-align:right;margin-top:10px;font-size:1.05rem;font-weight:800;color:var(--gd)">Estimated Total: Rs. ${total.toFixed(2)}</div>
+    <div style="text-align:right;font-size:.74rem;color:var(--tl);margin-top:3px">Final amount based on actual delivery prices</div>`;
+  openModal('m-confirm');
 }
 
 function finalSubmit() {
-    const items = [];
-    let total = 0;
-
-    for (const pid in quantities) {
-        const p = products.find(x => x.id == pid);
-        const price = getEffectivePrice(pid);
-        const qty = quantities[pid];
-        items.push({
-            product_id: p.id,
-            name_en: p.name_en,
-            qty: qty,
-            price: price,
-            subtotal: qty * price
-        });
-        total += qty * price;
-    }
-
-    const newOrder = {
-        id: Date.now(),
-        member_id: selMemberId,
-        member_name: selMemberObj.name,
-        member_nic: selMemberObj.nic,
-        org_id: selMemberObj.organization_id,
-        items: items,
-        total: total,
-        date: new Date().toISOString(),
-        status: 'pending'
-    };
-
-    orders.push(newOrder);
-    save();
-    
-    // Clear state
-    quantities = {};
-    selMemberId = null;
-    document.getElementById('member-search').value = "";
-    document.getElementById('dyn-order-footer').style.display = 'none';
-    
-    closeModal('m-confirm');
-    showToast("Order Placed Successfully!");
-    renderCatalog();
+  closeModal('m-confirm');
+  const total = pendingItems.reduce((s, i) => s + i.subtotal, 0);
+  const order = { id: Date.now(), member_id: selMemberId, member_name: selMemberObj?.name, member_nic: selMemberObj?.nic, org_id: selMemberObj?.organization_id, items: pendingItems, total, date: new Date().toISOString(), status: 'pending' };
+  orders.push(order);
+  save();
+  showReceipt(order);
+  quantities = {};
+  renderCatalog();
+  clearMember();
+  pendingItems = [];
+  showToast('✓ Order placed successfully!');
 }
 
-/* ═══════════════════════════════════════════════
-   FIXED REPORTING LOGIC
-   ═══════════════════════════════════════════════ */
+function showReceipt(order) {
+  const m = members.find(x => x.id === order.member_id) || {};
+  const org = organizations.find(o => o.id == order.org_id);
+  const maskedNic = m.nic ? (m.nic.slice(0, -4).replace(/./g, '•') + m.nic.slice(-4)) : '—';
+  const dateStr = new Date(order.date || Date.now()).toLocaleDateString('en-LK', { year: 'numeric', month: 'long', day: 'numeric' });
+  document.getElementById('receipt-body').innerHTML = `
+    <div class="receipt">
+      <div class="receipt-hdr">
+        <div style="font-size:1.2rem;font-weight:800;color:var(--gd)">🌿 GREENER'S</div>
+        <div style="font-size:.78rem;color:var(--tm)">Order Receipt / ඇණවුම් රිසිට්</div>
+        <div style="font-size:.73rem;color:var(--tl);margin-top:3px">${dateStr}</div>
+      </div>
+      <div class="receipt-row"><span>Order #</span><span>#${String(order.id).slice(-6)}</span></div>
+      <div class="receipt-row"><span>Member</span><span>${m.name || '—'}</span></div>
+      <div class="receipt-row"><span>NIC</span><span>${maskedNic}</span></div>
+      <div class="receipt-row"><span>Organization</span><span>${org ? orgName(org) : '—'}</span></div>
+      <div class="receipt-div"></div>
+      ${order.items.map(i => `
+        <div class="receipt-row"><span>${i.name_en}</span><span>${i.qtyStr}</span></div>
+        <div class="receipt-row" style="font-size:.78rem;color:var(--tm);padding-left:10px"><span>@ Rs.${i.price.toFixed(2)}</span><span>Rs.${i.subtotal.toFixed(2)}</span></div>`).join('')}
+      <div class="receipt-div"></div>
+      <div class="receipt-row" style="font-weight:700;font-size:.98rem"><span>EST. TOTAL</span><span>Rs. ${order.total.toFixed(2)}</span></div>
+      <div style="border-top:1px dashed #ccc;margin:7px 0;padding-top:7px;font-size:.72rem;color:#718096;text-align:center">
+        ⚠️ Estimated amounts — Final bill at actual delivery prices<br>
+        සහතික මිල ක්රියාගත ප්‍ර෱යයූඹ්දි ගතු ගෛන කල යුතු
+      </div>
+      <div style="text-align:center;margin-top:8px;font-size:.73rem;color:var(--tl)">ස්තූතියි — Greener's Cooperative</div>
+    </div>`;
+  openModal('m-receipt');
+}
 
-// Security Gate
+/* ── Price Board ── */
+function renderPriceBoard() {
+  const tb = document.getElementById('price-tbody');
+  if (!tb) return;
+  const active = products.filter(p => p.is_active);
+  const grouped = {};
+  active.forEach(p => { const c = p.category_en || 'Other'; (grouped[c] = grouped[c] || []).push(p); });
+  let html = '';
+  Object.entries(grouped).forEach(([cat, prods]) => {
+    html += `<tr class="cat-row"><td colspan="4">${CAT_ICONS[cat] || '🌿'} ${catLabel(cat)}</td></tr>`;
+    let bannerDone = false;
+    prods.forEach(p => {
+      if (cat === 'Fruits' && BANANA_NAMES.includes(p.name_en) && !bannerDone) {
+        bannerDone = true;
+        html += `<tr class="banana-row"><td colspan="4">🍌 ${t('bananaSub')}</td></tr>`;
+      }
+      const hasM = p.market_price > 0;
+      const lower = hasM && p.our_price < p.market_price;
+      const unit = p.unit_type === 'weight_kg_g' ? '/kg' : '/unit';
+      const pName = lang === 'si' ? (p.name_si || p.name_en) : lang === 'ta' ? (p.name_ta || p.name_en) : p.name_en;
+      const pSi = p.name_si || '—';
+      html += `<tr>
+        <td>${p.name_en || '—'}</td>
+        <td>${pSi}</td>
+        <td>${hasM ? 'Rs.' + p.market_price.toLocaleString() + unit : '<span class="price-dash">—</span>'}</td>
+        <td>${p.our_price ? `<span class="${lower ? 'price-lower' : 'price-our'}">Rs.${p.our_price.toLocaleString()}${unit}</span>` : '<span class="price-dash">—</span>'}</td>
+      </tr>`;
+    });
+  });
+  tb.innerHTML = html;
+}
+
+function getLatestActualDate() {
+  const dates = Object.keys(actualPrices).sort().reverse();
+  return dates.length ? dates[0] : null;
+}
+
+function renderActualBoard() {
+  const cont = document.getElementById('actual-price-display');
+  if (!cont) return;
+  const latest = getLatestActualDate();
+  const ap = latest ? actualPrices[latest] : {};
+  const dateDisp = latest ? new Date(latest + 'T00:00:00').toLocaleDateString('en-LK', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'Not yet set';
+  const active = products.filter(p => p.is_active && p.our_price > 0);
+  const setCount = active.filter(p => ap[p.id] > 0).length;
+  let html = `<div style="background:var(--pale);border-radius:var(--rs);padding:12px 16px;margin-bottom:14px">
+    <div style="font-weight:700;color:var(--gd)">📅 Delivery date: ${dateDisp}</div>
+    <div style="font-size:.76rem;color:var(--tm);margin-top:3px">${setCount} of ${active.length} prices confirmed · Remaining use last known price</div>
+    <div style="font-size:.73rem;color:#854f0b;margin-top:4px;background:#faeeda;padding:4px 8px;border-radius:4px;display:inline-block;margin-top:6px">⚠️ Prices marked ★ are confirmed actual prices. Others are last known estimates.</div>
+  </div>
+  <div class="tbl-wrap">  表
+    <thead> <th>Item (English)</th><th>Item (සිංහල)</th><th>Actual / Est. Price</th><th>Confirmed?</th> </thead>
+    <tbody>`;
+  const grouped = {};
+  active.forEach(p => { const c = p.category_en || 'Other'; (grouped[c] = grouped[c] || []).push(p); });
+  Object.entries(grouped).forEach(([cat, prods]) => {
+    html += `<tr class="cat-row"><td colspan="4">${CAT_ICONS[cat] || '🌿'} ${catLabel(cat)}</td></tr>`;
+    prods.forEach(p => {
+      const unit = p.unit_type === 'weight_kg_g' ? '/kg' : '/unit';
+      const isSet = ap[p.id] > 0;
+      const price = isSet ? ap[p.id] : p.our_price;
+      html += `<tr>
+        <td>${p.name_en}</td>
+        <td>${p.name_si || '—'}</td>
+        <td><span class="${isSet ? 'price-lower' : 'price-our'}">Rs.${price.toLocaleString()}${unit}</span></td>
+        <td style="text-align:center">${isSet ? '<span style="color:#059669;font-weight:700">★ Confirmed</span>' : '<span style="color:#718096;font-size:.75rem">Est.</span>'}</td>
+      </tr>`;
+    });
+  });
+  html += '</tbody>   </div>';
+  cont.innerHTML = html;
+}
+
+/* ── Reports ── */
+function initReports() {
+  if (reportsOk) { showReportContent(); return; }
+  document.getElementById('rep-gate').style.display = '';
+  document.getElementById('rep-content').style.display = 'none';
+}
+
 function unlockReports() {
-    const pin = document.getElementById('rep-pin').value;
-    if (pin === ADMIN_PIN) {
-        reportsOk = true;
-        sessionStorage.setItem('rep_ok', '1');
-        document.getElementById('rep-gate').style.display = 'none';
-        document.getElementById('rep-content').style.display = 'block';
-        refreshOrgSelects();
-    } else {
-        showToast("Invalid PIN", "error");
-    }
+  if (document.getElementById('rep-pin').value.trim() === ADMIN_PIN) {
+    reportsOk = true;
+    sessionStorage.setItem('rep_ok', '1');
+    showReportContent();
+  } else {
+    showToast('Incorrect PIN', 'error');
+  }
 }
 
-/**
- * 1. ORG REPORT: Summary for a specific organization
- */
+function showReportContent() {
+  document.getElementById('rep-gate').style.display = 'none';
+  document.getElementById('rep-content').style.display = '';
+  populateOrg('rep-org-sel');
+  populateOrg('distrib-org-sel');
+}
+
 function genOrgReport() {
-    const orgId = document.getElementById('rep-org-sel').value;
-    const from = document.getElementById('rep-from').value;
-    const to = document.getElementById('rep-to').value;
-    const out = document.getElementById('rep-org-out');
-
-    if (!orgId) { showToast("Select Organization", "error"); return; }
-
-    const filtered = orders.filter(o => {
-        const matchOrg = o.org_id == orgId;
-        const oDate = o.date.split('T')[0];
-        const matchFrom = from ? oDate >= from : true;
-        const matchTo = to ? oDate <= to : true;
-        return matchOrg && matchFrom && matchTo;
-    });
-
-    if (filtered.length === 0) {
-        out.innerHTML = `<div class="empty-state">No data found for the selected criteria.</div>`;
-        return;
-    }
-
-    const memberTotals = {};
-    filtered.forEach(o => {
-        if (!memberTotals[o.member_name]) memberTotals[o.member_name] = 0;
-        memberTotals[o.member_name] += o.total;
-    });
-
-    out.innerHTML = `
-        <div class="stat-card">Total Revenue for Org: <strong>Rs. ${filtered.reduce((a,b) => a + b.total, 0).toFixed(2)}</strong></div>
-        <div class="tbl-wrap">
-            <table>
-                <thead><tr><th>Member</th><th>Total Contribution</th></tr></thead>
-                <tbody>
-                    ${Object.entries(memberTotals).map(([name, sum]) => `<tr><td>${name}</td><td>Rs. ${sum.toFixed(2)}</td></tr>`).join('')}
-                </tbody>
-            </table>
-        </div>
-    `;
+  const orgId = parseInt(document.getElementById('rep-org-sel').value);
+  if (!orgId) { showToast('Please select an organization', 'error'); return; }
+  const org = getOrgById(orgId);
+  if (!org) { showToast('Organization not found. It may have been deleted.', 'error'); return; }
+  const from = document.getElementById('rep-from').value;
+  const to = document.getElementById('rep-to').value;
+  const fromDate = from ? new Date(from) : null;
+  const toDate = to ? new Date(to + 'T23:59:59') : null;
+  const orgOrders = orders.filter(o => {
+    if (parseInt(o.org_id) !== orgId) return false;
+    if (fromDate && new Date(o.date) < fromDate) return false;
+    if (toDate && new Date(o.date) > toDate) return false;
+    return true;
+  });
+  const out = document.getElementById('rep-org-out');
+  if (!orgOrders.length) { out.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div>No orders found for this organization in the selected period.</div>'; return; }
+  const total = orgOrders.reduce((s, o) => s + o.total, 0);
+  const memberMap = {};
+  orgOrders.forEach(o => {
+    if (!memberMap[o.member_id]) memberMap[o.member_id] = { name: o.member_name, orders: [], total: 0 };
+    memberMap[o.member_id].orders.push(o);
+    memberMap[o.member_id].total += o.total;
+  });
+  const prodMap = {};
+  orgOrders.forEach(o => o.items.forEach(i => {
+    if (!prodMap[i.product_id]) prodMap[i.product_id] = { name_en: i.name_en, name_si: i.name_si, unit_type: i.unit_type, qty_kg: 0, qty_count: 0, total: 0 };
+    if (i.unit_type === 'weight_kg_g') prodMap[i.product_id].qty_kg += i.quantity_kg || 0;
+    else prodMap[i.product_id].qty_count += i.quantity_count || 0;
+    prodMap[i.product_id].total += i.subtotal;
+  }));
+  let html = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+      <div><div style="font-size:1rem;font-weight:700;color:var(--gd)">${ORG_ICONS[org.type] || '🏛️'} ${orgName(org)}</div>
+      ${org.name_si ? `<div style="font-size:.8rem;color:var(--tm)">${org.name_si}</div>` : ''}</div>
+      <button class="btn btn-outline btn-sm" onclick="window.print()">🖨 Print</button>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-val">${orgOrders.length}</div><div class="stat-lbl">Total Orders</div></div>
+      <div class="stat-card"><div class="stat-val">Rs.${total.toLocaleString('en', { minimumFractionDigits: 2 })}</div><div class="stat-lbl">Revenue</div></div>
+      <div class="stat-card"><div class="stat-val">${Object.keys(memberMap).length}</div><div class="stat-lbl">Members</div></div>
+    </div>
+    <div class="section-hdr" style="margin-bottom:8px">Member Breakdown</div>
+    <div class="tbl-wrap" style="margin-bottom:16px">  表
+      <thead> <th>Member</th><th>Orders</th><th>Amount</th><th>WhatsApp</th> </thead>
+      <tbody>${Object.entries(memberMap).map(([mid, md]) => {
+    const mem = members.find(x => x.id == mid) || {};
+    const wa = mem.whatsapp;
+    const waMsg = buildWA(orgName(org), md.name, md.orders);
+    const waLink = wa ? `<a href="https://wa.me/${wa.replace(/\D/g, '')}?text=${encodeURIComponent(waMsg)}" target="_blank" class="btn btn-wa btn-sm">📱 Send</a>` : '—';
+    return `<tr><td>👤 ${md.name}</td><td>${md.orders.length}</td><td>Rs.${md.total.toFixed(2)}</td><td>${waLink}</td></tr>`;
+  }).join('')}</tbody>
+     </div>
+    <div class="section-hdr" style="margin-bottom:8px">Product Quantities</div>
+    <div class="tbl-wrap">  表
+      <thead> <th>Product</th><th>Sinhala</th><th>Total Qty</th><th>Amount</th> </thead>
+      <tbody>${Object.values(prodMap).map(p => `<tr>
+        <td>${p.name_en}</td>
+        <td>${p.name_si || '—'}</td>
+        <td>${p.unit_type === 'weight_kg_g' ? p.qty_kg.toFixed(3) + ' kg' : p.qty_count + ' units'}</td>
+        <td>Rs.${p.total.toFixed(2)}</td>
+      </tr>`).join('')}</tbody>
+     </div>`;
+  out.innerHTML = html;
 }
 
-/**
- * 2. PROCUREMENT LIST: Total quantities needed across everyone
- */
+function buildWA(orgName, memberName, memberOrders) {
+  let msg = `ශ්‍රී ${orgName} සාමාජිකයා ${memberName} ගේ ඇණවුම:\n`;
+  const prodMap = {};
+  memberOrders.forEach(o => o.items.forEach(i => {
+    if (!prodMap[i.name_si || i.name_en]) prodMap[i.name_si || i.name_en] = { qty_kg: 0, qty_count: 0, unit: i.unit_type, total: 0 };
+    if (i.unit_type === 'weight_kg_g') prodMap[i.name_si || i.name_en].qty_kg += i.quantity_kg || 0;
+    else prodMap[i.name_si || i.name_en].qty_count += i.quantity_count || 0;
+    prodMap[i.name_si || i.name_en].total += i.subtotal;
+  }));
+  Object.entries(prodMap).forEach(([name, d]) => {
+    const qty = d.unit === 'weight_kg_g' ? d.qty_kg.toFixed(3) + ' kg' : d.qty_count + ' units';
+    msg += `${name}: ${qty} - Rs.${d.total.toFixed(2)}\n`;
+  });
+  const tot = memberOrders.reduce((s, o) => s + o.total, 0);
+  msg += `\nමුළු මුදල: Rs.${tot.toFixed(2)}\nදිනය: ${new Date().toLocaleDateString('en-LK')}\nස්තූතියි — Greener's`;
+  return msg;
+}
+
 function genProcReport() {
-    const from = document.getElementById('proc-from').value;
-    const to = document.getElementById('proc-to').value;
-    const out = document.getElementById('rep-proc-out');
-
-    const filtered = orders.filter(o => {
-        const oDate = o.date.split('T')[0];
-        const matchFrom = from ? oDate >= from : true;
-        const matchTo = to ? oDate <= to : true;
-        return matchFrom && matchTo;
-    });
-
-    const totals = {};
-    filtered.forEach(o => {
-        o.items.forEach(i => {
-            if (!totals[i.name_en]) totals[i.name_en] = { qty: 0, sub: 0 };
-            totals[i.name_en].qty += i.qty;
-            totals[i.name_en].sub += i.subtotal;
-        });
-    });
-
-    out.innerHTML = `
-        <div class="tbl-wrap">
-            <table>
-                <thead><tr><th>Product</th><th>Total Quantity</th><th>Total Value</th></tr></thead>
-                <tbody>
-                    ${Object.entries(totals).map(([name, data]) => `
-                        <tr><td>${name}</td><td>${data.qty.toFixed(2)}</td><td>Rs. ${data.sub.toFixed(2)}</td></tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        </div>
-    `;
+  const from = document.getElementById('proc-from').value;
+  const to = document.getElementById('proc-to').value;
+  const fromDate = from ? new Date(from) : null;
+  const toDate = to ? new Date(to + 'T23:59:59') : null;
+  const filtered = orders.filter(o => {
+    if (fromDate && new Date(o.date) < fromDate) return false;
+    if (toDate && new Date(o.date) > toDate) return false;
+    return true;
+  });
+  const out = document.getElementById('rep-proc-out');
+  if (!filtered.length) { out.innerHTML = '<div class="empty-state"><div class="empty-icon">📦</div>No orders found.</div>'; return; }
+  const total = filtered.reduce((s, o) => s + o.total, 0);
+  const prodMap = {};
+  filtered.forEach(o => o.items.forEach(i => {
+    if (!prodMap[i.product_id]) prodMap[i.product_id] = { name_en: i.name_en, name_si: i.name_si, unit_type: i.unit_type, qty_kg: 0, qty_count: 0, total: 0 };
+    if (i.unit_type === 'weight_kg_g') prodMap[i.product_id].qty_kg += i.quantity_kg || 0;
+    else prodMap[i.product_id].qty_count += i.quantity_count || 0;
+    prodMap[i.product_id].total += i.subtotal;
+  }));
+  let waMsg = 'Greener\'s Procurement List:\n' + Object.values(prodMap).map(p => p.unit_type === 'weight_kg_g' ? `${p.name_en}: ${p.qty_kg.toFixed(3)} kg` : `${p.name_en}: ${p.qty_count} units`).join('\n') + `\nTotal: Rs.${total.toFixed(2)}`;
+  out.innerHTML = `
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-val">${filtered.length}</div><div class="stat-lbl">Total Orders</div></div>
+      <div class="stat-card"><div class="stat-val">Rs.${total.toFixed(2)}</div><div class="stat-lbl">Grand Total</div></div>
+    </div>
+    <div style="margin-bottom:10px"><a href="https://wa.me/?text=${encodeURIComponent(waMsg)}" target="_blank" class="btn btn-wa btn-sm">📱 Share via WhatsApp</a></div>
+    <div class="tbl-wrap">  表
+      <thead> <th>Product</th><th>Sinhala</th><th>Total Qty Needed</th><th>Total Value</th> </thead>
+      <tbody>${Object.values(prodMap).sort((a, b) => b.total - a.total).map(p => `<tr>
+        <td>${p.name_en}</td>
+        <td>${p.name_si || '—'}</td>
+        <td style="font-weight:700">${p.unit_type === 'weight_kg_g' ? p.qty_kg.toFixed(3) + ' kg' : p.qty_count + ' units'}</td>
+        <td>Rs.${p.total.toFixed(2)}</td>
+      </tr>`).join('')}</tbody>
+     </div>`;
 }
 
-/**
- * 3. DISTRIBUTION REPORT: Detailed breakdown per member for delivery
- */
 function genDistribReport() {
-    const orgId = document.getElementById('distrib-org-sel').value;
-    const date = document.getElementById('distrib-date').value;
-    const out = document.getElementById('rep-distrib-out');
-
-    if (!orgId || !date) { showToast("Select Org and Delivery Date", "error"); return; }
-
-    // Filter orders for this org and this specific delivery date
-    // Note: This logic assumes orders were placed FOR this delivery date
-    const filtered = orders.filter(o => o.org_id == orgId);
-
-    if (filtered.length === 0) {
-        out.innerHTML = `<div class="empty-state">No orders found for this organization.</div>`;
-        return;
-    }
-
-    out.innerHTML = filtered.map(o => `
-        <div style="margin-bottom:20px; border:1px solid var(--border); padding:15px; border-radius:10px;">
-            <div style="font-weight:800; color:var(--primary-dark); margin-bottom:10px;">👤 ${o.member_name} (${o.member_nic})</div>
-            <table style="font-size:0.85rem;">
-                ${o.items.map(i => {
-                    const actual = getEffectivePrice(i.product_id, date);
-                    return `<tr><td>${i.name_en}</td><td>${i.qty}</td><td>@ Rs.${actual.toFixed(2)}</td><td>Rs.${(i.qty * actual).toFixed(2)}</td></tr>`;
-                }).join('')}
-            </table>
+  const orgId = parseInt(document.getElementById('distrib-org-sel').value);
+  if (!orgId) { showToast('Please select an organization', 'error'); return; }
+  const dateStr = document.getElementById('distrib-date').value;
+  const org = getOrgById(orgId);
+  if (!org) { showToast('Organization not found. It may have been deleted.', 'error'); return; }
+  const ap = dateStr && actualPrices[dateStr] ? actualPrices[dateStr] : {};
+  const orgOrders = orders.filter(o => parseInt(o.org_id) === orgId);
+  const out = document.getElementById('rep-distrib-out');
+  if (!orgOrders.length) { out.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div>No orders found for this organization.</div>'; return; }
+  const memberMap = {};
+  orgOrders.forEach(o => {
+    if (!memberMap[o.member_id]) memberMap[o.member_id] = { name: o.member_name, nic: o.member_nic || '', items: {}, estTotal: 0, actualTotal: 0 };
+    o.items.forEach(i => {
+      const key = i.product_id;
+      if (!memberMap[o.member_id].items[key]) memberMap[o.member_id].items[key] = { name_en: i.name_en, name_si: i.name_si, unit_type: i.unit_type, qty_kg: 0, qty_count: 0 };
+      if (i.unit_type === 'weight_kg_g') memberMap[o.member_id].items[key].qty_kg += i.quantity_kg || 0;
+      else memberMap[o.member_id].items[key].qty_count += i.quantity_count || 0;
+      memberMap[o.member_id].estTotal += i.subtotal;
+    });
+  });
+  Object.values(memberMap).forEach(m => {
+    let actTotal = 0;
+    Object.entries(m.items).forEach(([pid, item]) => {
+      const p = getProductById(parseInt(pid));
+      const actPrice = ap[pid] > 0 ? ap[pid] : (p ? p.our_price : 0);
+      const qty = item.unit_type === 'weight_kg_g' ? item.qty_kg : item.qty_count;
+      actTotal += qty * actPrice;
+    });
+    m.actualTotal = actTotal;
+  });
+  const grandEstTotal = Object.values(memberMap).reduce((s, m) => s + m.estTotal, 0);
+  const grandActTotal = Object.values(memberMap).reduce((s, m) => s + m.actualTotal, 0);
+  const dateLabel = dateStr ? new Date(dateStr + 'T00:00:00').toLocaleDateString('en-LK', { year: 'numeric', month: 'long', day: 'numeric' }) : '(no delivery date selected)';
+  let html = `
+    <div style="background:var(--pale);border-radius:var(--rs);padding:12px 16px;margin-bottom:14px">
+      <div style="font-weight:700;color:var(--gd);font-size:1rem">${ORG_ICONS[org.type] || '🏛️'} ${orgName(org)}</div>
+      <div style="font-size:.78rem;color:var(--tm);margin-top:2px">Distribution Report — Delivery: ${dateLabel}</div>
+      <button class="btn btn-outline btn-sm" onclick="window.print()" style="margin-top:8px">🖨 Print</button>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-val">${Object.keys(memberMap).length}</div><div class="stat-lbl">Members</div></div>
+      <div class="stat-card"><div class="stat-val">Rs.${grandEstTotal.toFixed(2)}</div><div class="stat-lbl">Est. Total</div></div>
+      <div class="stat-card"><div class="stat-val">Rs.${grandActTotal.toFixed(2)}</div><div class="stat-lbl">Actual Total</div></div>
+    </div>`;
+  Object.entries(memberMap).forEach(([mid, m]) => {
+    const mem = members.find(x => x.id == mid) || {};
+    const wa = mem.whatsapp;
+    const waMsg = buildDistribWA(orgName(org), m.name, m.items, ap, m.actualTotal, dateLabel);
+    const waLink = wa ? `<a href="https://wa.me/${wa.replace(/\D/g, '')}?text=${encodeURIComponent(waMsg)}" target="_blank" class="btn btn-wa btn-sm">📱 Send</a>` : '';
+    html += `
+      <div style="border:1.5px solid var(--border);border-radius:var(--rs);padding:14px;margin-bottom:12px;page-break-inside:avoid">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+          <div>
+            <div style="font-weight:700;color:var(--gd)">👤 ${m.name}</div>
+            <div style="font-size:.75rem;color:var(--tl)">${m.nic || ''}</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">${waLink}</div>
         </div>
-    `).join('');
+        <div class="tbl-wrap"><table style="font-size:.82rem">
+          <thead> <th>Product</th><th>Sinhala</th><th>Qty</th><th>Actual Price</th><th>Amount</th> </thead>
+          <tbody>${Object.entries(m.items).map(([pid, item]) => {
+      const p = getProductById(parseInt(pid));
+      const actPrice = ap[pid] > 0 ? ap[pid] : (p ? p.our_price : 0);
+      const isConfirmed = ap[pid] > 0;
+      const qty = item.unit_type === 'weight_kg_g' ? item.qty_kg : item.qty_count;
+      const amt = qty * actPrice;
+      const qtyStr = item.unit_type === 'weight_kg_g' ? item.qty_kg.toFixed(3) + ' kg' : item.qty_count + ' units';
+      return `<tr>
+        <td>${item.name_en}</td>
+        <td>${item.name_si || '—'}</td>
+        <td style="font-weight:600">${qtyStr}</td>
+        <td>Rs.${actPrice.toFixed(2)}${isConfirmed ? '<span style="color:#059669;font-size:.68rem"> ★</span>' : '<span style="color:#718096;font-size:.68rem"> est.</span>'}</td>
+        <td style="font-weight:600">Rs.${amt.toFixed(2)}</td>
+      </tr>`;
+    }).join('')}</tbody>
+          <tfoot><tr style="background:var(--pale)">
+            <td colspan="4" style="font-weight:700;text-align:right">Total to Collect:</td>
+            <td style="font-weight:800;color:var(--gd)">Rs.${m.actualTotal.toFixed(2)}</td>
+          </tr></tfoot>
+        </div>
+      </div>`;
+  });
+  html += `<div style="background:var(--gd);color:#fff;border-radius:var(--rs);padding:14px;margin-top:8px">
+    <div style="font-size:1rem;font-weight:700;margin-bottom:8px">💰 Collection Summary — ${orgName(org)}</div>
+    <div style="display:flex;justify-content:space-between"><span>Estimated Total:</span><span>Rs.${grandEstTotal.toFixed(2)}</span></div>
+    <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:1.1rem;font-weight:800;border-top:1px solid rgba(255,255,255,.3);padding-top:8px"><span>Actual Total to Collect:</span><span>Rs.${grandActTotal.toFixed(2)}</span></div>
+  </div>`;
+  out.innerHTML = html;
+  document.getElementById('distrib-wa-btn').style.display = 'inline-flex';
+  window._distribData = { org, memberMap, ap, dateLabel, grandActTotal };
 }
+
+function buildDistribWA(orgName, memberName, items, ap, total, dateLabel) {
+  let msg = `🌿 Greener's — ${orgName}\n👤 ${memberName}\n📅 Delivery: ${dateLabel}\n\n`;
+  Object.entries(items).forEach(([pid, item]) => {
+    const p = getProductById(parseInt(pid));
+    const actPrice = ap[pid] > 0 ? ap[pid] : (p ? p.our_price : 0);
+    const qty = item.unit_type === 'weight_kg_g' ? item.qty_kg.toFixed(3) + ' kg' : item.qty_count + ' units';
+    const amt = (item.unit_type === 'weight_kg_g' ? item.qty_kg : item.qty_count) * actPrice;
+    msg += `${item.name_si || item.name_en}: ${qty} @ Rs.${actPrice} = Rs.${amt.toFixed(2)}\n`;
+  });
+  msg += `\n💰 මුලු මුදල: Rs.${total.toFixed(2)}\nස්තූතියි — Greener's`;
+  return msg;
+}
+
+function shareDistribWA() {
+  if (!window._distribData) return;
+  const { org, memberMap, ap, dateLabel, grandActTotal } = window._distribData;
+  let msg = `🌿 Greener's Distribution — ${orgName(org)}\n📅 ${dateLabel}\n\n`;
+  Object.values(memberMap).forEach(m => { msg += `👤 ${m.name}: Rs.${m.actualTotal.toFixed(2)}\n`; });
+  msg += `\n💰 Total: Rs.${grandActTotal.toFixed(2)}`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
+function genProducerReport() {
+  const dateStr = document.getElementById('prod-rep-date').value;
+  const ap = dateStr && actualPrices[dateStr] ? actualPrices[dateStr] : {};
+  const out = document.getElementById('rep-producer-out');
+  if (!orders.length) { out.innerHTML = '<div class="empty-state"><div class="empty-icon">🚚</div>No orders found.</div>'; return; }
+  const dateLabel = dateStr ? new Date(dateStr + 'T00:00:00').toLocaleDateString('en-LK', { year: 'numeric', month: 'long', day: 'numeric' }) : 'All orders';
+  const orgMapLookup = new Map();
+  organizations.forEach(o => orgMapLookup.set(o.id, o));
+  const prodMap = {};
+  const orgMap = {};
+  orders.forEach(o => {
+    const org = orgMapLookup.get(o.org_id);
+    const orgNameVal = org ? (lang === 'si' ? (org.name_si || org.name_en) : lang === 'ta' ? (org.name_ta || org.name_en) : org.name_en) : 'Unknown Organization';
+    const orgKey = o.org_id || 0;
+    if (!orgMap[orgKey]) orgMap[orgKey] = { name: orgNameVal, items: {} };
+    o.items.forEach(i => {
+      if (!prodMap[i.product_id]) {
+        const prod = getProductById(i.product_id);
+        prodMap[i.product_id] = {
+          name_en: i.name_en,
+          name_si: i.name_si,
+          unit_type: i.unit_type,
+          qty_kg: 0,
+          qty_count: 0,
+          actualTotal: 0,
+          orgs: {}
+        };
+      }
+      if (i.unit_type === 'weight_kg_g') prodMap[i.product_id].qty_kg += i.quantity_kg || 0;
+      else prodMap[i.product_id].qty_count += i.quantity_count || 0;
+      const actP = ap[i.product_id] > 0 ? ap[i.product_id] : i.price;
+      const qty = i.unit_type === 'weight_kg_g' ? (i.quantity_kg || 0) : (i.quantity_count || 0);
+      prodMap[i.product_id].actualTotal += qty * actP;
+      if (!prodMap[i.product_id].orgs[orgKey]) {
+        prodMap[i.product_id].orgs[orgKey] = { name: orgNameVal, qty_kg: 0, qty_count: 0 };
+      }
+      if (i.unit_type === 'weight_kg_g') prodMap[i.product_id].orgs[orgKey].qty_kg += i.quantity_kg || 0;
+      else prodMap[i.product_id].orgs[orgKey].qty_count += i.quantity_count || 0;
+      if (!orgMap[orgKey].items[i.product_id]) {
+        orgMap[orgKey].items[i.product_id] = {
+          name_en: i.name_en,
+          name_si: i.name_si,
+          unit_type: i.unit_type,
+          qty_kg: 0,
+          qty_count: 0
+        };
+      }
+      if (i.unit_type === 'weight_kg_g') orgMap[orgKey].items[i.product_id].qty_kg += i.quantity_kg || 0;
+      else orgMap[orgKey].items[i.product_id].qty_count += i.quantity_count || 0;
+    });
+  });
+  const grandTotal = Object.values(prodMap).reduce((s, p) => s + p.actualTotal, 0);
+  const sortedProds = Object.values(prodMap).sort((a, b) => {
+    if (a.name_en < b.name_en) return -1;
+    if (a.name_en > b.name_en) return 1;
+    return 0;
+  });
+  let html = `
+    <div style="background:var(--pale);border-radius:var(--rs);padding:12px 16px;margin-bottom:14px">
+      <div style="font-weight:700;color:var(--gd);font-size:1rem">🚚 Procurement &amp; Logistics Report</div>
+      <div style="font-size:.78rem;color:var(--tm);margin-top:2px">Delivery: ${dateLabel} — ${Object.keys(orgMap).length} organizations</div>
+      <button class="btn btn-outline btn-sm" onclick="window.print()" style="margin-top:8px">🖨 Print</button>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-val">${Object.keys(prodMap).length}</div><div class="stat-lbl">Products</div></div>
+      <div class="stat-card"><div class="stat-val">${Object.keys(orgMap).length}</div><div class="stat-lbl">Destinations</div></div>
+      <div class="stat-card"><div class="stat-val">Rs.${grandTotal.toFixed(2)}</div><div class="stat-lbl">Total Value</div></div>
+    </div>
+    <div class="section-hdr" style="margin-bottom:8px">📦 Consolidated Procurement List</div>
+    <div class="tbl-wrap" style="margin-bottom:18px">  表
+      <thead> <th>Product</th><th>සිංහල</th><th>Total Qty to Harvest</th><th>Actual Price</th><th>Total Value</th> </thead>
+      <tbody>${sortedProds.map(p => {
+    const qtyStr = p.unit_type === 'weight_kg_g' ? '<strong>' + p.qty_kg.toFixed(3) + ' kg</strong>' : '<strong>' + p.qty_count + ' units</strong>';
+    const prod = getProductById(products.find(pr => pr.name_en === p.name_en)?.id);
+    const actualP = prod && ap[prod.id] > 0 ? ap[prod.id] : (prod ? prod.our_price : 0);
+    return `<tr>
+        <td>${p.name_en}</td>
+        <td>${p.name_si || '—'}</td>
+        <td>${qtyStr}</td>
+        <td>Rs.${actualP.toFixed(2)}/${p.unit_type === 'weight_kg_g' ? 'kg' : 'unit'}</td>
+        <td style="font-weight:700">Rs.${p.actualTotal.toFixed(2)}</td>
+      </tr>`;
+  }).join('')}
+      <tr style="background:var(--pale);font-weight:800">
+        <td colspan="4" style="text-align:right">Grand Total:</td>
+        <td>Rs.${grandTotal.toFixed(2)}</td>
+      </tr>
+    </tbody>
+   </div>
+    <div class="section-hdr" style="margin-bottom:8px">🚚 Delivery Routing by Organization</div>`;
+  Object.entries(orgMap).forEach(([oid, orgData]) => {
+    const org = orgMapLookup.get(parseInt(oid));
+    html += `
+      <div style="border:1.5px solid var(--gl);border-radius:var(--rs);padding:12px;margin-bottom:10px;page-break-inside:avoid">
+        <div style="font-weight:700;color:var(--gd);margin-bottom:8px">${ORG_ICONS[org?.type] || '🏛️'} ${orgData.name}</div>
+        <div class="tbl-wrap"><table style="font-size:.82rem">
+          <thead> <th>Product</th><th>සිංහල</th><th>Pack Qty</th> </thead>
+          <tbody>${Object.values(orgData.items).map(item => {
+      const qtyStr = item.unit_type === 'weight_kg_g' ? item.qty_kg.toFixed(3) + ' kg' : item.qty_count + ' units';
+      return `<tr><td>${item.name_en}</td><td>${item.name_si || '—'}</td><td style="font-weight:700">${qtyStr}</td></tr>`;
+    }).join('')}</tbody>
+        </div>
+      </div>`;
+  });
+  out.innerHTML = html;
+  document.getElementById('producer-wa-btn').style.display = 'inline-flex';
+  window._producerData = { sortedProds, grandTotal, dateLabel, orgMap, ap };
+}
+
+function shareProducerWA() {
+  if (!window._producerData) return;
+  const { sortedProds, grandTotal, dateLabel, ap } = window._producerData;
+  let msg = `🌿 Greener's Procurement List\n📅 ${dateLabel}\n\n`;
+  sortedProds.forEach(p => {
+    const qty = p.unit_type === 'weight_kg_g' ? p.qty_kg.toFixed(3) + ' kg' : p.qty_count + ' units';
+    msg += `${p.name_si || p.name_en}: ${qty}\n`;
+  });
+  msg += `\n💰 Total Value: Rs.${grandTotal.toFixed(2)}\nස්තූතියි — Greener's`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
+/* ── Admin ── */
+function initAdmin() {
+  if (adminOk) { showAdminContent(); return; }
+  document.getElementById('adm-gate').style.display = '';
+  document.getElementById('adm-content').style.display = 'none';
+}
+
+function unlockAdmin() {
+  if (document.getElementById('adm-pin').value.trim() === ADMIN_PIN) {
+    adminOk = true;
+    sessionStorage.setItem('adm_ok', '1');
+    showAdminContent();
+  } else {
+    showToast('Incorrect PIN', 'error');
+  }
+}
+
+function showAdminContent() {
+  document.getElementById('adm-gate').style.display = 'none';
+  document.getElementById('adm-content').style.display = '';
+  renderAdminTable(products);
+  renderPriceLog();
+}
+
+function filterAdmin(q) {
+  const cat = document.getElementById('adm-cat').value;
+  const qr = q.toLowerCase();
+  const filtered = products.filter(p => {
+    const mq = !qr || p.name_en?.toLowerCase().includes(qr) || p.name_si?.toLowerCase().includes(qr);
+    const mc = !cat || p.category_en === cat;
+    return mq && mc;
+  });
+  renderAdminTable(filtered);
+}
+
+function renderAdminTable(prods) {
+  document.getElementById('adm-tbody').innerHTML = prods.map(p => `
+    <tr>
+      <td><div style="font-weight:600">${p.name_en}</div><div style="font-size:.73rem;color:var(--tl)">${p.name_si || ''}</div></td>
+      <td style="font-size:.78rem">${p.category_en || '—'}</td>
+      <td><input type="number" min="0" step="0.5" value="${p.our_price || ''}" id="our-${p.id}" style="width:76px;padding:4px 6px;font-size:.83rem" onchange="trackPriceChange(${p.id},'our',this.value,${p.our_price || 0})"/></td>
+      <td><input type="number" min="0" step="0.5" value="${p.market_price || ''}" id="mkt-${p.id}" style="width:76px;padding:4px 6px;font-size:.83rem"/></td>
+      <td><button class="btn btn-sm ${p.is_active ? 'badge-active' : 'badge-inactive'}" onclick="toggleActive(${p.id},${p.is_active ? 0 : 1})" style="border:none;cursor:pointer;border-radius:20px">${p.is_active ? 'Active' : 'Hidden'}</button></td>
+    </tr>`).join('');
+}
+
+function trackPriceChange(id, field, newVal, oldVal) {
+  const nv = parseFloat(newVal) || 0;
+  if (nv === oldVal) return;
+  const p = products.find(x => x.id === id);
+  priceLog.unshift({ id, name: p?.name_en || 'Product', field, old: oldVal, new: nv, date: new Date().toISOString() });
+  if (priceLog.length > 500) priceLog.length = 500;
+  save();
+  renderPriceLog();
+}
+
+function renderPriceLog() {
+  const cont = document.getElementById('price-log');
+  cont.innerHTML = priceLog.length ?
+    priceLog.slice(0, 15).map(l => `<div class="hist-item"><span style="color:var(--gp)">→</span><span style="flex:1"><strong>${l.name}</strong> ${l.field === 'our' ? 'Our' : 'Market'} Price</span><span>Rs.${l.old} → Rs.${l.new}</span><span style="font-size:.73rem;color:var(--tl)">${new Date(l.date).toLocaleDateString()}</span></div>`).join('') :
+    '<div class="loading">No changes recorded yet</div>';
+}
+
+function saveAllPrices() {
+  products.forEach(p => {
+    const ourEl = document.getElementById('our-' + p.id);
+    const mktEl = document.getElementById('mkt-' + p.id);
+    if (ourEl) p.our_price = parseFloat(ourEl.value) || 0;
+    if (mktEl) p.market_price = parseFloat(mktEl.value) || 0;
+    p.updated_at = new Date().toISOString();
+  });
+  save();
+  renderPriceBoard();
+  showToast('✓ All prices saved!');
+}
+
+function toggleActive(id, val) {
+  const p = products.find(x => x.id === id);
+  if (p) { p.is_active = val; p.updated_at = new Date().toISOString(); }
+  save();
+  renderAdminTable(products);
+  renderCatalog();
+  showToast(val ? 'Product activated' : 'Product hidden');
+}
+
+function saveNewProduct() {
+  const en = document.getElementById('np-en').value.trim();
+  if (!en) { showToast('English name required', 'error'); return; }
+  const newP = {
+    id: Date.now(),
+    category_en: document.getElementById('np-cat').value,
+    name_en: en,
+    name_si: document.getElementById('np-si').value.trim() || null,
+    name_ta: document.getElementById('np-ta').value.trim() || null,
+    unit_type: document.getElementById('np-unit').value,
+    our_price: parseFloat(document.getElementById('np-price').value) || 0,
+    market_price: parseFloat(document.getElementById('np-mkt').value) || 0,
+    is_active: 1,
+    updated_at: new Date().toISOString()
+  };
+  products.push(newP);
+  save();
+  renderAdminTable(products);
+  renderCatalog();
+  closeModal('m-addprod');
+  showToast('✓ Product added!');
+  document.getElementById('np-en').value = '';
+  document.getElementById('np-si').value = '';
+  document.getElementById('np-ta').value = '';
+  document.getElementById('np-price').value = '';
+  document.getElementById('np-mkt').value = '';
+}
+
+/* ── Actual prices (admin editor) ── */
+function loadActualEditor() {
+  const dateEl = document.getElementById('actual-date');
+  if (!dateEl.value) {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    dateEl.value = d.toISOString().split('T')[0];
+  }
+  const dateStr = dateEl.value;
+  const ap = actualPrices[dateStr] || {};
+  const active = products.filter(p => p.is_active && p.our_price > 0);
+  document.getElementById('actual-editor').innerHTML = `
+    <div class="actual-price-grid">${active.map(p => `
+      <div class="ap-card ${ap[p.id] ? 'set' : ''}">
+        <div class="ap-name">${p.name_en}</div>
+        <div class="ap-name2">${p.name_si || ''}</div>
+        <input class="ap-input" type="number" min="0" step="0.5" placeholder="${p.our_price}" value="${ap[p.id] || ''}" id="ap-${p.id}" onchange="highlightAP(this,${p.id})"/>
+        <div class="ap-sample">Sample: Rs.${p.our_price}/${p.unit_type === 'weight_kg_g' ? 'kg' : 'unit'}</div>
+      </div>`).join('')}
+    </div>`;
+}
+
+function highlightAP(el, id) {
+  el.closest('.ap-card').classList.toggle('set', el.value !== '');
+}
+
+function saveActualPrices() {
+  const dateStr = document.getElementById('actual-date').value;
+  if (!dateStr) { showToast('Please select a delivery date', 'error'); return; }
+  if (!actualPrices[dateStr]) actualPrices[dateStr] = {};
+  const active = products.filter(p => p.is_active && p.our_price > 0);
+  active.forEach(p => {
+    const el = document.getElementById('ap-' + p.id);
+    if (el && el.value) actualPrices[dateStr][p.id] = parseFloat(el.value) || 0;
+    else delete actualPrices[dateStr][p.id];
+  });
+  save();
+  renderActualBoard();
+  showToast('✓ Actual prices saved for ' + dateStr + '!');
+}
+
+/* ── Organizations admin ── */
+function renderOrgsList() {
+  document.getElementById('orgs-list').innerHTML = `
+    <div class="tbl-wrap">  表
+      <thead> <th>Organization</th><th>Sinhala</th><th>Type</th><th>WhatsApp</th> </thead>
+      <tbody>${organizations.map(o => `<tr>
+        <td>${ORG_ICONS[o.type] || '🏛️'} ${o.name_en}</td>
+        <td>${o.name_si || '—'}</td>
+        <td>${o.type || '—'}</td>
+        <td>${o.whatsapp || '—'}</td>
+      </tr>`).join('')}</tbody>
+     </div>`;
+}
+
+function saveOrg() {
+  const en = document.getElementById('org-en').value.trim();
+  if (!en) { showToast('English name required', 'error'); return; }
+  const org = {
+    id: Date.now(),
+    name_en: en,
+    name_si: document.getElementById('org-si').value.trim() || null,
+    name_ta: document.getElementById('org-ta').value.trim() || null,
+    type: document.getElementById('org-type').value,
+    whatsapp: document.getElementById('org-wa').value.trim() || null
+  };
+  organizations.push(org);
+  save();
+  refreshOrgSelects();
+  renderOrgsList();
+  closeModal('m-addorg');
+  showToast('✓ Organization added!');
+}
+
+/* ── Order History ── */
+function searchHistory(q) {
+  clearTimeout(histT);
+  histT = setTimeout(() => {
+    const dd = document.getElementById('hist-dd');
+    const qr = q.toLowerCase().trim();
+    if (!qr) { dd.classList.remove('open'); return; }
+    const res = members.filter(m => m.name.toLowerCase().includes(qr) || m.nic.toLowerCase().includes(qr)).slice(0, 8);
+    dd.innerHTML = res.length ?
+      res.map(m => `<div class="si" onclick="showMemberHistory(${m.id})"><div class="si-name">👤 ${m.name}</div><div class="si-sub">${m.nic}</div></div>`).join('') :
+      '<div class="si"><span class="si-name" style="color:var(--tl)">No members found</span></div>';
+    dd.classList.add('open');
+  }, 180);
+}
+
+function showMemberHistory(id) {
+  document.getElementById('hist-dd').classList.remove('open');
+  const m = members.find(x => x.id === id);
+  if (!m) return;
+  const mOrders = orders.filter(o => o.member_id === id).sort((a, b) => b.date.localeCompare(a.date));
+  const out = document.getElementById('hist-out');
+  if (!mOrders.length) { out.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div>No orders found for ${m.name}</div>`; return; }
+  out.innerHTML = `<div style="font-weight:700;color:var(--gd);margin-bottom:12px">Last ${mOrders.length} orders for 👤 ${m.name}</div>` +
+    mOrders.map(order => {
+      const dateStr = new Date(order.date).toLocaleDateString('en-LK', { year: 'numeric', month: 'long', day: 'numeric' });
+      return `<div style="border:1.5px solid var(--border);border-radius:var(--rs);padding:12px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+          <div>
+            <div style="font-weight:700;color:var(--gd)">Order #${String(order.id).slice(-6)}</div>
+            <div style="font-size:.78rem;color:var(--tl)">${dateStr} · <span class="tag">${order.status}</span></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="font-weight:800;font-size:1.05rem;color:var(--gd)">Rs. ${order.total.toFixed(2)}</div>
+            <button class="btn btn-outline btn-sm" onclick="reorder(${id},${JSON.stringify(order.items).replace(/"/g, '&quot;')})">↺ Re-order</button>
+          </div>
+        </div>
+        <div class="tbl-wrap"><table style="font-size:.8rem">
+          <tbody>${order.items.map(i => `<tr><td>${i.name_en}</td><td style="color:var(--tl)">${i.qtyStr}</td><td>Rs.${i.subtotal.toFixed(2)}</td></tr>`).join('')}</tbody>
+        </div>
+      </div>`;
+    }).join('');
+}
+
+function reorder(memberId, items) {
+  selectMember(memberId);
+  quantities = {};
+  items.forEach(i => {
+    if (!quantities[i.product_id]) quantities[i.product_id] = {};
+    if (i.unit_type === 'weight_kg_g' && i.quantity_kg) {
+      quantities[i.product_id].kg = Math.floor(i.quantity_kg);
+      quantities[i.product_id].grams = Math.round((i.quantity_kg % 1) * 1000);
+    } else if (i.quantity_count) {
+      quantities[i.product_id].count = i.quantity_count;
+    }
+  });
+  document.querySelector('.nav-tab[onclick*="order"]').click();
+  renderCatalog();
+  showToast('Previous order loaded!');
+}
+
+/* ── Feedback ── */
+function searchFbMember(q) {
+  clearTimeout(fbSearchT);
+  fbSearchT = setTimeout(() => {
+    const dd = document.getElementById('fb-member-dd');
+    const qr = q.toLowerCase().trim();
+    if (!qr) { dd.classList.remove('open'); return; }
+    const res = members.filter(m => m.name.toLowerCase().includes(qr) || m.nic.toLowerCase().includes(qr)).slice(0, 6);
+    dd.innerHTML = res.length ?
+      res.map(m => `<div class="si" onclick="selectFbMember(${m.id})"><div class="si-name">👤 ${m.name}</div><div class="si-sub">${m.nic}</div></div>`).join('') :
+      '<div class="si"><span class="si-name" style="color:var(--tl)">No members found</span></div>';
+    dd.classList.add('open');
+  }, 180);
+}
+
+function selectFbMember(id) {
+  const m = members.find(x => x.id === id);
+  if (!m) return;
+  fbSelectedMember = m;
+  document.getElementById('fb-member-search').value = m.name;
+  document.getElementById('fb-member-dd').classList.remove('open');
+  document.getElementById('fb-banner-name').textContent = '👤 ' + m.name;
+  document.getElementById('fb-banner-nic').textContent = '  ' + m.nic;
+  document.getElementById('fb-member-banner').style.display = 'block';
+}
+
+function submitFeedback() {
+  const type = document.getElementById('fb-type').value;
+  const msg = document.getElementById('fb-message').value.trim();
+  if (!type) { showToast('Please select a feedback type', 'error'); return; }
+  if (!msg) { showToast('Please write your message', 'error'); return; }
+  const typeLabels = { complaint: 'Complaint — පැමිණිල්ල', suggestion: 'Suggestion — යෝජනාව' };
+  const memberInfo = fbSelectedMember ? `Member: ${fbSelectedMember.name} (${fbSelectedMember.nic})` : 'Member: Not specified';
+  const dateStr = new Date().toLocaleDateString('en-LK', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const waMsg = `🌿 Greener's Feedback\n\nType: ${typeLabels[type] || type}\n${memberInfo}\nDate: ${dateStr}\n\nMessage:\n${msg}\n\n— Sent via Greener's Order App`;
+  const entry = { id: Date.now(), type, member: fbSelectedMember ? fbSelectedMember.name : 'Unknown', nic: fbSelectedMember ? fbSelectedMember.nic : '', message: msg, date: new Date().toISOString() };
+  feedbackLog.unshift(entry);
+  if (feedbackLog.length > 200) feedbackLog.length = 200;
+  localStorage.setItem('g_feedback', JSON.stringify(feedbackLog));
+  const waNumber = '94702045900';
+  window.open('https://wa.me/' + waNumber + '?text=' + encodeURIComponent(waMsg), '_blank');
+  showToast('✓ Feedback sent via WhatsApp!');
+  document.getElementById('fb-type').value = '';
+  document.getElementById('fb-message').value = '';
+  document.getElementById('fb-member-search').value = '';
+  document.getElementById('fb-member-banner').style.display = 'none';
+  fbSelectedMember = null;
+}
+
+function renderFeedbackLog() {
+  const cont = document.getElementById('fb-log-list');
+  if (!cont) return;
+  if (!feedbackLog.length) { cont.innerHTML = '<div class="loading">No feedback submitted yet</div>'; return; }
+  cont.innerHTML = feedbackLog.slice(0, 20).map(f => `
+    <div style="border:1px solid var(--border);border-radius:var(--rs);padding:11px;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:6px">
+        <span class="tag">${f.type === 'complaint' ? '⚠️ Complaint' : '💡 Suggestion'}</span>
+        <span style="font-size:.74rem;color:var(--tl)">${new Date(f.date).toLocaleDateString()}</span>
+      </div>
+      <div style="font-size:.82rem;font-weight:600;color:var(--gd)">👤 ${f.member}${f.nic ? ' (' + f.nic + ')' : ''}</div>
+      <div style="font-size:.84rem;color:var(--tm);margin-top:4px">${f.message}</div>
+    </div>`).join('');
+}
+
+/* ── Data retention (keep 90 days) ── */
+function cleanOldData() {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 90);
+  const cutoffStr = cutoff.toISOString();
+  const before = orders.length;
+  orders = orders.filter(o => o.date >= cutoffStr);
+  feedbackLog = feedbackLog.filter(f => f.date >= cutoffStr);
+  priceLog = priceLog.filter(p => p.date >= cutoffStr);
+  if (orders.length !== before) {
+    save();
+    console.log('Data retention: removed ' + (before - orders.length) + ' orders older than 90 days');
+  }
+}
+
+/* ── Initialization ── */
+initDefaults();
+cleanOldData();
+setLang(lang);
+document.getElementById('order-footer').style.display = 'none';
+renderCatalog();
+renderPriceBoard();
+refreshOrgSelects();
+const td = new Date();
+td.setDate(td.getDate() + 1);
+const dd = document.getElementById('actual-date');
+if (dd) dd.value = td.toISOString().split('T')[0];
 </script>
 </body>
 </html>
