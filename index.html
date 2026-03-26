@@ -3,738 +3,1015 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Greener's Order Collection System</title>
+<title>Greener's Order Collection System v2.0</title>
 <style>
-/* (Same as original – no changes) */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --gp:#2d6a4f;--gd:#1b4332;--gm:#40916c;--gl:#95d5b2;--pale:#d8f3dc;--faint:#f0faf3;
-  --td:#1a1a1a;--tm:#4a5568;--tl:#718096;--border:#e2e8f0;
-  --shadow:0 2px 12px rgba(0,0,0,.08);--r:12px;--rs:8px;
+/* ═══════════════════════════════════════════════
+   MODERN CSS RESET & VARIABLES
+   ═══════════════════════════════════════════════ */
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary: #2d6a4f;
+  --primary-dark: #1b4332;
+  --primary-mid: #40916c;
+  --primary-light: #95d5b2;
+  --pale: #d8f3dc;
+  --faint: #f0faf3;
+  --text-dark: #1a1a1a;
+  --text-mid: #4a5568;
+  --text-light: #718096;
+  --border: #e2e8f0;
+  --shadow: 0 4px 15px rgba(0,0,0,0.08);
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+  --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Sinhala', 'Noto Sans Tamil', sans-serif;
 }
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans Sinhala','Noto Sans Tamil',sans-serif;background:var(--faint);color:var(--td);min-height:100vh}
-/* … rest of styles unchanged … */
-</style>
-</head>
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans Sinhala','Noto Sans Tamil',sans-serif;background:var(--faint);color:var(--td);min-height:100vh}
-header{background:var(--gd);position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.2)}
-.header-top{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;gap:8px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:10px}
-.brand-icon{width:40px;height:40px;background:var(--gl);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.brand h1{font-size:1.15rem;font-weight:700;color:#fff;line-height:1.1}
-.brand p{font-size:.65rem;color:var(--gl);margin-top:1px}
-.lang-sw{display:flex;gap:3px;background:rgba(255,255,255,.1);border-radius:8px;padding:3px}
-.lang-btn{background:transparent;border:none;color:rgba(255,255,255,.7);padding:5px 10px;border-radius:6px;cursor:pointer;font-size:.8rem;font-weight:500;font-family:inherit;transition:all .2s}
-.lang-btn.active,.lang-btn:hover{background:var(--gp);color:#fff}
-nav{display:flex;background:var(--gp);overflow-x:auto;scrollbar-width:none}
-nav::-webkit-scrollbar{display:none}
-.nav-tab{background:transparent;border:none;color:rgba(255,255,255,.75);padding:12px 18px;cursor:pointer;font-size:.83rem;font-weight:500;white-space:nowrap;border-bottom:3px solid transparent;transition:all .2s;font-family:inherit}
-.nav-tab.active,.nav-tab:hover{color:#fff;border-bottom-color:var(--gl)}
-.nav-tab.active{background:rgba(0,0,0,.15)}
-main{max-width:960px;margin:0 auto;padding:20px 14px 120px}
-.section{display:none}.section.active{display:block}
-.card{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);padding:22px;margin-bottom:18px}
-.card-title{font-size:1.05rem;font-weight:700;color:var(--gd);margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--pale)}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:580px){.form-grid{grid-template-columns:1fr}.header-top{padding:8px 12px}.nav-tab{padding:10px 12px;font-size:.78rem}}
-.form-group{display:flex;flex-direction:column;gap:5px}
-.form-group.full{grid-column:1/-1}
-label{font-size:.72rem;font-weight:600;color:var(--tm);text-transform:uppercase;letter-spacing:.04em}
-input,select,textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:.92rem;color:var(--td);background:#fff;transition:border-color .2s;font-family:inherit;-webkit-appearance:none}
-input:focus,select:focus{outline:none;border-color:var(--gp);box-shadow:0 0 0 3px rgba(45,106,79,.1)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 20px;border-radius:var(--rs);border:none;cursor:pointer;font-size:.88rem;font-weight:600;transition:all .2s;font-family:inherit;white-space:nowrap}
-.btn-primary{background:var(--gp);color:#fff}.btn-primary:hover{background:var(--gd)}
-.btn-outline{background:transparent;color:var(--gp);border:2px solid var(--gp)}.btn-outline:hover{background:var(--pale)}
-.btn-sm{padding:5px 12px;font-size:.78rem}
-.btn-wa{background:#25d366;color:#fff}.btn-wa:hover{background:#128c5e}
-.btn-danger{background:#fee2e2;color:#991b1b}
-.toast{position:fixed;top:70px;right:16px;padding:12px 16px;border-radius:var(--rs);font-size:.86rem;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.15);z-index:9999;transform:translateX(140%);transition:transform .3s;max-width:300px}
-.toast.show{transform:translateX(0)}
-.toast-success{background:#d1fae5;color:#065f46;border-left:4px solid #059669}
-.toast-error{background:#fee2e2;color:#991b1b;border-left:4px solid #dc2626}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;padding:14px}
-.modal-overlay.open{display:flex}
-.modal{background:#fff;border-radius:var(--r);max-width:540px;width:100%;max-height:92vh;overflow-y:auto}
-.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
-.modal-hdr h3{font-size:1rem;font-weight:700;color:var(--gd)}
-.modal-close{background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--tl);padding:2px 6px}
-.modal-body{padding:18px 20px}
-.modal-foot{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
-.pin-gate{text-align:center;padding:40px 20px}
-.pin-gate-icon{font-size:2.8rem;margin-bottom:14px}
-.pin-gate h3{font-size:1.1rem;font-weight:700;color:var(--gd);margin-bottom:6px}
-.pin-gate p{font-size:.85rem;color:var(--tm);margin-bottom:18px}
-.member-card{background:linear-gradient(135deg,var(--gp),var(--gd));color:#fff;border-radius:var(--r);padding:22px;margin-top:18px;display:none}
-.member-card.visible{display:block}
-.mc-hdr{display:flex;align-items:center;gap:14px;margin-bottom:14px}
-.mc-avatar{width:48px;height:48px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px}
-.mc-details{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.2)}
-.mdl{font-size:.65rem;opacity:.65;text-transform:uppercase}.mdv{font-size:.9rem;font-weight:600;margin-top:2px}
-.search-wrap{position:relative}
-.search-dd{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--border);border-top:none;border-radius:0 0 var(--rs) var(--rs);z-index:50;max-height:240px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.1);display:none}
-.search-dd.open{display:block}
-.si{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--faint);transition:background .15s}
-.si:hover{background:var(--faint)}
-.si-name{font-weight:600;font-size:.9rem}.si-sub{font-size:.76rem;color:var(--tl);margin-top:1px}
-.mbanner{display:none;background:var(--pale);border:1.5px solid var(--gl);border-radius:var(--rs);padding:11px 15px;margin-bottom:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
-.mbanner.visible{display:flex}
-.cat-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--pale);border-radius:var(--rs);cursor:pointer;user-select:none;margin-bottom:2px}
-.cat-hdr:hover{background:#b7e4c7}
-.cat-title{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--gd);font-size:.88rem}
-.chev{font-size:.72rem;color:var(--tm);transition:transform .2s}
-.cat-hdr.collapsed .chev{transform:rotate(-90deg)}
-.cat-items{display:flex;flex-direction:column;gap:2px;margin-bottom:6px}
-.cat-items.hidden{display:none}
-.prow{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;background:#fff;border:1px solid var(--border);border-radius:var(--rs);padding:9px 12px;transition:border-color .2s}
-.prow:hover{border-color:var(--gl)}
-.prow.has-qty{border-color:var(--gp);background:var(--faint)}
-.pn1{font-weight:600;color:var(--td);font-size:.88rem}
-.pn2{font-size:.73rem;color:var(--tl);margin-top:1px}
-.psub{font-size:.8rem;color:var(--gd);font-weight:700;margin-top:2px;min-height:1em}
-.w-inputs{display:flex;gap:5px;align-items:flex-end;flex-wrap:wrap}
-.w-inputs input[type=number]{width:60px;padding:6px 4px;font-size:.82rem;text-align:center}
-.w-inputs select{padding:6px 2px;font-size:.77rem;width:68px}
-.wlbl{font-size:.64rem;color:var(--tm);font-weight:500;text-align:center;margin-top:2px}
-.presets{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
-.preset-btn{background:var(--faint);border:1px solid var(--gl);border-radius:20px;padding:2px 8px;font-size:.7rem;font-weight:600;color:var(--gp);cursor:pointer;font-family:inherit}
-.preset-btn:hover{background:var(--pale)}
-.stepper{display:flex;align-items:center;border:1.5px solid var(--border);border-radius:var(--rs);overflow:hidden}
-.step-btn{background:var(--faint);border:none;padding:6px 10px;cursor:pointer;font-size:.95rem;font-weight:700;color:var(--gp);line-height:1}
-.step-btn:hover{background:var(--gl)}
-.step-val{min-width:32px;text-align:center;font-size:.86rem;font-weight:700;padding:6px 3px;border-left:1px solid var(--border);border-right:1px solid var(--border)}
-.order-footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid var(--pale);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.1);z-index:90;flex-wrap:wrap}
-.ot-lbl{font-size:.72rem;color:var(--tm)}.ot-amt{font-size:1.4rem;font-weight:800;color:var(--gd)}.ot-cnt{font-size:.72rem;color:var(--tl)}
-.tbl-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:.84rem}
-th{background:var(--gp);color:#fff;padding:9px 11px;text-align:left;font-weight:600;font-size:.76rem}
-td{padding:8px 11px;border-bottom:1px solid var(--border);vertical-align:middle}
-tr:hover td{background:var(--faint)}
-.cat-row td{background:var(--pale);font-weight:700;color:var(--gd);padding:6px 11px;font-size:.76rem;text-transform:uppercase;letter-spacing:.05em}
-.banana-row td{background:#b7e4c7;font-weight:700;color:#1b4332;padding:5px 11px;font-size:.76rem}
-.price-our{font-weight:700;color:var(--gp)}
-.price-lower{background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:20px;font-weight:700}
-.price-dash{color:var(--tl)}
-.sub-tabs{display:flex;gap:3px;margin-bottom:16px;border-bottom:2px solid var(--pale)}
-.sub-tab{background:transparent;border:none;padding:8px 14px;font-size:.83rem;font-weight:600;color:var(--tm);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;font-family:inherit}
-.sub-tab.active{color:var(--gp);border-bottom-color:var(--gp)}
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px}
-.stat-card{background:#fff;border-radius:var(--rs);padding:12px;text-align:center;border:1.5px solid var(--border)}
-.stat-val{font-size:1.3rem;font-weight:800;color:var(--gd)}.stat-lbl{font-size:.68rem;color:var(--tm);margin-top:2px}
-.expand-row{background:var(--faint);display:none}.expand-row.open{display:table-row}
-.badge-active{background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:20px;font-size:.73rem;font-weight:700}
-.badge-inactive{background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:20px;font-size:.73rem;font-weight:700}
-.hist-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--faint);font-size:.8rem}
-.receipt{font-family:'Courier New',monospace;font-size:.83rem;line-height:1.6}
-.receipt-hdr{text-align:center;margin-bottom:10px;border-bottom:2px dashed #ccc;padding-bottom:10px}
-.receipt-row{display:flex;justify-content:space-between;gap:6px}
-.receipt-div{border-top:1px dashed #ccc;margin:7px 0}
-.empty-state{text-align:center;padding:36px 18px;color:var(--tm)}
-.empty-icon{font-size:2.6rem;margin-bottom:8px}
-.loading{text-align:center;padding:24px;color:var(--tl);font-size:.88rem}
-.tag{display:inline-flex;align-items:center;background:var(--pale);color:var(--gd);padding:2px 9px;border-radius:20px;font-size:.74rem;font-weight:600}
-.section-hdr{font-size:.74rem;font-weight:700;color:var(--gd);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
-.actual-price-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
-@media(max-width:500px){.actual-price-grid{grid-template-columns:1fr 1fr}}
-.ap-card{background:var(--faint);border:1.5px solid var(--border);border-radius:var(--rs);padding:10px}
-.ap-card.set{border-color:var(--gp);background:#f0faf3}
-.ap-name{font-size:.8rem;font-weight:600;color:var(--gd)}
-.ap-name2{font-size:.7rem;color:var(--tl);margin-bottom:6px}
-.ap-input{width:100%;padding:6px 8px;font-size:.85rem;border:1.5px solid var(--border);border-radius:6px;font-family:inherit}
-.ap-input:focus{outline:none;border-color:var(--gp)}
-.ap-sample{font-size:.68rem;color:var(--tl);margin-top:3px}
+
+body {
+  font-family: var(--font-main);
+  background: var(--faint);
+  color: var(--text-dark);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ── HEADER & NAVIGATION ── */
+header {
+  background: var(--primary-dark);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  gap: 15px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  background: var(--primary-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.brand h1 { font-size: 1.3rem; color: #fff; line-height: 1; }
+.brand p { font-size: 0.75rem; color: var(--primary-light); }
+
+.lang-sw {
+  display: flex;
+  background: rgba(255,255,255,0.1);
+  border-radius: var(--radius-md);
+  padding: 4px;
+}
+
+.lang-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.8);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: 0.3s;
+}
+
+.lang-btn.active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: var(--shadow);
+}
+
+nav {
+  display: flex;
+  background: var(--primary);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+nav::-webkit-scrollbar { display: none; }
+
+.nav-tab {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.7);
+  padding: 14px 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  transition: 0.2s;
+}
+
+.nav-tab.active, .nav-tab:hover {
+  color: #fff;
+  border-bottom-color: var(--primary-light);
+  background: rgba(255,255,255,0.05);
+}
+
+/* ── LAYOUT & CARDS ── */
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 16px 120px;
+}
+
+.section { display: none; animation: fadeIn 0.4s ease; }
+.section.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+}
+
+.card-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--primary-dark);
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--pale);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── FORMS & BUTTONS ── */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media(max-width: 600px) {
+  .form-grid { grid-template-columns: 1fr; }
+}
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+
+label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-mid);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+input, select, textarea {
+  padding: 12px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: 0.2s;
+  background: #fdfdfd;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(45, 106, 79, 0.15);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: 0.2s;
+  font-family: inherit;
+}
+
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+.btn-outline { background: #fff; color: var(--primary); border: 2px solid var(--primary); }
+.btn-outline:hover { background: var(--pale); }
+
+.btn-wa { background: #25d366; color: #fff; }
+.btn-wa:hover { background: #128c5e; }
+
+/* ── TABLES ── */
+.tbl-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  margin: 15px 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  background: #fff;
+}
+
+th {
+  background: #f8fafc;
+  color: var(--text-mid);
+  padding: 14px;
+  text-align: left;
+  font-weight: 700;
+  border-bottom: 2px solid var(--border);
+}
+
+td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--faint); }
+
+.cat-row td {
+  background: var(--pale);
+  font-weight: 800;
+  color: var(--primary-dark);
+  text-transform: uppercase;
+}
 </style>
 </head>
 <body>
+<div class="toast" id="toast"></div>
+
+<!-- ── MODALS ── -->
+
+<!-- CONFIRM ORDER MODAL -->
+<div class="modal-overlay" id="m-confirm">
+  <div class="modal">
+    <div class="modal-hdr">
+      <h3 id="confirm-title">Confirm Order</h3>
+      <button class="modal-close" onclick="closeModal('m-confirm')">✕</button>
+    </div>
+    <div class="modal-body" id="confirm-body"></div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('m-confirm')">Cancel</button>
+      <button class="btn btn-primary" onclick="finalSubmit()">✓ Confirm & Place</button>
+    </div>
+  </div>
+</div>
+
+<!-- RECEIPT MODAL -->
+<div class="modal-overlay" id="m-receipt">
+  <div class="modal">
+    <div class="modal-hdr">
+      <h3>🧾 Order Receipt</h3>
+      <button class="modal-close" onclick="closeModal('m-receipt')">✕</button>
+    </div>
+    <div class="modal-body" id="receipt-body"></div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="window.print()">🖨 Print</button>
+      <button class="btn btn-primary" onclick="closeModal('m-receipt')">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN: ADD PRODUCT MODAL -->
+<div class="modal-overlay" id="m-addprod">
+  <div class="modal">
+    <div class="modal-hdr">
+      <h3>➕ Add New Product</h3>
+      <button class="modal-close" onclick="closeModal('m-addprod')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>English Name *</label><input type="text" id="np-en"/></div>
+        <div class="form-group"><label>Sinhala Name</label><input type="text" id="np-si"/></div>
+        <div class="form-group"><label>Tamil Name</label><input type="text" id="np-ta"/></div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="np-cat">
+            <option value="Vegetables & Roots">Vegetables & Roots</option>
+            <option value="Leafy Greens">Leafy Greens</option>
+            <option value="Snack Crops">Snack Crops</option>
+            <option value="Fruits">Fruits</option>
+            <option value="Grains">Grains</option>
+            <option value="Spices">Spices</option>
+            <option value="Sweets & Desserts">Sweets & Desserts</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Unit Type</label>
+          <select id="np-unit">
+            <option value="weight_kg_g">Weight (kg/g)</option>
+            <option value="count">Count / Bundle</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Our Price (Rs.)</label><input type="number" id="np-price" step="0.5"/></div>
+        <div class="form-group"><label>Market Price (Rs.)</label><input type="number" id="np-mkt" step="0.5"/></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('m-addprod')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveNewProduct()">Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── SITE HEADER ── -->
+<header>
+  <div class="header-top">
+    <div class="brand">
+      <div class="brand-icon">🌿</div>
+      <div>
+        <h1>Greener's</h1>
+        <p data-i18n="tagline">Collaborating with producers for organized consumers</p>
+      </div>
+    </div>
+    <div class="lang-sw">
+      <button class="lang-btn" onclick="setLang('si')">සිංහල</button>
+      <button class="lang-btn active" onclick="setLang('en')">English</button>
+      <button class="lang-btn" onclick="setLang('ta')">தமிழ்</button>
+    </div>
+  </div>
+  <nav>
+    <button class="nav-tab active" onclick="showTab('about',this)" data-i18n="navAbout">About Us</button>
+    <button class="nav-tab" onclick="showTab('register',this)" data-i18n="navReg">Register</button>
+    <button class="nav-tab" onclick="showTab('order',this)" data-i18n="navOrder">Place Order</button>
+    <button class="nav-tab" onclick="showTab('prices',this)" data-i18n="navPrices">Price Board</button>
+    <button class="nav-tab" onclick="showTab('reports',this)" data-i18n="navReports">Reports</button>
+    <button class="nav-tab" onclick="showTab('admin',this)" data-i18n="navAdmin">Admin</button>
+    <button class="nav-tab" onclick="showTab('feedback',this)" data-i18n="navFeedback">💬 Feedback</button>
+  </nav>
+</header>
+
+<main>
+  <!-- SECTION: REGISTER -->
+  <div class="section" id="tab-register">
+    <div class="card">
+      <div class="card-title">👤 <span data-i18n="regTitle">Member Registration</span></div>
+      <form id="reg-form" onsubmit="submitReg(event)">
+        <div class="form-grid">
+          <div class="form-group"><label data-i18n="nameLabel">Full Name</label><input type="text" id="r-name" required/></div>
+          <div class="form-group"><label data-i18n="nicLabel">NIC Number</label><input type="text" id="r-nic" required/></div>
+          <div class="form-group full"><label data-i18n="addrLabel">Address</label><input type="text" id="r-addr"/></div>
+          <div class="form-group"><label data-i18n="phoneLabel">Phone</label><input type="tel" id="r-phone"/></div>
+          <div class="form-group"><label data-i18n="waLabel">WhatsApp</label><input type="tel" id="r-wa"/></div>
+          <div class="form-group full">
+            <label data-i18n="orgLabel">Organization</label>
+            <select id="r-org"><option value="">— Select —</option></select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top:20px" data-i18n="submitReg">Register Member</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- SECTION: ORDER -->
+  <div class="section" id="tab-order">
+    <div class="card">
+      <div class="card-title">🛒 <span data-i18n="orderTitle">Place Order</span></div>
+      <div class="form-group" style="margin-bottom:20px">
+        <label data-i18n="selMember">Select Member</label>
+        <div class="search-wrap">
+          <input type="text" id="member-search" oninput="searchMembers(this.value)" autocomplete="off" data-i18n-placeholder="memberSearch"/>
+          <div class="search-dd" id="member-dd"></div>
+        </div>
+      </div>
+      <div id="catalog"></div>
+    </div>
+  </div>
+
+  <!-- SECTION: REPORTS -->
+  <div class="section" id="tab-reports">
+    <div id="rep-gate" class="card">
+      <!-- PIN Gate for Reports -->
+      <div style="text-align:center; padding:40px 0;">
+        <h3 data-i18n="accessReq">Admin Access Required</h3>
+        <input type="password" id="rep-pin" maxlength="4" style="width:150px; text-align:center; margin:20px 0; font-size:1.5rem;" placeholder="••••"/>
+        <br/>
+        <button class="btn btn-primary" onclick="unlockReports()" data-i18n="unlockBtn">Unlock Reports</button>
+      </div>
+    </div>
+    <div id="rep-content" style="display:none">
+      <div class="card">
+        <div class="sub-tabs" style="display:flex; gap:10px; margin-bottom:20px;">
+          <button class="sub-tab active" onclick="showSubTab('rep-org',this)" data-i18n="orgReport">Org Report</button>
+          <button class="sub-tab" onclick="showSubTab('rep-proc',this)" data-i18n="procurement">Procurement</button>
+          <button class="sub-tab" onclick="showSubTab('rep-distrib',this)">Distribution</button>
+        </div>
+        
+        <div id="rep-org">
+          <div class="form-grid" style="margin-bottom:20px">
+            <div class="form-group"><label>Organization</label><select id="rep-org-sel"><option value="">— Select —</option></select></div>
+            <div class="form-group"><label>From</label><input type="date" id="rep-from"/></div>
+            <div class="form-group"><label>To</label><input type="date" id="rep-to"/></div>
+            <div class="form-group" style="justify-content: flex-end;"><button class="btn btn-primary" onclick="genOrgReport()">Generate</button></div>
+          </div>
+          <div id="rep-org-out"></div>
+        </div>
+
+        <div id="rep-proc" style="display:none">
+          <div class="form-grid" style="margin-bottom:20px">
+            <div class="form-group"><label>From</label><input type="date" id="proc-from"/></div>
+            <div class="form-group"><label>To</label><input type="date" id="proc-to"/></div>
+            <div class="form-group" style="justify-content: flex-end;"><button class="btn btn-primary" onclick="genProcReport()">Generate</button></div>
+          </div>
+          <div id="rep-proc-out"></div>
+        </div>
+
+        <div id="rep-distrib" style="display:none">
+          <div class="form-grid" style="margin-bottom:20px">
+            <div class="form-group"><label>Organization</label><select id="distrib-org-sel"><option value="">— Select —</option></select></div>
+            <div class="form-group"><label>Delivery Date</label><input type="date" id="distrib-date"/></div>
+            <div class="form-group" style="justify-content: flex-end;"><button class="btn btn-primary" onclick="genDistribReport()">Generate</button></div>
+          </div>
+          <div id="rep-distrib-out"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
 <script>
-/* ═══════════════════════════════════════════════════════════════════════════
-   Part 3: Global variables, language, data structures, initialisation
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-// ----- Translations (full as original) -----
-const LANG = { ... };  // (Same as provided – no changes)
-
-// ----- Constants -----
-const CAT_ICONS = {'Vegetables & Roots':'🥕','Leafy Greens':'🥬','Snack Crops':'🌽','Fruits':'🍈','Grains':'🌾','Spices':'🌶️','Sweets & Desserts':'🍯'};
-const CAT_KEYS = {'Vegetables & Roots':'catVeg','Leafy Greens':'catLeafy','Snack Crops':'catSnack','Fruits':'catFruit','Grains':'catGrain','Spices':'catSpice','Sweets & Desserts':'catSweet'};
-const ORG_ICONS = {elder_society:'👴',welfare_society:'🏡',women_society:'👩',office:'🏢',school:'🏫',hospital:'🏥',other:'🏛️'};
-const BANANA_NAMES = ['Embul banana','Seeni banana','Embun banana','Red banana','Cavendish','Anamalu'];
-const ADMIN_PIN = '1234';
-
-// ----- App State (stored in localStorage) -----
+/* ═══════════════════════════════════════════════
+   GLOBAL STATE & STORAGE
+   ═══════════════════════════════════════════════ */
 let lang = localStorage.getItem('g_lang') || 'en';
-let products = JSON.parse(localStorage.getItem('g_products') || 'null');
+let products = JSON.parse(localStorage.getItem('g_products'));
 let members = JSON.parse(localStorage.getItem('g_members') || '[]');
-let organizations = JSON.parse(localStorage.getItem('g_orgs') || 'null');
+let organizations = JSON.parse(localStorage.getItem('g_orgs'));
 let orders = JSON.parse(localStorage.getItem('g_orders') || '[]');
 let actualPrices = JSON.parse(localStorage.getItem('g_actual') || '{}');
-let priceLog = JSON.parse(localStorage.getItem('g_pricelog') || '[]');
 let feedbackLog = JSON.parse(localStorage.getItem('g_feedback') || '[]');
-let selMemberId = null, selMemberObj = null;
-let quantities = {};
-let pendingItems = [];
-let adminOk = sessionStorage.getItem('adm_ok') === '1';
+
+let selMemberId = null;
+let selMemberObj = null;
+let quantities = {}; // Tracks current order session
 let reportsOk = sessionStorage.getItem('rep_ok') === '1';
-let searchT = null, histT = null, fbSearchT = null;
-let fbSelectedMember = null;
+let adminOk = sessionStorage.getItem('adm_ok') === '1';
 
-// ----- Helper: Save all data to localStorage -----
+const ADMIN_PIN = "1234"; // Consistent with your original requirement
+
+/* ── PERSISTENCE ── */
 function save() {
-  localStorage.setItem('g_products', JSON.stringify(products));
-  localStorage.setItem('g_members', JSON.stringify(members));
-  localStorage.setItem('g_orgs', JSON.stringify(organizations));
-  localStorage.setItem('g_orders', JSON.stringify(orders));
-  localStorage.setItem('g_actual', JSON.stringify(actualPrices));
-  localStorage.setItem('g_pricelog', JSON.stringify(priceLog));
-  localStorage.setItem('g_feedback', JSON.stringify(feedbackLog));
+    localStorage.setItem('g_products', JSON.stringify(products));
+    localStorage.setItem('g_members', JSON.stringify(members));
+    localStorage.setItem('g_orgs', JSON.stringify(organizations));
+    localStorage.setItem('g_orders', JSON.stringify(orders));
+    localStorage.setItem('g_actual', JSON.stringify(actualPrices));
+    localStorage.setItem('g_lang', lang);
 }
 
-// ----- Build default products (same as original) -----
-function buildDefaultProducts() {
-  let id = 1;
-  const mk = (cat,en,si,ta,unit,mkt,our) => ({ id:id++, category_en:cat, name_en:en, name_si:si, name_ta:ta, unit_type:unit, market_price:mkt, our_price:our, is_active:1, updated_at:new Date().toISOString() });
-  const V='Vegetables & Roots', L='Leafy Greens', S='Snack Crops', F='Fruits', G='Grains', SP='Spices', SW='Sweets & Desserts';
-  return [
-    mk(V,'Lime','දෙහි','தேக்கு','weight_kg_g',250,190),
-    mk(V,'Sweet potato','බතල','இனிப்பு உருளை','weight_kg_g',325,315),
-    // ... (rest of default products as original, omitted for brevity) ...
-    mk(SW,'Sesame rolls small','තල කැරලි පොඩි','சிறிய எள் சுருள்','count',0,6)
-  ];
-}
-
-// ----- Initialise default data if missing -----
+/* ── INITIALIZATION ── */
 function initDefaults() {
-  if (!organizations) {
-    organizations = [{ id:1, name_en:'Ekamuthu Elders Society Niwandama North, Ja Ela', name_si:'එකමුතු වැඩිහිටි සමිතිය උතුරු නිවන්දම, ජා ඇල', name_ta:'ஒன்றுபட்ட மூத்தோர் சங்கம் நிவந்தம வடக்கு, ஜா-ஏலா', type:'elder_society', whatsapp:'0771234567' }];
-  }
-  if (!products || !products.length) {
-    products = buildDefaultProducts();
-  }
-  save();
+    // Standard Organization
+    if (!organizations || organizations.length === 0) {
+        organizations = [{
+            id: 1,
+            name_en: 'Ekamuthu Elders Society Niwandama North, Ja Ela',
+            name_si: 'එකමුතු වැඩිහිටි සමිතිය උතුරු නිවන්දම, ජා ඇල',
+            name_ta: 'ஒன்றுபட்ட மூத்தோர் சங்கம் நிவந்தம வடக்கு, ஜா-ஏலா',
+            type: 'elder_society',
+            whatsapp: '0771234567'
+        }];
+    }
+
+    // Default Products (Simplified list for logic, expand as needed)
+    if (!products) {
+        products = buildDefaultProducts();
+    }
+    save();
 }
 
-// ----- Clean old data (keep 90 days) -----
-function cleanOldData() {
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - 90);
-  const cutoffStr = cutoff.toISOString();
-  const beforeOrders = orders.length;
-  orders = orders.filter(o => o.date >= cutoffStr);
-  feedbackLog = feedbackLog.filter(f => f.date >= cutoffStr);
-  priceLog = priceLog.filter(p => p.date >= cutoffStr);
-  if (orders.length !== beforeOrders) save();
+function buildDefaultProducts() {
+    let id = 1;
+    const mk = (cat, en, si, ta, unit, mkt, our) => ({
+        id: id++,
+        category_en: cat,
+        name_en: en,
+        name_si: si,
+        name_ta: ta,
+        unit_type: unit,
+        market_price: mkt,
+        our_price: our,
+        is_active: 1
+    });
+    const V = 'Vegetables & Roots', L = 'Leafy Greens', F = 'Fruits', SW = 'Sweets & Desserts';
+    return [
+        mk(V, 'Lime', 'දෙහි', 'தேக்கு', 'weight_kg_g', 250, 190),
+        mk(V, 'Sweet potato', 'බතල', 'இனிப்பு உருளை', 'weight_kg_g', 325, 315),
+        mk(V, 'Tomato', 'තක්කාලි', 'தக்காளி', 'weight_kg_g', 150, 140),
+        mk(L, 'Gotukola', 'ගොටුකොල', 'கோட்டுக்கொல', 'count', 0, 150),
+        mk(F, 'Embul banana', 'ඇඹුල්', 'புளிப்பு வாழை', 'weight_kg_g', 250, 180),
+        mk(SW, 'Curd 1L pot', 'මුදවපු කිරි ලීටර 1', 'தயிர் 1L', 'count', 0, 470)
+    ];
 }
 
-// ----- Run initialisation -----
-initDefaults();
-cleanOldData();
+/* ── TRANSLATION ENGINE ── */
+function t(k) {
+    return (LANG[lang] || LANG.en)[k] || LANG.en[k] || k;
+}
 
-// ----- Language functions (as original) -----
-function t(k) { return (LANG[lang] || LANG.en)[k] || LANG.en[k] || k; }
-function setLang(l) { /* ... unchanged ... */ }
-function applyI18n() { /* ... unchanged ... */ }
+function setLang(l) {
+    lang = l;
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${l}'`));
+    });
+    applyI18n();
+    refreshOrgSelects();
+    if (document.getElementById('tab-order').classList.contains('active')) renderCatalog();
+}
 
-// ----- Modal & Tab navigation (unchanged) -----
+function applyI18n() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        el.textContent = t(el.dataset.i18n);
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        el.placeholder = t(el.dataset.i18nPlaceholder);
+    });
+}
+
+/* ── CORE UTILITIES ── */
+
+/**
+ * FIXED LOGIC: Gets actual price for a specific date or falls back to sample price.
+ * Solves the issue where reports were empty due to missing price links.
+ */
+function getEffectivePrice(productId, dateStr) {
+    // If no date provided, use "Tomorrow" as default for the order screen
+    if (!dateStr) {
+        const d = new Date();
+        d.setDate(d.getDate() + 1);
+        dateStr = d.toISOString().split('T')[0];
+    }
+    
+    // Check if Greener's set a specific price for this delivery day
+    if (actualPrices[dateStr] && actualPrices[dateStr][productId] > 0) {
+        return actualPrices[dateStr][productId];
+    }
+
+    // Fallback to the standard product price
+    const p = products.find(x => x.id == productId);
+    return p ? p.our_price : 0;
+}
+
+function showToast(msg, type = 'success') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = `toast show toast-${type}`;
+    setTimeout(() => el.classList.remove('show'), 3000);
+}
+
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-function showTab(name, btn) { /* ... unchanged ... */ }
-function showSubTab(id, btn) { /* ... unchanged ... */ }
 
-// ----- Toast (unchanged) -----
-function showToast(msg, type='success') { /* ... unchanged ... */ }
-</script>
-<script>
-// ----- Organization name helper (unchanged) -----
-function orgName(o) { return lang==='si' ? (o.name_si||o.name_en) : lang==='ta' ? (o.name_ta||o.name_en) : o.name_en; }
-function populateOrg(id) { /* ... unchanged ... */ }
-function refreshOrgSelects() { populateOrg('r-org'); populateOrg('rep-org-sel'); populateOrg('distrib-org-sel'); }
-
-// ----- Registration (unchanged) -----
-function submitReg(e) { /* ... unchanged ... */ }
-
-// ----- Member search (unchanged) -----
-function searchMembers(q) { /* ... unchanged ... */ }
-function selectMember(id) { /* ... unchanged ... */ }
-function clearMember() { /* ... unchanged ... */ }
-document.addEventListener('click', e => { if (!e.target.closest('.search-wrap')) document.querySelectorAll('.search-dd').forEach(d => d.classList.remove('open')); });
-
-// ----- Catalog helpers (unchanged) -----
-function catLabel(cat) { return t(CAT_KEYS[cat]||'catVeg')||cat; }
-function getEffectivePrice(p, dateStr) {
-  if (!dateStr) dateStr = getTomorrowDate();
-  const ap = actualPrices[dateStr] || {};
-  return (ap[p.id] && ap[p.id] > 0) ? ap[p.id] : (p.our_price || 0);
-}
-function getTomorrowDate() { const d = new Date(); d.setDate(d.getDate()+1); return d.toISOString().split('T')[0]; }
-
-// ----- Product row, quantity management (unchanged) -----
-function renderCatalog() { /* ... unchanged ... */ }
-function prodRow(p) { /* ... unchanged ... */ }
-function toggleCat(hdr) { /* ... unchanged ... */ }
-function applyPreset(pid, kg, grams) { /* ... unchanged ... */ }
-function setQty(id, field, val) { /* ... unchanged ... */ }
-function stepCount(id, delta) { /* ... unchanged ... */ }
-function updateRowHL(id) { /* ... unchanged ... */ }
-function updateTotal() { /* ... unchanged ... */ }
-
-// ----- Order flow (unchanged) -----
-function buildItems() { /* ... unchanged ... */ }
-function initiateOrder() { /* ... unchanged ... */ }
-function finalSubmit() { /* ... unchanged ... */ }
-function showReceipt(order) { /* ... unchanged ... */ }
-</script>
-<script>
-// ----- Report access (unchanged) -----
-function initReports() { /* ... unchanged ... */ }
-function unlockReports() { /* ... unchanged ... */ }
-function showReportContent() { /* ... unchanged ... */ }
-
-// ----- Org Report (fixed for missing org_id handling) -----
-function genOrgReport() {
-  const orgId = parseInt(document.getElementById('rep-org-sel').value);
-  if (!orgId) { showToast('Please select an organization','error'); return; }
-  const from = document.getElementById('rep-from').value;
-  const to = document.getElementById('rep-to').value;
-  const org = organizations.find(o => o.id === orgId);
-  if (!org) { showToast('Organization not found','error'); return; }
-
-  // Filter orders by org_id (handle null/undefined safely)
-  const orgOrders = orders.filter(o => {
-    if (o.org_id !== orgId) return false; // ensure strict equality
-    if (from && o.date < from) return false;
-    if (to && o.date > to + 'T23:59:59') return false;
-    return true;
-  });
-
-  const out = document.getElementById('rep-org-out');
-  if (!orgOrders.length) {
-    out.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div>No orders found for this organization in the selected period.</div>';
-    return;
-  }
-
-  const total = orgOrders.reduce((s,o) => s + o.total, 0);
-  const memberMap = {};
-  const prodMap = {};
-
-  orgOrders.forEach(o => {
-    // Build member map
-    if (!memberMap[o.member_id]) {
-      memberMap[o.member_id] = {
-        name: o.member_name || 'Unknown',
-        orders: [],
-        total: 0
-      };
-    }
-    memberMap[o.member_id].orders.push(o);
-    memberMap[o.member_id].total += o.total;
-
-    // Build product map
-    o.items.forEach(i => {
-      const pid = i.product_id;
-      if (!prodMap[pid]) {
-        prodMap[pid] = {
-          name_en: i.name_en,
-          name_si: i.name_si || '',
-          unit_type: i.unit_type,
-          qty_kg: 0,
-          qty_count: 0,
-          total: 0
-        };
-      }
-      if (i.unit_type === 'weight_kg_g') {
-        prodMap[pid].qty_kg += i.quantity_kg || 0;
-      } else {
-        prodMap[pid].qty_count += i.quantity_count || 0;
-      }
-      prodMap[pid].total += i.subtotal;
+function refreshOrgSelects() {
+    const selects = ['r-org', 'rep-org-sel', 'distrib-org-sel'];
+    selects.forEach(id => {
+        const sel = document.getElementById(id);
+        if (!sel) return;
+        sel.innerHTML = `<option value="">— ${t('selectType')} —</option>`;
+        organizations.forEach(o => {
+            const name = lang === 'si' ? o.name_si : (lang === 'ta' ? o.name_ta : o.name_en);
+            sel.add(new Option(name, o.id));
+        });
     });
-  });
+}
+/* ═══════════════════════════════════════════════
+   MEMBER SEARCH & REGISTRATION
+   ═══════════════════════════════════════════════ */
 
-  // Build member breakdown HTML (with WhatsApp link)
-  const memberRows = Object.entries(memberMap).map(([mid, md]) => {
-    const mem = members.find(x => x.id == mid) || {};
-    const wa = mem.whatsapp;
-    const waMsg = buildWA(orgName(org), md.name, md.orders);
-    const waLink = wa ? `<a href="https://wa.me/${wa.replace(/\D/g,'')}?text=${encodeURIComponent(waMsg)}" target="_blank" class="btn btn-wa btn-sm">📱 Send</a>` : '—';
-    return `<tr>
-      <td>👤 ${md.name}</td>
-      <td>${md.orders.length}</td>
-      <td>Rs.${md.total.toFixed(2)}</td>
-      <td>${waLink}</td>
-    </tr>`;
-  }).join('');
+/**
+ * Searches members by Name or NIC and populates a dropdown
+ */
+function searchMembers(query) {
+    const dd = document.getElementById('member-dd');
+    const q = query.toLowerCase().trim();
+    
+    if (q.length < 1) {
+        dd.style.display = 'none';
+        return;
+    }
 
-  // Product breakdown rows
-  const prodRows = Object.values(prodMap).map(p => {
-    const qtyStr = p.unit_type === 'weight_kg_g' ? p.qty_kg.toFixed(3) + ' kg' : p.qty_count + ' units';
-    return `<tr>
-      <td>${p.name_en}</td>
-      <td>${p.name_si || '—'}</td>
-      <td>${qtyStr}</td>
-      <td>Rs.${p.total.toFixed(2)}</td>
-    </tr>`;
-  }).join('');
+    // Filter members based on name or NIC
+    const matches = members.filter(m => 
+        m.name.toLowerCase().includes(q) || 
+        m.nic.toLowerCase().includes(q)
+    ).slice(0, 10); // Limit to top 10 for performance
 
-  const html = `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
-      <div>
-        <div style="font-size:1rem;font-weight:700;color:var(--gd)">${ORG_ICONS[org.type]||'🏛️'} ${orgName(org)}</div>
-        ${org.name_si ? `<div style="font-size:.8rem;color:var(--tm)">${org.name_si}</div>` : ''}
-      </div>
-      <button class="btn btn-outline btn-sm" onclick="window.print()">🖨 Print</button>
-    </div>
-    <div class="stat-grid">
-      <div class="stat-card"><div class="stat-val">${orgOrders.length}</div><div class="stat-lbl">Total Orders</div></div>
-      <div class="stat-card"><div class="stat-val">Rs.${total.toLocaleString('en',{minimumFractionDigits:2})}</div><div class="stat-lbl">Revenue</div></div>
-      <div class="stat-card"><div class="stat-val">${Object.keys(memberMap).length}</div><div class="stat-lbl">Members</div></div>
-    </div>
-    <div class="section-hdr" style="margin-bottom:8px">Member Breakdown</div>
-    <div class="tbl-wrap" style="margin-bottom:16px">
-      <table>
-        <thead><tr><th>Member</th><th>Orders</th><th>Amount</th><th>WhatsApp</th></tr></thead>
-        <tbody>${memberRows}</tbody>
-      </table>
-    </div>
-    <div class="section-hdr" style="margin-bottom:8px">Product Quantities</div>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr><th>Product</th><th>Sinhala</th><th>Total Qty</th><th>Amount</th></tr></thead>
-        <tbody>${prodRows}</tbody>
-      </table>
-    </div>`;
-
-  out.innerHTML = html;
+    if (matches.length > 0) {
+        dd.innerHTML = matches.map(m => `
+            <div class="si" onclick="selectMember(${m.id})">
+                <div class="si-name">👤 ${m.name}</div>
+                <div class="si-sub">NIC: ${m.nic}</div>
+            </div>
+        `).join('');
+        dd.style.display = 'block';
+    } else {
+        dd.innerHTML = `<div class="si"><div class="si-sub">No members found</div></div>`;
+        dd.style.display = 'block';
+    }
 }
 
-// ----- Helper for WhatsApp order message (unchanged) -----
-function buildWA(orgName, memberName, memberOrders) { /* ... unchanged ... */ }
+/**
+ * Sets the selected member for the current order session
+ */
+function selectMember(id) {
+    const m = members.find(x => x.id == id);
+    if (!m) return;
 
-// ----- Procurement List Report (unchanged) -----
-function genProcReport() { /* ... unchanged ... */ }
+    selMemberId = m.id;
+    selMemberObj = m;
+    
+    document.getElementById('member-search').value = m.name;
+    document.getElementById('member-dd').style.display = 'none';
+    
+    showToast(`Member Selected: ${m.name}`);
+}
 
-// ----- Distribution Report (FIXED: handle missing actualPrices and date) -----
-function genDistribReport() {
-  const orgId = parseInt(document.getElementById('distrib-org-sel').value);
-  if (!orgId) { showToast('Please select an organization','error'); return; }
-  const dateStr = document.getElementById('distrib-date').value;
-  const org = organizations.find(o => o.id === orgId);
-  if (!org) { showToast('Organization not found','error'); return; }
-
-  // Ensure ap is always an object (default empty if date not set or no prices)
-  const ap = (dateStr && actualPrices[dateStr]) ? actualPrices[dateStr] : {};
-
-  const orgOrders = orders.filter(o => o.org_id === orgId);
-  const out = document.getElementById('rep-distrib-out');
-  if (!orgOrders.length) {
-    out.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div>No orders found for this organization.</div>';
-    return;
-  }
-
-  const memberMap = {};
-  orgOrders.forEach(o => {
-    if (!memberMap[o.member_id]) {
-      memberMap[o.member_id] = {
-        name: o.member_name,
-        nic: o.member_nic || '',
-        items: {},
-        estTotal: 0,
-        actualTotal: 0
-      };
+/**
+ * Handles new member form submission
+ */
+function submitReg(e) {
+    e.preventDefault();
+    const nic = document.getElementById('r-nic').value.trim();
+    
+    // Check for duplicates
+    if (members.some(m => m.nic === nic)) {
+        showToast("This NIC is already registered.", "error");
+        return;
     }
-    o.items.forEach(i => {
-      const pid = i.product_id;
-      const key = pid;
-      if (!memberMap[o.member_id].items[key]) {
-        memberMap[o.member_id].items[key] = {
-          name_en: i.name_en,
-          name_si: i.name_si,
-          unit_type: i.unit_type,
-          qty_kg: 0,
-          qty_count: 0
-        };
-      }
-      if (i.unit_type === 'weight_kg_g') {
-        memberMap[o.member_id].items[key].qty_kg += i.quantity_kg || 0;
-      } else {
-        memberMap[o.member_id].items[key].qty_count += i.quantity_count || 0;
-      }
-      memberMap[o.member_id].estTotal += i.subtotal;
+
+    const newMember = {
+        id: Date.now(), // Unique numeric ID
+        name: document.getElementById('r-name').value.trim(),
+        nic: nic,
+        address: document.getElementById('r-addr').value.trim(),
+        phone: document.getElementById('r-phone').value.trim(),
+        whatsapp: document.getElementById('r-wa').value.trim(),
+        organization_id: Number(document.getElementById('r-org').value) || null,
+        created_at: new Date().toISOString()
+    };
+
+    members.push(newMember);
+    save();
+    e.target.reset();
+    showToast("Registration Successful!");
+}
+
+/* ═══════════════════════════════════════════════
+   CATALOG & QUANTITY LOGIC
+   ═══════════════════════════════════════════════ */
+
+/**
+ * Renders the product list grouped by category
+ */
+function renderCatalog() {
+    const cont = document.getElementById('catalog');
+    if (!cont) return;
+
+    const grouped = {};
+    products.filter(p => p.is_active).forEach(p => {
+        if (!grouped[p.category_en]) grouped[p.category_en] = [];
+        grouped[p.category_en].push(p);
     });
-  });
 
-  // Calculate actual totals using actual prices (ap)
-  Object.values(memberMap).forEach(m => {
-    let actTotal = 0;
-    Object.entries(m.items).forEach(([pid, item]) => {
-      const p = products.find(x => x.id == pid);
-      const actPrice = (ap[pid] && ap[pid] > 0) ? ap[pid] : (p ? p.our_price : 0);
-      const qty = item.unit_type === 'weight_kg_g' ? item.qty_kg : item.qty_count;
-      actTotal += qty * actPrice;
-    });
-    m.actualTotal = actTotal;
-  });
+    let html = "";
+    for (const cat in grouped) {
+        html += `
+            <div class="cat-section" style="margin-bottom: 25px;">
+                <h3 style="color: var(--primary); margin-bottom: 10px; border-bottom: 1px solid var(--border);">
+                    ${cat}
+                </h3>
+                <div class="prod-grid" style="display: grid; gap: 10px;">
+                    ${grouped[cat].map(p => renderProductRow(p)).join('')}
+                </div>
+            </div>
+        `;
+    }
+    cont.innerHTML = html;
+}
 
-  const grandEstTotal = Object.values(memberMap).reduce((s,m) => s + m.estTotal, 0);
-  const grandActTotal = Object.values(memberMap).reduce((s,m) => s + m.actualTotal, 0);
-  const dateLabel = dateStr ? new Date(dateStr+'T00:00:00').toLocaleDateString('en-LK',{year:'numeric',month:'long',day:'numeric'}) : '(no delivery date selected)';
+/**
+ * Helper to render individual product rows with logic for Kg vs Count
+ */
+function renderProductRow(p) {
+    const name = lang === 'si' ? (p.name_si || p.name_en) : (lang === 'ta' ? (p.name_ta || p.name_en) : p.name_en);
+    const price = getEffectivePrice(p.id);
+    const qty = quantities[p.id] || 0;
 
-  let html = `
-    <div style="background:var(--pale);border-radius:var(--rs);padding:12px 16px;margin-bottom:14px">
-      <div style="font-weight:700;color:var(--gd);font-size:1rem">${ORG_ICONS[org.type]||'🏛️'} ${orgName(org)}</div>
-      <div style="font-size:.78rem;color:var(--tm);margin-top:2px">Distribution Report — Delivery: ${dateLabel}</div>
-      <button class="btn btn-outline btn-sm" onclick="window.print()" style="margin-top:8px">🖨 Print</button>
-    </div>
-    <div class="stat-grid">
-      <div class="stat-card"><div class="stat-val">${Object.keys(memberMap).length}</div><div class="stat-lbl">Members</div></div>
-      <div class="stat-card"><div class="stat-val">Rs.${grandEstTotal.toFixed(2)}</div><div class="stat-lbl">Est. Total</div></div>
-      <div class="stat-card"><div class="stat-val">Rs.${grandActTotal.toFixed(2)}</div><div class="stat-lbl">Actual Total</div></div>
-    </div>`;
-
-  // Per-member detail
-  Object.entries(memberMap).forEach(([mid, m]) => {
-    const mem = members.find(x => x.id == mid) || {};
-    const wa = mem.whatsapp;
-    const waMsg = buildDistribWA(orgName(org), m.name, m.items, ap, m.actualTotal, dateLabel);
-    const waLink = wa ? `<a href="https://wa.me/${wa.replace(/\D/g,'')}?text=${encodeURIComponent(waMsg)}" target="_blank" class="btn btn-wa btn-sm">📱 Send</a>` : '';
-
-    const itemRows = Object.entries(m.items).map(([pid, item]) => {
-      const p = products.find(x => x.id == pid);
-      const actPrice = (ap[pid] && ap[pid] > 0) ? ap[pid] : (p ? p.our_price : 0);
-      const isConfirmed = ap[pid] && ap[pid] > 0;
-      const qty = item.unit_type === 'weight_kg_g' ? item.qty_kg : item.qty_count;
-      const amt = qty * actPrice;
-      const qtyStr = item.unit_type === 'weight_kg_g' ? item.qty_kg.toFixed(3) + ' kg' : item.qty_count + ' units';
-      return `<tr>
-        <td>${item.name_en}</td>
-        <td>${item.name_si || '—'}</td>
-        <td style="font-weight:600">${qtyStr}</td>
-        <td>Rs.${actPrice.toFixed(2)}${isConfirmed ? '<span style="color:#059669;font-size:.68rem"> ★</span>' : '<span style="color:#718096;font-size:.68rem"> est.</span>'}</td>
-        <td style="font-weight:600">Rs.${amt.toFixed(2)}</td>
-      </tr>`;
-    }).join('');
-
-    html += `
-      <div style="border:1.5px solid var(--border);border-radius:var(--rs);padding:14px;margin-bottom:12px;page-break-inside:avoid">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
-          <div>
-            <div style="font-weight:700;color:var(--gd)">👤 ${m.name}</div>
-            <div style="font-size:.75rem;color:var(--tl)">${m.nic || ''}</div>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center">${waLink}</div>
+    return `
+        <div class="prow" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-md);">
+            <div>
+                <div style="font-weight: 600;">${name}</div>
+                <div style="font-size: 0.8rem; color: var(--text-light);">Rs. ${price.toFixed(2)} / ${p.unit_type === 'weight_kg_g' ? 'kg' : 'unit'}</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                ${p.unit_type === 'weight_kg_g' ? 
+                    `<input type="number" step="0.1" placeholder="0.0kg" style="width: 80px;" oninput="updateQty(${p.id}, this.value)" value="${qty || ''}">` : 
+                    `<input type="number" step="1" placeholder="0" style="width: 80px;" oninput="updateQty(${p.id}, this.value)" value="${qty || ''}">`
+                }
+            </div>
         </div>
-        <div class="tbl-wrap"><table style="font-size:.82rem">
-          <thead><tr><th>Product</th><th>Sinhala</th><th>Qty</th><th>Actual Price</th><th>Amount</th></tr></thead>
-          <tbody>${itemRows}</tbody>
-          <tfoot><tr style="background:var(--pale)">
-            <td colspan="4" style="font-weight:700;text-align:right">Total to Collect:</td>
-            <td style="font-weight:800;color:var(--gd)">Rs.${m.actualTotal.toFixed(2)}</td>
-          </tr></tfoot>
-        </table></div>
-      </div>`;
-  });
-
-  // Grand total summary
-  html += `<div style="background:var(--gd);color:#fff;border-radius:var(--rs);padding:14px;margin-top:8px">
-    <div style="font-size:1rem;font-weight:700;margin-bottom:8px">💰 Collection Summary — ${orgName(org)}</div>
-    <div style="display:flex;justify-content:space-between"><span>Estimated Total:</span><span>Rs.${grandEstTotal.toFixed(2)}</span></div>
-    <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:1.1rem;font-weight:800;border-top:1px solid rgba(255,255,255,.3);padding-top:8px"><span>Actual Total to Collect:</span><span>Rs.${grandActTotal.toFixed(2)}</span></div>
-  </div>`;
-
-  out.innerHTML = html;
-  document.getElementById('distrib-wa-btn').style.display = 'inline-flex';
-  window._distribData = { org, memberMap, ap, dateLabel, grandActTotal };
+    `;
 }
 
-// ----- Helper for Distribution WhatsApp message (unchanged) -----
-function buildDistribWA(orgName, memberName, items, ap, total, dateLabel) { /* ... unchanged ... */ }
+function updateQty(productId, val) {
+    const num = parseFloat(val);
+    if (num > 0) {
+        quantities[productId] = num;
+    } else {
+        delete quantities[productId];
+    }
+    updateOrderSummary();
+}
 
-// ----- Share Distribution WhatsApp (unchanged) -----
-function shareDistribWA() { /* ... unchanged ... */ }
+/**
+ * Calculates current total and updates the persistent "Order Footer"
+ */
+function updateOrderSummary() {
+    let total = 0;
+    let itemCount = 0;
 
-// ----- Producer Report (FIXED: sort by product name, not category_en) -----
-function genProducerReport() {
-  const dateStr = document.getElementById('prod-rep-date').value;
-  const ap = (dateStr && actualPrices[dateStr]) ? actualPrices[dateStr] : {};
-  const out = document.getElementById('rep-producer-out');
-  if (!orders.length) {
-    out.innerHTML = '<div class="empty-state"><div class="empty-icon">🚚</div>No orders found.</div>';
-    return;
-  }
+    for (const pid in quantities) {
+        const p = products.find(x => x.id == pid);
+        if (p) {
+            const price = getEffectivePrice(p.id);
+            total += quantities[pid] * price;
+            itemCount++;
+        }
+    }
 
-  const dateLabel = dateStr ? new Date(dateStr+'T00:00:00').toLocaleDateString('en-LK',{year:'numeric',month:'long',day:'numeric'}) : 'All orders';
+    // Since we need a footer, let's create it dynamically if it doesn't exist
+    let footer = document.getElementById('dyn-order-footer');
+    if (!footer) {
+        footer = document.createElement('div');
+        footer.id = 'dyn-order-footer';
+        footer.style = "position: fixed; bottom: 0; left:0; width: 100%; background: #fff; padding: 15px 20px; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; z-index: 900;";
+        document.body.appendChild(footer);
+    }
 
-  const prodMap = {};
-  const orgMap = {};
+    footer.innerHTML = `
+        <div>
+            <div style="font-size: 0.8rem; color: var(--text-mid);">${itemCount} items selected</div>
+            <div style="font-size: 1.2rem; font-weight: 800; color: var(--primary-dark);">Rs. ${total.toFixed(2)}</div>
+        </div>
+        <button class="btn btn-primary" onclick="initiateOrder()">Place Order</button>
+    `;
+    
+    footer.style.display = itemCount > 0 ? 'flex' : 'none';
+}
+/* ═══════════════════════════════════════════════
+   FINAL ORDER SUBMISSION
+   ═══════════════════════════════════════════════ */
 
-  orders.forEach(o => {
-    const org = organizations.find(x => x.id === o.org_id);
-    const orgLabel = org ? orgName(org) : 'Unknown';
-    if (!orgMap[o.org_id]) orgMap[o.org_id] = { name: orgLabel, items: {} };
+function initiateOrder() {
+    if (!selMemberId) {
+        showToast("Please select a member first.", "error");
+        return;
+    }
 
-    o.items.forEach(i => {
-      const pid = i.product_id;
-      // Global totals
-      if (!prodMap[pid]) {
-        prodMap[pid] = {
-          name_en: i.name_en,
-          name_si: i.name_si,
-          unit_type: i.unit_type,
-          qty_kg: 0,
-          qty_count: 0,
-          actualTotal: 0,
-          orgs: {}
-        };
-      }
-      if (i.unit_type === 'weight_kg_g') {
-        prodMap[pid].qty_kg += i.quantity_kg || 0;
-      } else {
-        prodMap[pid].qty_count += i.quantity_count || 0;
-      }
-      const actP = (ap[pid] && ap[pid] > 0) ? ap[pid] : i.price;
-      const qty = i.unit_type === 'weight_kg_g' ? (i.quantity_kg || 0) : (i.quantity_count || 0);
-      prodMap[pid].actualTotal += qty * actP;
+    const items = [];
+    let total = 0;
 
-      // Per‑org breakdown
-      if (!prodMap[pid].orgs[o.org_id]) {
-        prodMap[pid].orgs[o.org_id] = { name: orgLabel, qty_kg: 0, qty_count: 0 };
-      }
-      if (i.unit_type === 'weight_kg_g') {
-        prodMap[pid].orgs[o.org_id].qty_kg += i.quantity_kg || 0;
-      } else {
-        prodMap[pid].orgs[o.org_id].qty_count += i.quantity_count || 0;
-      }
+    for (const pid in quantities) {
+        const p = products.find(x => x.id == pid);
+        const price = getEffectivePrice(pid);
+        const qty = quantities[pid];
+        const sub = qty * price;
+        
+        items.push({
+            product_id: p.id,
+            name_en: p.name_en,
+            name_si: p.name_si,
+            unit_type: p.unit_type,
+            qty: qty,
+            price: price,
+            subtotal: sub
+        });
+        total += sub;
+    }
 
-      // Org item totals
-      if (!orgMap[o.org_id].items[pid]) {
-        orgMap[o.org_id].items[pid] = {
-          name_en: i.name_en,
-          name_si: i.name_si,
-          unit_type: i.unit_type,
-          qty_kg: 0,
-          qty_count: 0
-        };
-      }
-      if (i.unit_type === 'weight_kg_g') {
-        orgMap[o.org_id].items[pid].qty_kg += i.quantity_kg || 0;
-      } else {
-        orgMap[o.org_id].items[pid].qty_count += i.quantity_count || 0;
-      }
+    const body = document.getElementById('confirm-body');
+    body.innerHTML = `
+        <div style="margin-bottom:15px; padding:10px; background:var(--faint); border-radius:8px;">
+            <strong>Member:</strong> ${selMemberObj.name}<br>
+            <strong>NIC:</strong> ${selMemberObj.nic}
+        </div>
+        <table style="width:100%; font-size:0.9rem;">
+            ${items.map(i => `
+                <tr>
+                    <td>${i.name_en} x ${i.qty}</td>
+                    <td style="text-align:right;">Rs. ${i.subtotal.toFixed(2)}</td>
+                </tr>
+            `).join('')}
+            <tr style="font-weight:800; border-top: 1px solid #ccc;">
+                <td style="padding-top:10px;">Total Estimated</td>
+                <td style="padding-top:10px; text-align:right;">Rs. ${total.toFixed(2)}</td>
+            </tr>
+        </table>
+    `;
+    openModal('m-confirm');
+}
+
+function finalSubmit() {
+    const items = [];
+    let total = 0;
+
+    for (const pid in quantities) {
+        const p = products.find(x => x.id == pid);
+        const price = getEffectivePrice(pid);
+        const qty = quantities[pid];
+        items.push({
+            product_id: p.id,
+            name_en: p.name_en,
+            qty: qty,
+            price: price,
+            subtotal: qty * price
+        });
+        total += qty * price;
+    }
+
+    const newOrder = {
+        id: Date.now(),
+        member_id: selMemberId,
+        member_name: selMemberObj.name,
+        member_nic: selMemberObj.nic,
+        org_id: selMemberObj.organization_id,
+        items: items,
+        total: total,
+        date: new Date().toISOString(),
+        status: 'pending'
+    };
+
+    orders.push(newOrder);
+    save();
+    
+    // Clear state
+    quantities = {};
+    selMemberId = null;
+    document.getElementById('member-search').value = "";
+    document.getElementById('dyn-order-footer').style.display = 'none';
+    
+    closeModal('m-confirm');
+    showToast("Order Placed Successfully!");
+    renderCatalog();
+}
+
+/* ═══════════════════════════════════════════════
+   FIXED REPORTING LOGIC
+   ═══════════════════════════════════════════════ */
+
+// Security Gate
+function unlockReports() {
+    const pin = document.getElementById('rep-pin').value;
+    if (pin === ADMIN_PIN) {
+        reportsOk = true;
+        sessionStorage.setItem('rep_ok', '1');
+        document.getElementById('rep-gate').style.display = 'none';
+        document.getElementById('rep-content').style.display = 'block';
+        refreshOrgSelects();
+    } else {
+        showToast("Invalid PIN", "error");
+    }
+}
+
+/**
+ * 1. ORG REPORT: Summary for a specific organization
+ */
+function genOrgReport() {
+    const orgId = document.getElementById('rep-org-sel').value;
+    const from = document.getElementById('rep-from').value;
+    const to = document.getElementById('rep-to').value;
+    const out = document.getElementById('rep-org-out');
+
+    if (!orgId) { showToast("Select Organization", "error"); return; }
+
+    const filtered = orders.filter(o => {
+        const matchOrg = o.org_id == orgId;
+        const oDate = o.date.split('T')[0];
+        const matchFrom = from ? oDate >= from : true;
+        const matchTo = to ? oDate <= to : true;
+        return matchOrg && matchFrom && matchTo;
     });
-  });
 
-  const grandTotal = Object.values(prodMap).reduce((s,p) => s + p.actualTotal, 0);
-  const sortedProds = Object.values(prodMap).sort((a,b) => a.name_en.localeCompare(b.name_en)); // FIX: sort by name
+    if (filtered.length === 0) {
+        out.innerHTML = `<div class="empty-state">No data found for the selected criteria.</div>`;
+        return;
+    }
 
-  let html = `
-    <div style="background:var(--pale);border-radius:var(--rs);padding:12px 16px;margin-bottom:14px">
-      <div style="font-weight:700;color:var(--gd);font-size:1rem">🚚 Procurement &amp; Logistics Report</div>
-      <div style="font-size:.78rem;color:var(--tm);margin-top:2px">Delivery: ${dateLabel} — ${Object.keys(orgMap).length} organizations</div>
-      <button class="btn btn-outline btn-sm" onclick="window.print()" style="margin-top:8px">🖨 Print</button>
-    </div>
-    <div class="stat-grid">
-      <div class="stat-card"><div class="stat-val">${Object.keys(prodMap).length}</div><div class="stat-lbl">Products</div></div>
-      <div class="stat-card"><div class="stat-val">${Object.keys(orgMap).length}</div><div class="stat-lbl">Destinations</div></div>
-      <div class="stat-card"><div class="stat-val">Rs.${grandTotal.toFixed(2)}</div><div class="stat-lbl">Total Value</div></div>
-    </div>
-    <div class="section-hdr" style="margin-bottom:8px">📦 Consolidated Procurement List</div>
-    <div class="tbl-wrap" style="margin-bottom:18px">
-      <table>
-        <thead><tr><th>Product</th><th>සිංහල</th><th>Total Qty to Harvest</th><th>Actual Price</th><th>Total Value</th></tr></thead>
-        <tbody>${sortedProds.map(p => {
-          const actPrice = (ap[Object.keys(p.orgs)[0]] && ap[Object.keys(p.orgs)[0]] > 0) ? ap[Object.keys(p.orgs)[0]] : 0;
-          const prod = products.find(x => x.name_en === p.name_en);
-          const actualP = (prod && ap[prod.id] && ap[prod.id] > 0) ? ap[prod.id] : (prod ? prod.our_price : 0);
-          const qtyStr = p.unit_type === 'weight_kg_g' ? '<strong>'+p.qty_kg.toFixed(3)+' kg</strong>' : '<strong>'+p.qty_count+' units</strong>';
-          return `<tr>
-            <td>${p.name_en}</td>
-            <td>${p.name_si || '—'}</td>
-            <td>${qtyStr}</td>
-            <td>Rs.${actualP.toFixed(2)}/${p.unit_type === 'weight_kg_g' ? 'kg' : 'unit'}</td>
-            <td style="font-weight:700">Rs.${p.actualTotal.toFixed(2)}</td>
-          </tr>`;
-        }).join('')}
-        <tr style="background:var(--pale);font-weight:800">
-          <td colspan="4" style="text-align:right">Grand Total:</td>
-          <td>Rs.${grandTotal.toFixed(2)}</td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="section-hdr" style="margin-bottom:8px">🚚 Delivery Routing by Organization</div>`;
+    const memberTotals = {};
+    filtered.forEach(o => {
+        if (!memberTotals[o.member_name]) memberTotals[o.member_name] = 0;
+        memberTotals[o.member_name] += o.total;
+    });
 
-  Object.entries(orgMap).forEach(([oid, orgData]) => {
-    const org = organizations.find(x => x.id == oid);
-    html += `
-      <div style="border:1.5px solid var(--gl);border-radius:var(--rs);padding:12px;margin-bottom:10px;page-break-inside:avoid">
-        <div style="font-weight:700;color:var(--gd);margin-bottom:8px">${ORG_ICONS[org?.type]||'🏛️'} ${orgData.name}</div>
-        <div class="tbl-wrap"><table style="font-size:.82rem">
-          <thead><tr><th>Product</th><th>සිංහල</th><th>Pack Qty</th></tr></thead>
-          <tbody>${Object.values(orgData.items).map(item => {
-            const qtyStr = item.unit_type === 'weight_kg_g' ? item.qty_kg.toFixed(3)+' kg' : item.qty_count+' units';
-            return `<tr><td>${item.name_en}</td><td>${item.name_si || '—'}</td><td style="font-weight:700">${qtyStr}</td></tr>`;
-          }).join('')}</tbody>
-        </table></div>
-      </div>`;
-  });
-
-  out.innerHTML = html;
-  document.getElementById('producer-wa-btn').style.display = 'inline-flex';
-  window._producerData = { sortedProds, grandTotal, dateLabel, orgMap, ap };
+    out.innerHTML = `
+        <div class="stat-card">Total Revenue for Org: <strong>Rs. ${filtered.reduce((a,b) => a + b.total, 0).toFixed(2)}</strong></div>
+        <div class="tbl-wrap">
+            <table>
+                <thead><tr><th>Member</th><th>Total Contribution</th></tr></thead>
+                <tbody>
+                    ${Object.entries(memberTotals).map(([name, sum]) => `<tr><td>${name}</td><td>Rs. ${sum.toFixed(2)}</td></tr>`).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
 }
 
-// ----- Share Producer WhatsApp (unchanged) -----
-function shareProducerWA() { /* ... unchanged ... */ }
+/**
+ * 2. PROCUREMENT LIST: Total quantities needed across everyone
+ */
+function genProcReport() {
+    const from = document.getElementById('proc-from').value;
+    const to = document.getElementById('proc-to').value;
+    const out = document.getElementById('rep-proc-out');
+
+    const filtered = orders.filter(o => {
+        const oDate = o.date.split('T')[0];
+        const matchFrom = from ? oDate >= from : true;
+        const matchTo = to ? oDate <= to : true;
+        return matchFrom && matchTo;
+    });
+
+    const totals = {};
+    filtered.forEach(o => {
+        o.items.forEach(i => {
+            if (!totals[i.name_en]) totals[i.name_en] = { qty: 0, sub: 0 };
+            totals[i.name_en].qty += i.qty;
+            totals[i.name_en].sub += i.subtotal;
+        });
+    });
+
+    out.innerHTML = `
+        <div class="tbl-wrap">
+            <table>
+                <thead><tr><th>Product</th><th>Total Quantity</th><th>Total Value</th></tr></thead>
+                <tbody>
+                    ${Object.entries(totals).map(([name, data]) => `
+                        <tr><td>${name}</td><td>${data.qty.toFixed(2)}</td><td>Rs. ${data.sub.toFixed(2)}</td></tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+/**
+ * 3. DISTRIBUTION REPORT: Detailed breakdown per member for delivery
+ */
+function genDistribReport() {
+    const orgId = document.getElementById('distrib-org-sel').value;
+    const date = document.getElementById('distrib-date').value;
+    const out = document.getElementById('rep-distrib-out');
+
+    if (!orgId || !date) { showToast("Select Org and Delivery Date", "error"); return; }
+
+    // Filter orders for this org and this specific delivery date
+    // Note: This logic assumes orders were placed FOR this delivery date
+    const filtered = orders.filter(o => o.org_id == orgId);
+
+    if (filtered.length === 0) {
+        out.innerHTML = `<div class="empty-state">No orders found for this organization.</div>`;
+        return;
+    }
+
+    out.innerHTML = filtered.map(o => `
+        <div style="margin-bottom:20px; border:1px solid var(--border); padding:15px; border-radius:10px;">
+            <div style="font-weight:800; color:var(--primary-dark); margin-bottom:10px;">👤 ${o.member_name} (${o.member_nic})</div>
+            <table style="font-size:0.85rem;">
+                ${o.items.map(i => {
+                    const actual = getEffectivePrice(i.product_id, date);
+                    return `<tr><td>${i.name_en}</td><td>${i.qty}</td><td>@ Rs.${actual.toFixed(2)}</td><td>Rs.${(i.qty * actual).toFixed(2)}</td></tr>`;
+                }).join('')}
+            </table>
+        </div>
+    `).join('');
+}
 </script>
-<script>
-// ----- Admin access (unchanged) -----
-function initAdmin() { /* ... unchanged ... */ }
-function unlockAdmin() { /* ... unchanged ... */ }
-function showAdminContent() { /* ... unchanged ... */ }
-function filterAdmin(q) { /* ... unchanged ... */ }
-function renderAdminTable(prods) { /* ... unchanged ... */ }
-function trackPriceChange(id,field,newVal,oldVal) { /* ... unchanged ... */ }
-function renderPriceLog() { /* ... unchanged ... */ }
-function saveAllPrices() { /* ... unchanged ... */ }
-function toggleActive(id,val) { /* ... unchanged ... */ }
-function saveNewProduct() { /* ... unchanged ... */ }
-
-// ----- Actual price editor (unchanged) -----
-function loadActualEditor() { /* ... unchanged ... */ }
-function highlightAP(el,id) { /* ... unchanged ... */ }
-function saveActualPrices() { /* ... unchanged ... */ }
-
-// ----- Organizations admin (unchanged) -----
-function renderOrgsList() { /* ... unchanged ... */ }
-function saveOrg() { /* ... unchanged ... */ }
-</script>
-<script>
-// ----- Order History (unchanged) -----
-function searchHistory(q) { /* ... unchanged ... */ }
-function showMemberHistory(id) { /* ... unchanged ... */ }
-function reorder(memberId, items) { /* ... unchanged ... */ }
-
-// ----- Feedback (unchanged) -----
-function searchFbMember(q) { /* ... unchanged ... */ }
-function selectFbMember(id) { /* ... unchanged ... */ }
-function submitFeedback() { /* ... unchanged ... */ }
-function renderFeedbackLog() { /* ... unchanged ... */ }
-
-// ----- About tab initialisation (unchanged) -----
-function initAboutTab() { /* ... unchanged ... */ }
-
-// ----- Price board rendering (unchanged) -----
-function renderPriceBoard() { /* ... unchanged ... */ }
-function renderActualBoard() { /* ... unchanged ... */ }
-function getActualPrice(productId, dateStr) { /* ... unchanged ... */ }
-function getLatestActualDate() { /* ... unchanged ... */ }
-
-// ----- Final initialisation -----
-setLang(lang);
-document.getElementById('order-footer').style.display = 'none';
-renderCatalog();
-renderPriceBoard();
-refreshOrgSelects();
-// Set default date for actual price editor
-const td = new Date(); td.setDate(td.getDate()+1);
-const dd = document.getElementById('actual-date');
-if (dd) dd.value = td.toISOString().split('T')[0];
-</script>
+</body>
+</html>
