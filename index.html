@@ -1252,7 +1252,7 @@ function showReportContent(){
   populateOrg('distrib-org-sel');
 }
 function genOrgReport(){
-  const orgId=parseInt(document.getElementById('rep-org-sel').value);
+  const orgId=document.getElementById('rep-org-sel').value;
   if(!orgId){showToast('Please select an organization','error');return}
   const from=document.getElementById('rep-from').value;
   const to=document.getElementById('rep-to').value;
@@ -1294,7 +1294,7 @@ function genOrgReport(){
     <div class="tbl-wrap" style="margin-bottom:16px"><table>
       <thead><tr><th>Member</th><th>Orders</th><th>Amount</th><th>WhatsApp</th></tr></thead>
       <tbody>${Object.entries(memberMap).map(([mid,md])=>{
-        const mem=members.find(x=>x.id==mid)||{};
+        const mem=members.find(x=>String(x.id)===String(mid))||{};
         const wa=mem.whatsapp;
         const waMsg=buildWA(orgName(org),md.name,md.orders);
         const waLink=wa?`<a href="https://wa.me/${wa.replace(/\D/g,'')}?text=${encodeURIComponent(waMsg)}" target="_blank" class="btn btn-wa btn-sm">📱 Send</a>`:'—';
@@ -1421,7 +1421,7 @@ function genDistribReport(){
 
   // Per-member detailed table
   Object.entries(memberMap).forEach(([mid,m])=>{
-    const mem=members.find(x=>x.id==mid)||{};
+    const mem=members.find(x=>String(x.id)===String(mid))||{};
     const wa=mem.whatsapp;
     const waMsg=buildDistribWA(orgName(org),m.name,m.items,ap,m.actualTotal,dateLabel);
     const waLink=wa?`<a href="https://wa.me/${wa.replace(/\D/g,'')}?text=${encodeURIComponent(waMsg)}" target="_blank" class="btn btn-wa btn-sm">📱 Send</a>`:'';
@@ -1530,9 +1530,8 @@ function genProducerReport(){
 
   const grandTotal=Object.values(prodMap).reduce((s,p)=>s+p.actualTotal,0);
   const sortedProds=Object.values(prodMap).sort((a,b)=>{
-    if(a.category_en<b.category_en)return -1;
-    if(a.category_en>b.category_en)return 1;
-    return 0;
+    const ca=a.category||a.category_en||'';const cb=b.category||b.category_en||'';
+    if(ca<cb)return -1;if(ca>cb)return 1;return 0;
   });
 
   let html=`
